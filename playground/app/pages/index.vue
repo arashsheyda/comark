@@ -166,7 +166,7 @@ const customComponents = {
     },
   }),
   code: defineComponent({
-    name: 'Code',
+    name: 'ProseCode',
     setup(props, { slots }) {
       return () => h('code', {
         class: 'bg-gray-800 text-pink-400 px-1.5 py-0.5 rounded text-sm font-mono border border-gray-700',
@@ -381,7 +381,10 @@ const customComponents = {
           </p>
         </div>
         <div class="flex gap-2 items-center">
-          <div v-if="isStreaming || elementsCount > 0" class="text-right mr-4">
+          <div
+            v-if="isStreaming || elementsCount > 0"
+            class="text-right mr-4"
+          >
             <div class="text-white text-xs opacity-90">
               {{ bytesReceived }} bytes · {{ elementsCount }} nodes
             </div>
@@ -434,11 +437,19 @@ const customComponents = {
             <h3 class="text-gray-200 font-semibold">
               Rendered Output
             </h3>
-            <UBadge color="neutral" variant="soft" size="xs">
+            <UBadge
+              color="neutral"
+              variant="soft"
+              size="xs"
+            >
               {{ selectedParser }}
             </UBadge>
           </div>
-          <UBadge v-if="isStreaming" color="primary" variant="soft">
+          <UBadge
+            v-if="isStreaming"
+            color="primary"
+            variant="soft"
+          >
             Live
           </UBadge>
         </div>
@@ -452,7 +463,10 @@ const customComponents = {
             :components="customComponents"
             :components-manifest="resolveComponent"
           />
-          <div v-else class="text-center text-gray-600 py-12">
+          <div
+            v-else
+            class="text-center text-gray-600 py-12"
+          >
             Click "Start" to see the renderer in action
           </div>
         </div>
@@ -464,7 +478,10 @@ const customComponents = {
           <h3 class="text-gray-200 font-semibold">
             AST Structure
           </h3>
-          <UBadge color="neutral" variant="soft">
+          <UBadge
+            color="neutral"
+            variant="soft"
+          >
             {{ elementsCount }} nodes
           </UBadge>
         </div>
@@ -476,7 +493,10 @@ const customComponents = {
             v-if="elementsCount > 0"
             class="text-xs text-gray-400 leading-relaxed"
           >{{ JSON.stringify(state.body, null, 2) }}</pre>
-          <div v-else class="text-center text-gray-600 py-12">
+          <div
+            v-else
+            class="text-center text-gray-600 py-12"
+          >
             AST structure will appear here
           </div>
         </div>

@@ -31,13 +31,23 @@ onMounted(async () => {
 
 <template>
   <div class="code-wrapper">
-    <div v-if="lang" class="language-label">
+    <div
+      v-if="lang"
+      class="language-label"
+    >
       {{ lang }}
     </div>
 
     <!-- Loading state -->
-    <div v-if="isLoading" class="loading-skeleton">
-      <div v-for="i in 3" :key="i" class="skeleton-line" />
+    <div
+      v-if="isLoading"
+      class="loading-skeleton"
+    >
+      <div
+        v-for="i in 3"
+        :key="i"
+        class="skeleton-line"
+      />
     </div>
 
     <!-- Shiki renderer -->
@@ -50,7 +60,10 @@ onMounted(async () => {
     />
 
     <!-- Fallback -->
-    <pre v-else class="code-block"><code>{{ code }}</code></pre>
+    <pre
+      v-else
+      class="code-block"
+    ><code>{{ code }}</code></pre>
   </div>
 </template>
 

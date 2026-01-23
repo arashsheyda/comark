@@ -258,7 +258,11 @@ async function copyMarkdown() {
                   class="px-2 py-1 text-xs border rounded dark:bg-neutral-800 dark:border-neutral-600"
                   @change="loadSelectedPreset"
                 >
-                  <option v-for="preset in presets" :key="preset.value" :value="preset.value">
+                  <option
+                    v-for="preset in presets"
+                    :key="preset.value"
+                    :value="preset.value"
+                  >
                     {{ preset.label }}
                   </option>
                 </select>
@@ -413,18 +417,27 @@ async function copyMarkdown() {
 
             <div class="h-[calc(100vh-380px)] min-h-[300px] overflow-auto p-3">
               <!-- AST View -->
-              <div v-if="showAst" class="font-mono text-[10px]">
+              <div
+                v-if="showAst"
+                class="font-mono text-[10px]"
+              >
                 <pre class="whitespace-pre-wrap text-gray-800 dark:text-gray-200">{{ JSON.stringify(streamState.body, null, 2) }}</pre>
               </div>
 
               <!-- Rendered View -->
-              <div v-else class="text-sm">
+              <div
+                v-else
+                class="text-sm"
+              >
                 <ContentRenderer
                   v-if="streamState.body && streamState.body.children && streamState.body.children.length > 0"
                   :value="{ body: streamState.body }"
                   class="prose prose-sm dark:prose-invert max-w-none"
                 />
-                <div v-else class="text-gray-400 text-center py-12 text-xs">
+                <div
+                  v-else
+                  class="text-gray-400 text-center py-12 text-xs"
+                >
                   No content yet. Click "Start" to begin streaming.
                 </div>
 
