@@ -8,7 +8,7 @@ timeout:
 ## Input 
 
 ```md
-```javascript
+```
 function hello() {
   console.log("Hello, World!");
 }
@@ -26,9 +26,7 @@ function hello() {
       {},
       [
         "code",
-        {
-          "class": "language-javascript"
-        },
+        {},
         "function hello() {\n  console.log(\"Hello, World!\");\n}\n"
       ]
     ]
@@ -39,7 +37,7 @@ function hello() {
 ## HTML
 
 ```html
-<pre><code class="language-javascript">function hello() {
+<pre><code>function hello() {
   console.log("Hello, World!");
 }
 </code></pre>
@@ -48,7 +46,7 @@ function hello() {
 ## Markdown
 
 ```md
-```javascript
+```
 function hello() {
   console.log("Hello, World!");
 }

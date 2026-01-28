@@ -48,7 +48,7 @@ Here's an image:
 
 And here's a code block:
 
-```javascript
+```
 function hello() {
   console.log("Hello, World!");
 }
@@ -297,9 +297,7 @@ Here's a paragraph with `code`, **strong text**, *emphasized text*, and a [link]
       {},
       [
         "code",
-        {
-          "class": "language-javascript"
-        },
+        {},
         "function hello() {\n  console.log(\"Hello, World!\");\n}\n"
       ]
     ],
@@ -536,7 +534,7 @@ Here's a paragraph with `code`, **strong text**, *emphasized text*, and a [link]
 <p>Here's an image:</p>
 <p><img src="/path/to/image.jpg" alt="Alt text" title="Image title" /></p>
 <p>And here's a code block:</p>
-<pre><code class="language-javascript">function hello() {
+<pre><code>function hello() {
   console.log("Hello, World!");
 }
 </code></pre>
@@ -607,7 +605,7 @@ Here's an image:
 
 And here's a code block:
 
-```javascript
+```
 function hello() {
   console.log("Hello, World!");
 }

@@ -91,6 +91,111 @@ function processAttributes(
 }
 
 /**
+ * Parse codeblock info string to extract language, highlights, filename, and meta
+ * Example: "javascript {1-3} [filename.ts] meta=value"
+ */
+function parseCodeblockInfo(info: string): {
+  language: string
+  filename?: string
+  highlights?: number[]
+  meta?: string
+} {
+  if (!info) {
+    return { language: '' }
+  }
+
+  const result: {
+    language: string
+    filename?: string
+    highlights?: number[]
+    meta?: string
+  } = { language: '' }
+
+  let remaining = info.trim()
+
+  // Extract language (first word)
+  const languageMatch = remaining.match(/^(\S+)/)
+  if (languageMatch) {
+    result.language = languageMatch[1]
+    remaining = remaining.slice(languageMatch[1].length).trim()
+  }
+
+  // Extract highlights and filename in any order
+  // They can appear as: {highlights} [filename] or [filename] {highlights}
+  while (remaining && (remaining.startsWith('{') || remaining.startsWith('['))) {
+    if (remaining.startsWith('{')) {
+      // Extract highlights {1-3} or {1,2,3} or {1-3,5,9-11}
+      const highlightsMatch = remaining.match(/^\{([^}]+)\}/)
+      if (highlightsMatch) {
+        const highlightsStr = highlightsMatch[1]
+        remaining = remaining.slice(highlightsMatch[0].length).trim()
+
+        // Parse highlight ranges and individual numbers
+        const highlights: number[] = []
+        const parts = highlightsStr.split(',')
+        for (const part of parts) {
+          const trimmed = part.trim()
+          if (trimmed.includes('-')) {
+            // Range like "1-3"
+            const [start, end] = trimmed.split('-').map(s => Number.parseInt(s.trim(), 10))
+            if (!Number.isNaN(start) && !Number.isNaN(end)) {
+              for (let i = start; i <= end; i++) {
+                highlights.push(i)
+              }
+            }
+          }
+          else {
+            // Single number
+            const num = Number.parseInt(trimmed, 10)
+            if (!Number.isNaN(num)) {
+              highlights.push(num)
+            }
+          }
+        }
+        if (highlights.length > 0) {
+          result.highlights = highlights
+        }
+      }
+      else {
+        break
+      }
+    }
+    else if (remaining.startsWith('[')) {
+      // Extract filename [filename.ts] - handle nested brackets and escaped backslashes
+      let depth = 0
+      let i = 0
+      for (; i < remaining.length; i++) {
+        if (remaining[i] === '[') {
+          depth++
+        }
+        else if (remaining[i] === ']') {
+          depth--
+          if (depth === 0) {
+            // Found the closing bracket
+            const filename = remaining.slice(1, i)
+            // Unescape backslashes: @[...slug\\\\].ts -> @[...slug].ts
+            result.filename = filename.replace(/\\\\/g, '')
+            remaining = remaining.slice(i + 1).trim()
+            break
+          }
+        }
+      }
+      if (depth !== 0) {
+        // Unclosed bracket, stop processing
+        break
+      }
+    }
+  }
+
+  // Remaining text is meta
+  if (remaining) {
+    result.meta = remaining
+  }
+
+  return result
+}
+
+/**
  * Extract MDC attributes from mdc_inline_props token
  * @param tokens - Array of tokens
  * @param startIndex - Index to start searching from (after the element token)
@@ -168,14 +273,35 @@ function processBlockToken(tokens: any[], startIndex: number): { node: MinimarkN
   }
 
   if (token.type === 'fence' || token.type === 'fenced_code_block' || token.type === 'code_block') {
-    const attrs: Record<string, unknown> = {}
     const content = token.content || ''
-    const language = token.info || token.params || ''
-    if (language) {
-      attrs['class'] = `language-${language.trim()}`
+    const info = token.info || token.params || ''
+
+    // Parse the info string
+    const parsed = parseCodeblockInfo(info)
+
+    // Build pre attributes
+    const preAttrs: Record<string, unknown> = {}
+    if (parsed.language && parsed.language.trim()) {
+      preAttrs.language = parsed.language
     }
-    const code: MinimarkNode = ['code', attrs, content] as MinimarkNode
-    const pre: MinimarkNode = ['pre', {}, code] as MinimarkNode
+    if (parsed.filename) {
+      preAttrs.filename = parsed.filename
+    }
+    if (parsed.highlights) {
+      preAttrs.highlights = parsed.highlights
+    }
+    if (parsed.meta) {
+      preAttrs.meta = parsed.meta
+    }
+
+    // Build code attributes
+    const codeAttrs: Record<string, unknown> = {}
+    if (parsed.language && parsed.language.trim()) {
+      codeAttrs['class'] = `language-${parsed.language}`
+    }
+
+    const code: MinimarkNode = ['code', codeAttrs, content] as MinimarkNode
+    const pre: MinimarkNode = ['pre', preAttrs, code] as MinimarkNode
     return { node: pre, nextIndex: startIndex + 1 }
   }
 

@@ -21,8 +21,8 @@ importers:
         specifier: ^2.0.0
         version: 2.0.0
       minimark:
-        specifier: https://pkg.pr.new/minimark@1484201
-        version: https://pkg.pr.new/minimark@1484201
+        specifier: https://pkg.pr.new/minimark@d7de9cd
+        version: https://pkg.pr.new/minimark@d7de9cd
       remark-mdc:
         specifier: ^3.10.0
         version: 3.10.0
@@ -5396,8 +5396,8 @@ packages:
   minimark@0.2.0:
     resolution: {integrity: sha512-AmtWU9pO0C2/3AM2pikaVhJ//8E5rOpJ7+ioFQfjIq+wCsBeuZoxPd97hBFZ9qrI7DMHZudwGH3r8A7BMnsIew==}
 
-  minimark@https://pkg.pr.new/minimark@1484201:
-    resolution: {integrity: sha512-6bKp8am/eRcQEjpduF0dnV8bVq7gh998Igg/ftIeUMd0qgv5zPZv27qv5LXYSwhoagKZyGjgV08NEk3730OnEA==, tarball: https://pkg.pr.new/minimark@1484201}
+  minimark@https://pkg.pr.new/minimark@d7de9cd:
+    resolution: {integrity: sha512-45ptf+oDc4lyDyC9MMgMajZj85h1chsREgj2tsH3weXWbArv/lNeVv8Y4uh8QXq5zbOdCId6amBbdbLZ7bAZ/g==, tarball: https://pkg.pr.new/minimark@d7de9cd}
     version: 0.2.0
 
   minimatch@10.1.1:
@@ -13265,7 +13265,7 @@ snapshots:
 
   minimark@0.2.0: {}
 
-  minimark@https://pkg.pr.new/minimark@1484201:
+  minimark@https://pkg.pr.new/minimark@d7de9cd:
     dependencies:
       js-yaml: 4.1.1
 

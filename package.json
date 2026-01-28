@@ -37,7 +37,7 @@
     "markdown-it": "^14.1.0",
     "markdown-it-mdc": "^0.2.8",
     "markdown-it-sub": "^2.0.0",
-    "minimark": "https://pkg.pr.new/minimark@1484201",
+    "minimark": "https://pkg.pr.new/minimark@d7de9cd",
     "remark-mdc": "^3.10.0",
     "scule": "^1.3.0",
     "unified": "^11.0.5"
