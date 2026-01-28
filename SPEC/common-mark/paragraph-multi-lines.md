@@ -21,12 +21,7 @@ And continues in next line
     [
       "p",
       {},
-      "This is a simple paragraph",
-      [
-        "br",
-        {}
-      ],
-      "And continues in next line"
+      "This is a simple paragraph\nAnd continues in next line"
     ]
   ]
 }
@@ -35,7 +30,8 @@ And continues in next line
 ## HTML
 
 ```html
-<p>This is a simple paragraph<br />And continues in next line</p>
+<p>This is a simple paragraph
+And continues in next line</p>
 ```
 
 ## Markdown

@@ -435,8 +435,13 @@ function processBlockChildren(
       nodes.push(...inlineNodes)
       i++
     }
-    else if (token.type === 'hard_break') {
+    else if (token.type === 'hardbreak' || token.type === 'hard_break') {
       nodes.push(['br', {}] as MinimarkNode)
+      i++
+    }
+    else if (token.type === 'softbreak') {
+      // Soft breaks are preserved as newlines in the text content
+      nodes.push('\n')
       i++
     }
     else if (inlineOnly && (token.type === 'text' || token.type === 'code_inline')) {
@@ -454,7 +459,29 @@ function processBlockChildren(
     }
   }
 
-  return { nodes, nextIndex: i }
+  // Merge adjacent text nodes
+  return { nodes: mergeAdjacentTextNodes(nodes), nextIndex: i }
+}
+
+/**
+ * Merge adjacent string nodes in an array of nodes
+ */
+function mergeAdjacentTextNodes(nodes: MinimarkNode[]): MinimarkNode[] {
+  const merged: MinimarkNode[] = []
+
+  for (const node of nodes) {
+    const lastNode = merged[merged.length - 1]
+
+    // If both current and last nodes are strings, merge them
+    if (typeof node === 'string' && typeof lastNode === 'string') {
+      merged[merged.length - 1] = lastNode + node
+    }
+    else {
+      merged.push(node)
+    }
+  }
+
+  return merged
 }
 
 function processInlineTokens(tokens: any[], inHeading: boolean = false): MinimarkNode[] {
@@ -480,7 +507,8 @@ function processInlineTokens(tokens: any[], inHeading: boolean = false): Minimar
     }
   }
 
-  return nodes
+  // Merge adjacent text nodes (e.g., "text" + "\n" + "text" → "text\ntext")
+  return mergeAdjacentTextNodes(nodes)
 }
 
 function processInlineToken(tokens: any[], startIndex: number, inHeading: boolean = false): { node: MinimarkNode | string | null, nextIndex: number } {
@@ -544,8 +572,13 @@ function processInlineToken(tokens: any[], startIndex: number, inHeading: boolea
     return { node: null, nextIndex }
   }
 
-  if (token.type === 'hard_break' || token.type === 'softbreak') {
+  if (token.type === 'hardbreak' || token.type === 'hard_break') {
     return { node: ['br', {}] as MinimarkNode, nextIndex: startIndex + 1 }
+  }
+
+  if (token.type === 'softbreak') {
+    // Soft breaks are preserved as newlines in the text content
+    return { node: '\n', nextIndex: startIndex + 1 }
   }
 
   // Handle MDC inline components (e.g., :inline-component)
@@ -676,5 +709,6 @@ function processInlineChildren(
     }
   }
 
-  return { nodes, nextIndex: i }
+  // Merge adjacent text nodes
+  return { nodes: mergeAdjacentTextNodes(nodes), nextIndex: i }
 }

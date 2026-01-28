@@ -8,7 +8,7 @@ timeout:
 ## Input 
 
 ```md
-This is a simple paragraph
+This is a simple paragraph  
 And continues in next line
 
 This is another paragraph
@@ -49,7 +49,7 @@ This is another paragraph
 ## Markdown
 
 ```md
-This is a simple paragraph
+This is a simple paragraph  
 And continues in next line
 
 This is another paragraph
