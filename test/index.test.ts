@@ -148,7 +148,6 @@ describe('MDC Syntax Tests', () => {
   testCases.forEach(({ file, testCase }) => {
     describe(file, () => {
       it('should parse input to AST', { timeout: testCase.timeouts?.parse ?? 5000 }, () => {
-        // if (!file.includes('table-alignment')) return
         const result = parse(testCase.input, { autoUnwrap: false })
         const expectedAST = JSON.parse(testCase.ast)
 

@@ -52,7 +52,9 @@ Paragraph with :inline-component in middle
     ],
     [
       "h2",
-      {},
+      {
+        "id": "a-inline-inside-heading"
+      },
       "a ",
       [
         "inline",
@@ -76,7 +78,7 @@ Paragraph with :inline-component in middle
 <p>
   Paragraph with <inline-component></inline-component> in middle
 </p>
-<h2>
+<h2 id="a-inline-inside-heading">
   a <inline></inline> inside heading
 </h2>
 ```

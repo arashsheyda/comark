@@ -29,7 +29,9 @@ timeout:
     ],
     [
       "h1",
-      {},
+      {
+        "id": "content"
+      },
       "Content"
     ]
   ]
@@ -41,7 +43,7 @@ timeout:
 ```html
 <hr />
 <hr />
-<h1>Content</h1>
+<h1 id="content">Content</h1>
 ```
 
 ## Markdown

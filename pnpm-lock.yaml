@@ -4,34 +4,15 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+patchedDependencies:
+  markdown-it-mdc:
+    hash: 7344102ef20260b8a21d26ebab2fa94fd01ea8e31cc68f051f81754d63ea9b6e
+    path: patches/markdown-it-mdc.patch
+
 importers:
 
   .:
     dependencies:
-      github-slugger:
-        specifier: ^2.0.0
-        version: 2.0.0
-      markdown-it:
-        specifier: ^14.1.0
-        version: 14.1.0
-      markdown-it-mdc:
-        specifier: ^0.2.8
-        version: 0.2.8(@types/markdown-it@14.1.2)(markdown-it@14.1.0)
-      markdown-it-sub:
-        specifier: ^2.0.0
-        version: 2.0.0
-      minimark:
-        specifier: https://pkg.pr.new/minimark@c68ddf8
-        version: https://pkg.pr.new/minimark@c68ddf8
-      remark-mdc:
-        specifier: ^3.10.0
-        version: 3.10.0
-      scule:
-        specifier: ^1.3.0
-        version: 1.3.0
-      unified:
-        specifier: ^11.0.5
-        version: 11.0.5
       vue:
         specifier: ^3.5.27
         version: 3.5.27(typescript@5.9.3)
@@ -45,9 +26,24 @@ importers:
       eslint:
         specifier: ^9.39.2
         version: 9.39.2(jiti@2.6.1)
+      github-slugger:
+        specifier: ^2.0.0
+        version: 2.0.0
       hast-util-to-string:
         specifier: ^3.0.1
         version: 3.0.1
+      markdown-it:
+        specifier: ^14.1.0
+        version: 14.1.0
+      markdown-it-mdc:
+        specifier: ^0.2.8
+        version: 0.2.8(patch_hash=7344102ef20260b8a21d26ebab2fa94fd01ea8e31cc68f051f81754d63ea9b6e)(@types/markdown-it@14.1.2)(markdown-it@14.1.0)
+      markdown-it-sub:
+        specifier: ^2.0.0
+        version: 2.0.0
+      minimark:
+        specifier: https://pkg.pr.new/minimark@c68ddf8
+        version: https://pkg.pr.new/minimark@c68ddf8
       nuxt:
         specifier: ^4.3.0
         version: 4.3.0(@parcel/watcher@2.5.4)(@types/node@25.0.10)(@vue/compiler-sfc@3.5.27)(better-sqlite3@12.6.2)(cac@6.7.14)(db0@0.3.4(better-sqlite3@12.6.2))(eslint@9.39.2(jiti@2.6.1))(ioredis@5.9.2)(lightningcss@1.31.1)(magicast@0.5.1)(optionator@0.9.4)(rolldown@1.0.0-rc.1)(rollup@4.55.1)(terser@5.46.0)(typescript@5.9.3)(vite@7.3.1(@types/node@25.0.10)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(yaml@2.8.2))(vue-tsc@3.2.4(typescript@5.9.3))(yaml@2.8.2)
@@ -57,15 +53,24 @@ importers:
       remark-gfm:
         specifier: ^4.0.1
         version: 4.0.1
+      remark-mdc:
+        specifier: ^3.10.0
+        version: 3.10.0
       remark-parse:
         specifier: ^11.0.0
         version: 11.0.0
       remark-rehype:
         specifier: ^11.1.2
         version: 11.1.2
+      scule:
+        specifier: ^1.3.0
+        version: 1.3.0
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
+      unified:
+        specifier: ^11.0.5
+        version: 11.0.5
       vitest:
         specifier: ^4.0.18
         version: 4.0.18(@types/node@25.0.10)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(yaml@2.8.2)
@@ -12896,7 +12901,7 @@ snapshots:
       '@babel/types': 7.28.6
       source-map-js: 1.2.1
 
-  markdown-it-mdc@0.2.8(@types/markdown-it@14.1.2)(markdown-it@14.1.0):
+  markdown-it-mdc@0.2.8(patch_hash=7344102ef20260b8a21d26ebab2fa94fd01ea8e31cc68f051f81754d63ea9b6e)(@types/markdown-it@14.1.2)(markdown-it@14.1.0):
     dependencies:
       '@types/markdown-it': 14.1.2
       markdown-it: 14.1.0

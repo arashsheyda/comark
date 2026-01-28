@@ -231,7 +231,7 @@ export function parseTokens(tokens: any[]): MinimarkNode[] {
 
   let i = 0
   while (i < tokens.length) {
-    const result = processBlockToken(tokens, i)
+    const result = processBlockToken(tokens, i, false)
     i = result.nextIndex
     if (result.node) {
       nodes.push(result.node)
@@ -245,7 +245,7 @@ export function getMarkdownIt() {
   return md
 }
 
-function processBlockToken(tokens: any[], startIndex: number): { node: MinimarkNode | null, nextIndex: number } {
+function processBlockToken(tokens: any[], startIndex: number, insideNestedContext: boolean = false): { node: MinimarkNode | null, nextIndex: number } {
   const token = tokens[startIndex]
 
   if (token.type === 'hr') {
@@ -309,16 +309,22 @@ function processBlockToken(tokens: any[], startIndex: number): { node: MinimarkN
     const level = token.tag.replace('h', '')
     const headingTag = `h${level}` as 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'
     // Process heading children with inHeading flag for MDC component handling
-    const children = processBlockChildren(tokens, startIndex + 1, 'heading_close', true, true)
+    const children = processBlockChildren(tokens, startIndex + 1, 'heading_close', true, true, insideNestedContext)
+
     if (children.nodes.length > 0) {
-      return { node: [headingTag, {}, ...children.nodes] as MinimarkNode, nextIndex: children.nextIndex + 1 }
+      // Always generate ID for all headings, no exceptions
+      const textContent = extractTextContent(children.nodes)
+      const headingId = slugify(textContent)
+
+      // Always attach ID to the heading element itself
+      return { node: [headingTag, { id: headingId }, ...children.nodes] as MinimarkNode, nextIndex: children.nextIndex + 1 }
     }
     return { node: null, nextIndex: children.nextIndex + 1 }
   }
 
   // Handle list items - paragraphs should be unwrapped
   if (token.type === 'list_item_open') {
-    const children = processBlockChildren(tokens, startIndex + 1, 'list_item_close', false)
+    const children = processBlockChildren(tokens, startIndex + 1, 'list_item_close', false, false, true)
     // Unwrap paragraphs in list items
     const unwrapped: MinimarkNode[] = []
     for (const child of children.nodes) {
@@ -336,12 +342,46 @@ function processBlockToken(tokens: any[], startIndex: number): { node: MinimarkN
     return { node: null, nextIndex: children.nextIndex + 1 }
   }
 
-  // Handle generic block-level open/close pairs
+  // Handle generic block-level open/close pairs (includes blockquote, lists, tables, etc.)
   const tagName = BLOCK_TAG_MAP[token.type]
   if (tagName) {
     const attrs = processAttributes(token.attrs, { handleBoolean: false, handleJSON: false })
     const closeType = token.type.replace('_open', '_close')
-    const children = processBlockChildren(tokens, startIndex + 1, closeType, false)
+
+    // Special handling for blockquotes
+    if (tagName === 'blockquote') {
+      // First pass: get children
+      const children = processBlockChildren(tokens, startIndex + 1, closeType, false, false, false)
+
+      // Rule: If a heading is the FIRST child AND there are additional children after it,
+      // then the heading should NOT have an ID. Otherwise, headings should have IDs.
+      if (children.nodes.length > 1) {
+        const firstChild = children.nodes[0]
+        // Check if first child is a heading (h1-h6)
+        const isHeading = Array.isArray(firstChild)
+          && typeof firstChild[0] === 'string'
+          && /^h[1-6]$/.test(firstChild[0])
+
+        if (isHeading) {
+          // Heading is first child with more siblings - reprocess without IDs
+          const childrenNoIds = processBlockChildren(tokens, startIndex + 1, closeType, false, false, true)
+          if (childrenNoIds.nodes.length > 0) {
+            return { node: [tagName, attrs, ...childrenNoIds.nodes] as MinimarkNode, nextIndex: childrenNoIds.nextIndex + 1 }
+          }
+          return { node: null, nextIndex: childrenNoIds.nextIndex + 1 }
+        }
+      }
+
+      // All other cases: use original processing (allows IDs)
+      if (children.nodes.length > 0) {
+        return { node: [tagName, attrs, ...children.nodes] as MinimarkNode, nextIndex: children.nextIndex + 1 }
+      }
+      return { node: null, nextIndex: children.nextIndex + 1 }
+    }
+
+    // For other elements (tables, etc.)
+    const isNestedContext = ['td', 'th'].includes(tagName)
+    const children = processBlockChildren(tokens, startIndex + 1, closeType, false, false, isNestedContext)
     if (children.nodes.length > 0) {
       return { node: [tagName, attrs, ...children.nodes] as MinimarkNode, nextIndex: children.nextIndex + 1 }
     }
@@ -395,7 +435,8 @@ function processBlockChildrenWithSlots(
     }
 
     // Process other block tokens
-    const result = processBlockToken(tokens, i)
+    // MDC components are not nested contexts - headings inside them should get IDs
+    const result = processBlockToken(tokens, i, false)
     i = result.nextIndex
     if (result.node) {
       if (currentSlotName !== null) {
@@ -423,6 +464,7 @@ function processBlockChildren(
   closeType: string,
   inlineOnly: boolean,
   inHeading: boolean = false,
+  insideNestedContext: boolean = false,
 ): { nodes: MinimarkNode[], nextIndex: number } {
   const nodes: MinimarkNode[] = []
   let i = startIndex
@@ -451,7 +493,7 @@ function processBlockChildren(
       i++
     }
     else {
-      const result = processBlockToken(tokens, i)
+      const result = processBlockToken(tokens, i, insideNestedContext)
       i = result.nextIndex
       if (result.node) {
         nodes.push(result.node)
@@ -482,6 +524,60 @@ function mergeAdjacentTextNodes(nodes: MinimarkNode[]): MinimarkNode[] {
   }
 
   return merged
+}
+
+/**
+ * Extract text content from nodes for heading ID generation
+ */
+function extractTextContent(nodes: MinimarkNode[]): string {
+  let text = ''
+
+  for (const node of nodes) {
+    if (typeof node === 'string') {
+      text += node
+    }
+    else if (Array.isArray(node)) {
+      // For array nodes (elements), include the tag name (for inline components)
+      const tag = node[0]
+      const children = node.slice(2) as MinimarkNode[]
+
+      // Skip 'br' and 'html_inline' tags
+      if (tag === 'br' || tag === 'html_inline') {
+        continue
+      }
+
+      // Include the tag name (e.g., "inline" from :inline component)
+      text += ' ' + tag + ' '
+      // Also include any text from children
+      if (children.length > 0) {
+        text += extractTextContent(children)
+      }
+    }
+  }
+
+  return text
+}
+
+/**
+ * Convert text to a slug for heading IDs
+ * Example: "Hello World" -> "hello-world"
+ * Example: "1. Introduction" -> "_1-introduction"
+ */
+function slugify(text: string): string {
+  let slug = text
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, '-') // Replace spaces with hyphens
+    .replace(/[^\w-]+/g, '') // Remove non-word chars (except hyphens)
+    .replace(/-{2,}/g, '-') // Replace multiple hyphens with single hyphen
+    .replace(/^-+|-+$/g, '') // Remove leading/trailing hyphens
+
+  // Prefix with underscore if starts with a digit (HTML IDs can't start with numbers)
+  if (/^\d/.test(slug)) {
+    slug = '_' + slug
+  }
+
+  return slug
 }
 
 function processInlineTokens(tokens: any[], inHeading: boolean = false): MinimarkNode[] {
@@ -581,24 +677,59 @@ function processInlineToken(tokens: any[], startIndex: number, inHeading: boolea
     return { node: '\n', nextIndex: startIndex + 1 }
   }
 
-  // Handle MDC inline components (e.g., :inline-component)
+  // Handle MDC inline components (e.g., :inline-component or :component[text]{attrs})
   if (token.type === 'mdc_inline_component') {
     const componentName = token.tag || 'component'
-    const attrs: Record<string, unknown> = {}
 
-    // markdown-it-mdc stores attributes in a separate mdc_inline_props token
-    // that appears right after the component token
-    const { attrs: componentAttrs, nextIndex: propsNextIndex } = extractMDCAttributes(tokens, startIndex + 1, false)
-    Object.assign(attrs, componentAttrs)
+    // Check if this is an opening tag (has children) or a self-closing tag
+    if (token.nesting === 1) {
+      // Opening tag - process children until closing tag
+      const children: MinimarkNode[] = []
+      let i = startIndex + 1
 
-    // Extract attributes from token.attrs (fallback, though markdown-it-mdc uses mdc_inline_props)
-    const fallbackAttrs = processAttributes(token.attrs, { handleBoolean: false })
-    Object.assign(attrs, fallbackAttrs)
+      while (i < tokens.length) {
+        const childToken = tokens[i]
 
-    // Return the component without any text children
-    // Text after the component will be processed as siblings by processInlineChildren
-    const nextIndex = Object.keys(componentAttrs).length > 0 ? propsNextIndex : startIndex + 1
-    return { node: [componentName, attrs] as MinimarkNode, nextIndex }
+        // Check for closing tag
+        if (childToken.type === 'mdc_inline_component' && childToken.nesting === -1) {
+          // Found closing tag, now check for props after it
+          const { attrs, nextIndex } = extractMDCAttributes(tokens, i + 1, false)
+          return { node: [componentName, attrs, ...children] as MinimarkNode, nextIndex }
+        }
+
+        // Process child token
+        const result = processInlineToken(tokens, i, inHeading)
+        i = result.nextIndex
+        if (result.node) {
+          children.push(result.node as MinimarkNode)
+        }
+      }
+
+      // No closing tag found, return what we have
+      return { node: [componentName, {}, ...children] as MinimarkNode, nextIndex: i }
+    }
+    else if (token.nesting === -1) {
+      // Closing tag - should be handled by the opening tag processing
+      return { node: null, nextIndex: startIndex + 1 }
+    }
+    else {
+      // Self-closing component (nesting === 0)
+      const attrs: Record<string, unknown> = {}
+
+      // markdown-it-mdc stores attributes in a separate mdc_inline_props token
+      // that appears right after the component token
+      const { attrs: componentAttrs, nextIndex: propsNextIndex } = extractMDCAttributes(tokens, startIndex + 1, false)
+      Object.assign(attrs, componentAttrs)
+
+      // Extract attributes from token.attrs (fallback, though markdown-it-mdc uses mdc_inline_props)
+      const fallbackAttrs = processAttributes(token.attrs, { handleBoolean: false })
+      Object.assign(attrs, fallbackAttrs)
+
+      // Return the component without any text children
+      // Text after the component will be processed as siblings by processInlineChildren
+      const nextIndex = Object.keys(componentAttrs).length > 0 ? propsNextIndex : startIndex + 1
+      return { node: [componentName, attrs] as MinimarkNode, nextIndex }
+    }
   }
 
   if (token.type === 'image') {

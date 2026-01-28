@@ -1,0 +1,279 @@
+diff --git a/dist/index.mjs b/dist/index.mjs
+index 20ce47559cb5cf7a853be462f948ba8711564284..92c4dc2d11f8350c8539a624ac9589d696228448 100644
+--- a/dist/index.mjs
++++ b/dist/index.mjs
+@@ -1,6 +1,24 @@
+ import { parse } from 'yaml';
+ import TokenClass from 'markdown-it/lib/token.mjs';
+ 
++function parseBracketContent(str, startIndex) {
++  if (str[startIndex] !== "[")
++    return null;
++  let index = startIndex + 1;
++  while (index < str.length) {
++    if (str[index] === "\\" && index + 1 < str.length) {
++      index += 2;
++      continue;
++    }
++    if (str[index] === "]") {
++      const content = str.slice(startIndex + 1, index);
++      return { content, endIndex: index + 1 };
++    }
++    index += 1;
++  }
++  return null;
++}
++
+ const bracketPairs = {
+   "[": "]",
+   "{": "}",
+@@ -11,17 +29,6 @@ const quotePairs = {
+   '"': '"',
+   "`": "`"
+ };
+-function parseProps(content) {
+-  content = content.trim();
+-  if (!content)
+-    return void 0;
+-  const props = searchProps(content);
+-  if (!props)
+-    throw new Error(`Invalid props: \`${content}\``);
+-  if (props.index !== content.length)
+-    throw new Error(`Invalid props: \`${content}\`, expected end \`}\` but got \`${content.slice(props.index)}\``);
+-  return props.props;
+-}
+ function searchProps(content, index = 0) {
+   if (content[index] !== "{")
+     throw new Error(`Invalid props, expected \`{\` but got '${content[index]}'`);
+@@ -131,11 +138,42 @@ function parseBlockParams(str) {
+   const name = str.match(RE_BLOCK_NAME)?.[0];
+   if (!name)
+     throw new Error(`Invalid block params: ${str}`);
+-  const params = str.slice(name.length).trim();
+-  return {
+-    name,
+-    props: parseProps(params)
++  let remaining = str.slice(name.length).trim();
++  let content;
++  let props;
++  let unparsedRemaining;
++  if (remaining.startsWith("[")) {
++    const result2 = parseBracketContent(remaining, 0);
++    if (result2) {
++      content = result2.content;
++      remaining = remaining.slice(result2.endIndex).trim();
++    }
++  }
++  if (remaining.startsWith("{")) {
++    const propsResult = searchProps(remaining, 0);
++    if (propsResult) {
++      props = propsResult.props;
++      const afterProps = remaining.slice(propsResult.index).trim();
++      if (afterProps) {
++        unparsedRemaining = afterProps;
++      }
++    }
++  } else if (remaining) {
++    unparsedRemaining = remaining;
++  }
++  const result = {
++    name
+   };
++  if (content !== void 0) {
++    result.content = content;
++  }
++  if (props !== void 0) {
++    result.props = props;
++  }
++  if (unparsedRemaining) {
++    result.remaining = unparsedRemaining;
++  }
++  return result;
+ }
+ 
+ const MarkdownItMdcBlock = (md) => {
+@@ -150,19 +188,41 @@ const MarkdownItMdcBlock = (md) => {
+       const line = state.src.slice(state.bMarks[startLine] + state.tShift[startLine], state.eMarks[startLine]);
+       if (!line.match(/^:\w/))
+         return false;
++      const parsed = parseBlockParams(line.slice(1));
+       const {
+         name,
+-        props
+-      } = parseBlockParams(line.slice(1));
++        content,
++        props,
++        remaining
++      } = parsed;
++      if (remaining) {
++        return false;
++      }
+       state.lineMax = startLine + 1;
+       if (!silent) {
+-        const token = state.push("mdc_block_shorthand", name, 0);
+-        props?.forEach(([key, value]) => {
+-          if (key === "class")
+-            token.attrJoin(key, value);
+-          else
+-            token.attrSet(key, value);
+-        });
++        if (content !== void 0) {
++          const tokenOpen = state.push("mdc_block_shorthand", name, 1);
++          props?.forEach(([key, value]) => {
++            if (key === "class")
++              tokenOpen.attrJoin(key, value);
++            else
++              tokenOpen.attrSet(key, value);
++          });
++          const inline = state.push("inline", "", 0);
++          inline.content = "";
++          const text = new state.Token("text", "", 0);
++          text.content = content;
++          inline.children = [text];
++          state.push("mdc_block_shorthand", name, -1);
++        } else {
++          const token = state.push("mdc_block_shorthand", name, 0);
++          props?.forEach(([key, value]) => {
++            if (key === "class")
++              token.attrJoin(key, value);
++            else
++              token.attrSet(key, value);
++          });
++        }
+       }
+       state.line = startLine + 1;
+       return true;
+@@ -348,6 +408,7 @@ const MarkdownItMdcBlock = (md) => {
+   );
+ };
+ 
++const ALLOWED_PREV_CHARS = /* @__PURE__ */ new Set([" ", "	", "\n", "*", "_", "["]);
+ const MarkdownItInlineComponent = (md) => {
+   md.inline.ruler.after("entity", "mdc_inline_component", (state, silent) => {
+     const start = state.pos;
+@@ -355,24 +416,19 @@ const MarkdownItInlineComponent = (md) => {
+     if (char !== ":")
+       return false;
+     const prevChar = state.src[start - 1];
+-    if (start > 0 && prevChar !== " " && prevChar !== "	")
++    if (start > 0 && !ALLOWED_PREV_CHARS.has(prevChar))
+       return false;
+     let index = start + 1;
+-    let contentStart = -1;
+-    let contentEnd = -1;
++    let nameEnd = -1;
++    let content;
+     while (index < state.src.length) {
+       const char2 = state.src[index];
+       if (char2 === "[") {
+-        contentStart = index + 1;
+-        while (index < state.src.length) {
+-          index += 1;
+-          if (state.src[index] === "\\")
+-            index += 2;
+-          if (state.src[index] === "]") {
+-            contentEnd = index;
+-            index += 1;
+-            break;
+-          }
++        nameEnd = index;
++        const result = parseBracketContent(state.src, index);
++        if (result) {
++          content = result.content;
++          index = result.endIndex;
+         }
+         break;
+       }
+@@ -380,22 +436,22 @@ const MarkdownItInlineComponent = (md) => {
+         break;
+       index += 1;
+     }
+-    if (index <= start + 1)
++    if (nameEnd === -1)
++      nameEnd = index;
++    if (nameEnd <= start + 1)
+       return false;
++    state.pos = index;
+     if (silent)
+       return true;
+-    if (contentEnd !== contentStart) {
+-      const name = state.src.slice(start + 1, contentStart - 1);
+-      const body = state.src.slice(contentStart, contentEnd);
++    const name = state.src.slice(start + 1, nameEnd);
++    if (content !== void 0) {
+       state.push("mdc_inline_component", name, 1);
+       const text = state.push("text", "", 0);
+-      text.content = body;
++      text.content = content;
+       state.push("mdc_inline_component", name, -1);
+     } else {
+-      const name = state.src.slice(start + 1, index);
+       state.push("mdc_inline_component", name, 0);
+     }
+-    state.pos = index;
+     return true;
+   });
+ };
+@@ -417,12 +473,12 @@ const MarkdownItInlineProps = (md) => {
+     } = search;
+     if (end === start)
+       return false;
++    state.pos = end;
+     if (silent)
+       return true;
+     const token = state.push("mdc_inline_props", "span", 0);
+     token.attrs = props;
+     token.hidden = true;
+-    state.pos = end;
+     return true;
+   });
+   md.renderer.rules.mdc_inline_props = () => {
+@@ -519,26 +575,42 @@ const MarkdownItInlineProps = (md) => {
+ };
+ 
+ const MarkdownItInlineSpan = (md) => {
+-  md.inline.ruler.after("mdc_inline_props", "mdc_inline_span", (state, silent) => {
++  md.inline.ruler.before("link", "mdc_inline_span", (state, silent) => {
+     const start = state.pos;
+     const char = state.src[start];
+     if (char !== "[")
+       return false;
+     let index = start + 1;
++    let depth = 0;
+     while (index < state.src.length) {
+-      if (state.src[index] === "\\")
++      if (state.src[index] === "\\") {
+         index += 2;
+-      if (state.src[index] === "]")
+-        break;
++        continue;
++      }
++      if (state.src[index] === "[") {
++        depth++;
++      } else if (state.src[index] === "]") {
++        if (depth === 0)
++          break;
++        depth--;
++      }
+       index += 1;
+     }
+     if (index === start)
+       return false;
++    const nextChar = state.src[index + 1];
++    if (nextChar === "(" || nextChar === "[")
++      return false;
+     if (silent)
+       return true;
+     state.push("mdc_inline_span", "span", 1);
+-    const text = state.push("text", "", 0);
+-    text.content = state.src.slice(start + 1, index);
++    const oldPos = state.pos;
++    const oldPosMax = state.posMax;
++    state.pos = start + 1;
++    state.posMax = index;
++    state.md.inline.tokenize(state);
++    state.pos = oldPos;
++    state.posMax = oldPosMax;
+     state.push("mdc_inline_span", "span", -1);
+     state.pos = index + 1;
+     return true;

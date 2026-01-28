@@ -23,7 +23,9 @@ description: My Description
   "value": [
     [
       "h1",
-      {},
+      {
+        "id": "content"
+      },
       "Content"
     ]
   ]
@@ -33,7 +35,7 @@ description: My Description
 ## HTML
 
 ```html
-<h1>Content</h1>
+<h1 id="content">Content</h1>
 ```
 
 ## Markdown

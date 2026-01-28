@@ -91,7 +91,9 @@ Here's a paragraph with `code`, **strong text**, *emphasized text*, and a [link]
   "value": [
     [
       "h1",
-      {},
+      {
+        "id": "main-title"
+      },
       "Main Title"
     ],
     [
@@ -113,7 +115,9 @@ Here's a paragraph with `code`, **strong text**, *emphasized text*, and a [link]
     ],
     [
       "h2",
-      {},
+      {
+        "id": "section-one"
+      },
       "Section One"
     ],
     [
@@ -149,7 +153,9 @@ Here's a paragraph with `code`, **strong text**, *emphasized text*, and a [link]
     ],
     [
       "h3",
-      {},
+      {
+        "id": "subsection"
+      },
       "Subsection"
     ],
     [
@@ -174,7 +180,9 @@ Here's a paragraph with `code`, **strong text**, *emphasized text*, and a [link]
     ],
     [
       "h4",
-      {},
+      {
+        "id": "nested-heading"
+      },
       "Nested Heading"
     ],
     [
@@ -267,7 +275,9 @@ Here's a paragraph with `code`, **strong text**, *emphasized text*, and a [link]
     ],
     [
       "h2",
-      {},
+      {
+        "id": "section-two"
+      },
       "Section Two"
     ],
     [
@@ -303,7 +313,9 @@ Here's a paragraph with `code`, **strong text**, *emphasized text*, and a [link]
     ],
     [
       "h3",
-      {},
+      {
+        "id": "more-content"
+      },
       "More Content"
     ],
     [
@@ -344,7 +356,9 @@ Here's a paragraph with `code`, **strong text**, *emphasized text*, and a [link]
     ],
     [
       "h2",
-      {},
+      {
+        "id": "final-section"
+      },
       "Final Section"
     ],
     [
@@ -388,7 +402,9 @@ Here's a paragraph with `code`, **strong text**, *emphasized text*, and a [link]
       ],
       [
         "h4",
-        {},
+        {
+          "id": "blockquote-heading"
+        },
         "Blockquote Heading"
       ],
       [
@@ -399,7 +415,9 @@ Here's a paragraph with `code`, **strong text**, *emphasized text*, and a [link]
     ],
     [
       "h3",
-      {},
+      {
+        "id": "lists-combined"
+      },
       "Lists Combined"
     ],
     [
@@ -496,16 +514,16 @@ Here's a paragraph with `code`, **strong text**, *emphasized text*, and a [link]
 ## HTML
 
 ```html
-<h1>Main Title</h1>
+<h1 id="main-title">Main Title</h1>
 <p>This is a comprehensive markdown document with <strong>multiple features</strong> and <em>various</em> formatting options.</p>
-<h2>Section One</h2>
+<h2 id="section-one">Section One</h2>
 <p>Here's a paragraph with a <a href="https://nuxt.com">link to Nuxt</a> and some <code>inline code</code>. You can also find <strong>bold text</strong> and <em>italic text</em> together.</p>
-<h3>Subsection</h3>
+<h3 id="subsection">Subsection</h3>
 <blockquote>
   <p>This is a blockquote with important information.</p>
   <p>It can span multiple lines and contain <strong>formatted text</strong>.</p>
 </blockquote>
-<h4>Nested Heading</h4>
+<h4 id="nested-heading">Nested Heading</h4>
 <p>Here's an unordered list:</p>
 <ul>
   <li>First item</li>
@@ -530,7 +548,7 @@ Here's a paragraph with `code`, **strong text**, *emphasized text*, and a [link]
     </ul>
   </li>
 </ol>
-<h2>Section Two</h2>
+<h2 id="section-two">Section Two</h2>
 <p>Here's an image:</p>
 <p><img src="/path/to/image.jpg" alt="Alt text" title="Image title" /></p>
 <p>And here's a code block:</p>
@@ -538,18 +556,18 @@ Here's a paragraph with `code`, **strong text**, *emphasized text*, and a [link]
   console.log("Hello, World!");
 }
 </code></pre>
-<h3>More Content</h3>
+<h3 id="more-content">More Content</h3>
 <p>You can have <strong>bold</strong> and <em>italic</em> text, or even <em><strong>both together</strong></em>.</p>
 <p>Horizontal rule:</p>
 <hr />
-<h2>Final Section</h2>
+<h2 id="final-section">Final Section</h2>
 <p>Here's a paragraph with <code>code</code>, <strong>strong text</strong>, <em>emphasized text</em>, and a <a href="https://nuxt.com">link</a> all in one line.</p>
 <blockquote>
   <p>Blockquote with heading</p>
-  <h4>Blockquote Heading</h4>
+  <h4 id="blockquote-heading">Blockquote Heading</h4>
   <p>And a paragraph inside the blockquote.</p>
 </blockquote>
-<h3>Lists Combined</h3>
+<h3 id="lists-combined">Lists Combined</h3>
 <ul>
   <li>Item with <strong>bold</strong> and <em>italic</em></li>
   <li>Item with <code>code</code> and <a href="https://example.com">link</a></li>
