@@ -43,12 +43,13 @@ function autoCloseInlineSyntax(markdown: string): string {
   const lines = markdown.split('\n')
   const lastLine = lines[lines.length - 1]
 
-  // Define markers in order (bold before italic to avoid conflicts)
+  // Define markers in order (bold+italic, then bold, then italic to avoid conflicts)
   const markers = [
+    { marker: '***', pattern: /\*\*\*(?:[^*]|\*(?!\*\*)|\*\*(?!\*))*$/ }, // bold+italic (strong emphasis)
     { marker: '**', pattern: /\*\*(?:[^*]|\*(?!\*))*$/ }, // bold - matches ** followed by content not ending with **
     { marker: '~~', pattern: /~~(?:[^~]|~(?!~))*$/ }, // strikethrough
     { marker: '`', pattern: /`[^`]*$/ }, // inline code
-    { marker: '*', pattern: /\*[^*]*$/ }, // italic - must be after bold
+    { marker: '*', pattern: /\*(?!\s)[^*]*$/ }, // italic - must be after bold, not followed by space
   ]
 
   let closingSuffix = ''

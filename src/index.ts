@@ -7,6 +7,7 @@ import { generateToc } from './utils/table-of-contents'
 import { stringify } from 'minimark/stringify'
 import type { MinimarkTree, MinimarkNode } from 'minimark'
 import { parseTokens } from './utils/token-processor'
+import { autoCloseMarkdown } from './utils/auto-close'
 
 export interface ParseResult {
   body: MinimarkTree
@@ -64,13 +65,17 @@ export type { ParseOptions, ShikiOptions } from './types'
  * ```
  */
 export function parse(source: string, options: ParseOptions = {}): ParseResult {
-  const { autoUnwrap = true, highlight } = options
+  const { autoUnwrap = true, autoClose = true, highlight } = options
 
   // Warn if highlight option is used with sync parse
   if (highlight) {
     console.warn(
       'The "highlight" option requires async parsing. Use parseAsync() instead, or call highlightCodeBlocks() manually after parsing.',
     )
+  }
+
+  if (autoClose) {
+    source = autoCloseMarkdown(source)
   }
 
   const { content, data } = parseFrontMatter(source)

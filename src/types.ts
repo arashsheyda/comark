@@ -32,6 +32,12 @@ export interface ParseOptions {
   autoUnwrap?: boolean
 
   /**
+   * Whether to automatically close unclosed markdown and MDC components.
+   * @default true
+   */
+  autoClose?: boolean
+
+  /**
    * Enable syntax highlighting for code blocks using Shiki or provide custom options
    * @default false
    */

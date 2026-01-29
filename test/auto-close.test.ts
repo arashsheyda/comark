@@ -103,6 +103,22 @@ describe('autoCloseMarkdown - MDC Components', () => {
     const input = ':not-a-component'
     expect(autoCloseMarkdown(input)).toBe(input)
   })
+
+  it('should ignore space', () => {
+    const input = '* not an italic'
+    const expected = '* not an italic'
+    expect(autoCloseMarkdown(input)).toBe(expected)
+  })
+  it('valid italic syntax', () => {
+    const input = '*italic'
+    const expected = '*italic*'
+    expect(autoCloseMarkdown(input)).toBe(expected)
+  })
+  it('should handle strong in italic', () => {
+    const input = '***strong italic'
+    const expected = '***strong italic***'
+    expect(autoCloseMarkdown(input)).toBe(expected)
+  })
 })
 
 describe('autoCloseMarkdown - Combined Scenarios', () => {
