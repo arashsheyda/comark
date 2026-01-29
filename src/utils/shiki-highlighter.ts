@@ -24,7 +24,7 @@ export interface ShikiOptions {
 
 let highlighter: Highlighter | null = null
 let highlighterPromise: Promise<Highlighter> | null = null
-let loadedThemes: Set<string> = new Set()
+const loadedThemes: Set<string> = new Set()
 
 /**
  * Get or create the Shiki highlighter instance
@@ -107,44 +107,42 @@ export async function highlightCode(
 
     // Use codeToTokens to get raw tokens
     const result = hl.codeToTokens(code, {
-      lang: language,
+      lang: language as BundledLanguage,
       theme: theme as BundledTheme | string,
     })
 
-    console.log(result.tokens)
     // Build minimark nodes from tokens (flatten all lines)
     const allTokens: MinimarkNode[] = []
-    
+
     for (let i = 0; i < result.tokens.length; i++) {
       const lineTokens = result.tokens[i]
 
       const lineTokensNodes: MinimarkNode[] = []
       for (const token of lineTokens) {
         const style = colorToStyle(token.color)
-        
+
         // Create a span with style for colored tokens
         // Note: we always wrap in spans if there's a style, even for whitespace
         // because the whitespace may be part of the styled token
         if (style) {
           lineTokensNodes.push(['span', { style }, token.content] as MinimarkNode)
-        } else {
+        }
+        else {
           // Plain text token (no style)
           lineTokensNodes.push(token.content)
         }
       }
 
-      
       allTokens.push(['span', { class: 'line' }, ...lineTokensNodes])
 
       // Add newline between lines (except for last line)
       if (i < result.tokens.length - 1) {
         allTokens.push('\n')
       }
-
     }
 
-    return { 
-      nodes: allTokens, 
+    return {
+      nodes: allTokens,
       language,
       bgColor: result.bg,
       fgColor: result.fg,
@@ -176,7 +174,7 @@ export async function highlightCodeBlocks(
 
     // Check if this is a pre > code structure
     if (Array.isArray(node) && node[0] === 'pre') {
-      const [tag, attrs, ...children] = node
+      const [_tag, attrs, ...children] = node
 
       // Look for code element as child
       if (children.length > 0 && Array.isArray(children[0]) && children[0][0] === 'code') {
@@ -184,21 +182,21 @@ export async function highlightCodeBlocks(
         const [, codeAttrs, content] = codeNode
 
         // Extract language from attributes
-        const language = (attrs as any)?.language ||
-                        ((codeAttrs as any)?.class as string)?.replace('language-', '') ||
-                        'text'
+        const language = (attrs as any)?.language
+          || ((codeAttrs as any)?.class as string)?.replace('language-', '')
+          || 'text'
 
         if (typeof content === 'string') {
           try {
             const { nodes, bgColor, fgColor } = await highlightCode(content, language, options)
 
             // Build pre attributes with Shiki styling
-            const newPreAttrs: any = { 
+            const newPreAttrs: any = {
               ...attrs,
               class: `shiki ${options.theme || 'github-dark'}`,
               tabindex: '0',
             }
-            
+
             if (bgColor || fgColor) {
               const styles: string[] = []
               if (bgColor) styles.push(`background-color:${bgColor}`)

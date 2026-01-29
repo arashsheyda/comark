@@ -45,8 +45,8 @@ importers:
         specifier: ^2.0.0
         version: 2.0.0
       minimark:
-        specifier: https://pkg.pr.new/minimark@9df41a4
-        version: https://pkg.pr.new/minimark@9df41a4
+        specifier: https://pkg.pr.new/minimark@bf0f08a
+        version: https://pkg.pr.new/minimark@bf0f08a
       nuxt:
         specifier: ^4.3.0
         version: 4.3.0(@parcel/watcher@2.5.4)(@types/node@25.0.10)(@vue/compiler-sfc@3.5.27)(better-sqlite3@12.6.2)(cac@6.7.14)(db0@0.3.4(better-sqlite3@12.6.2))(eslint@9.39.2(jiti@2.6.1))(ioredis@5.9.2)(lightningcss@1.31.1)(magicast@0.5.1)(optionator@0.9.4)(rolldown@1.0.0-rc.1)(rollup@4.55.1)(terser@5.46.0)(typescript@5.9.3)(vite@7.3.1(@types/node@25.0.10)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(yaml@2.8.2))(vue-tsc@3.2.4(typescript@5.9.3))(yaml@2.8.2)
@@ -5408,8 +5408,8 @@ packages:
   minimark@0.2.0:
     resolution: {integrity: sha512-AmtWU9pO0C2/3AM2pikaVhJ//8E5rOpJ7+ioFQfjIq+wCsBeuZoxPd97hBFZ9qrI7DMHZudwGH3r8A7BMnsIew==}
 
-  minimark@https://pkg.pr.new/minimark@9df41a4:
-    resolution: {integrity: sha512-e5PE6/eGpWww/D+dW+kEITDzYUIT+H3acsqugjhAs0yPxtmYtnbekzTNo//gEPGZqNG/MO5IOVrc2jF1QNzyPQ==, tarball: https://pkg.pr.new/minimark@9df41a4}
+  minimark@https://pkg.pr.new/minimark@bf0f08a:
+    resolution: {integrity: sha512-CCSQSqEQng1t7uJeVAyiCeW9sxJ47Dh1uKJ6lujKMMtKG2oRvl3Xrv1vlvGT13CAz2ETbPuMS6GYlDevFI8sZQ==, tarball: https://pkg.pr.new/minimark@bf0f08a}
     version: 0.2.0
 
   minimatch@10.1.1:
@@ -13279,7 +13279,7 @@ snapshots:
 
   minimark@0.2.0: {}
 
-  minimark@https://pkg.pr.new/minimark@9df41a4:
+  minimark@https://pkg.pr.new/minimark@bf0f08a:
     dependencies:
       entities: 7.0.1
       js-yaml: 4.1.1

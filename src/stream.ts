@@ -163,11 +163,10 @@ export async function* parseStreamIncremental(
 
       // Auto-close unclosed syntax before parsing intermediate results
       const closedContent = autoCloseMarkdown(accumulatedContent)
-      // console.log({closedContent})
 
       // Parse the auto-closed content
       const result = parse(closedContent, options)
-      // console.log({result})
+
       yield {
         chunk: chunkStr,
         body: result.body,

@@ -47,7 +47,7 @@ function extractFrontmatter(content: string): { timeouts?: TestCase['timeouts'],
   return {
     timeouts: Object.keys(timeouts).length > 0 ? timeouts : undefined,
     options: data.options as TestCase['options'] | undefined,
-    body
+    body,
   }
 }
 
