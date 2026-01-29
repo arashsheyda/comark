@@ -157,8 +157,6 @@ describe('MDC Syntax Tests', () => {
   testCases.forEach(({ file, testCase }) => {
     describe(file, () => {
       it('should parse input to AST', { timeout: testCase.timeouts?.parse ?? 5000 }, async () => {
-        // if (!file.includes('shiki-codeblock-highlight-complex')) return
-        console.log({ autoUnwrap: false, ...testCase.options })
         const result = await parseAsync(testCase.input, { autoUnwrap: false, ...testCase.options })
         const expectedAST = JSON.parse(testCase.ast)
 

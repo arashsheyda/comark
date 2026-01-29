@@ -102,7 +102,6 @@ export async function highlightCode(
 
       const lineTokensNodes: MinimarkNode[] = []
       for (const token of lineTokens) {
-        console.log(token)
         const style = colorToStyle(token.htmlStyle)
 
         // Create a span with style for colored tokens
