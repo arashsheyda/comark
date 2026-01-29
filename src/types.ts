@@ -2,12 +2,6 @@ import type { BundledLanguage, BundledTheme } from 'shiki'
 
 export interface ShikiOptions {
   /**
-   * Theme to use for syntax highlighting
-   * @default 'github-dark'
-   */
-  theme?: BundledTheme | string
-
-  /**
    * Languages to preload. If not specified, languages will be loaded on demand.
    * @default undefined (load on demand)
    */
@@ -15,9 +9,9 @@ export interface ShikiOptions {
 
   /**
    * Additional themes to preload
-   * @default []
+   * @default { light: 'material-theme-lighter', dark: 'material-theme-palenight' }
    */
-  themes?: (BundledTheme | string)[]
+  themes?: Record<string, BundledTheme | string>
 }
 
 export interface ParseOptions {

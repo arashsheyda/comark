@@ -4,7 +4,9 @@ timeout:
   html: 5ms
   markdown: 5ms
 options:
-  highlight: true
+  highlight:
+    themes:
+      light: 'github-dark'
 ---
 
 ## Input

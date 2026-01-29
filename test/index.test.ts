@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest'
 import { readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import { parseFrontMatter } from 'remark-mdc'
+import type { ParseOptions } from '../src/index'
 import { parseAsync, renderHTML, renderMarkdown } from '../src/index'
 
 interface TestCase {
@@ -15,7 +16,7 @@ interface TestCase {
     markdown?: number
   }
   options?: {
-    highlight?: boolean
+    highlight?: ParseOptions['highlight']
   }
 }
 
@@ -157,6 +158,7 @@ describe('MDC Syntax Tests', () => {
     describe(file, () => {
       it('should parse input to AST', { timeout: testCase.timeouts?.parse ?? 5000 }, async () => {
         // if (!file.includes('shiki-codeblock-highlight-complex')) return
+        console.log({ autoUnwrap: false, ...testCase.options })
         const result = await parseAsync(testCase.input, { autoUnwrap: false, ...testCase.options })
         const expectedAST = JSON.parse(testCase.ast)
 

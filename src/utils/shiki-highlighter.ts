@@ -1,26 +1,7 @@
 import type { Highlighter, BundledLanguage, BundledTheme } from 'shiki'
 import { createHighlighter } from 'shiki'
 import type { MinimarkNode, MinimarkTree } from 'minimark'
-
-export interface ShikiOptions {
-  /**
-   * Theme to use for syntax highlighting
-   * @default 'github-dark'
-   */
-  theme?: BundledTheme | string
-
-  /**
-   * Languages to preload. If not specified, languages will be loaded on demand.
-   * @default undefined (load on demand)
-   */
-  languages?: BundledLanguage[]
-
-  /**
-   * Additional themes to preload
-   * @default []
-   */
-  themes?: (BundledTheme | string)[]
-}
+import type { ParseOptions } from '../types'
 
 let highlighter: Highlighter | null = null
 let highlighterPromise: Promise<Highlighter> | null = null
@@ -30,9 +11,9 @@ const loadedThemes: Set<string> = new Set()
  * Get or create the Shiki highlighter instance
  * Uses a singleton pattern to avoid creating multiple highlighters
  */
-export async function getHighlighter(options: ShikiOptions = {}): Promise<Highlighter> {
-  const { theme = 'github-dark', themes = [], languages } = options
-  const allThemes = [theme, ...themes].filter(Boolean) as (BundledTheme | string)[]
+export async function getHighlighter(options: Exclude<ParseOptions['highlight'], boolean> = {}): Promise<Highlighter> {
+  const { themes = {}, languages } = options
+  const allThemes = ['material-theme-lighter', 'material-theme-palenight', ...Object.values(themes)].filter(Boolean) as (BundledTheme | string)[]
 
   // If highlighter exists, load any new themes that aren't loaded yet
   if (highlighter) {
@@ -72,9 +53,9 @@ export async function getHighlighter(options: ShikiOptions = {}): Promise<Highli
 /**
  * Convert color to inline style
  */
-function colorToStyle(color: string | undefined): string | undefined {
+function colorToStyle(color: Record<string, string> | undefined): string | undefined {
   if (!color) return undefined
-  return `color:${color}`
+  return Object.entries(color).map(([key, value]) => `${key}:${value}`).join(';')
 }
 
 /**
@@ -83,12 +64,14 @@ function colorToStyle(color: string | undefined): string | undefined {
  */
 export async function highlightCode(
   code: string,
-  language: string,
-  options: ShikiOptions = {},
+  attrs: { language?: string, class?: string, highlights?: number[] },
+  options: Exclude<ParseOptions['highlight'], boolean> = {},
 ): Promise<{ nodes: MinimarkNode[], language: string, bgColor?: string, fgColor?: string }> {
+  // Extract language from attributes
+  const language = (attrs as any)?.language
   try {
     const hl = await getHighlighter(options)
-    const { theme = 'github-dark' } = options
+    const { themes = { light: 'material-theme-lighter', dark: 'material-theme-palenight' } } = options
 
     // Load the language if not already loaded
     const loadedLanguages = hl.getLoadedLanguages()
@@ -108,7 +91,7 @@ export async function highlightCode(
     // Use codeToTokens to get raw tokens
     const result = hl.codeToTokens(code, {
       lang: language as BundledLanguage,
-      theme: theme as BundledTheme | string,
+      themes: themes as Record<string, BundledTheme | string>,
     })
 
     // Build minimark nodes from tokens (flatten all lines)
@@ -119,7 +102,8 @@ export async function highlightCode(
 
       const lineTokensNodes: MinimarkNode[] = []
       for (const token of lineTokens) {
-        const style = colorToStyle(token.color)
+        console.log(token)
+        const style = colorToStyle(token.htmlStyle)
 
         // Create a span with style for colored tokens
         // Note: we always wrap in spans if there's a style, even for whitespace
@@ -133,7 +117,8 @@ export async function highlightCode(
         }
       }
 
-      allTokens.push(['span', { class: 'line' }, ...lineTokensNodes])
+      const lineClass = 'line' + (attrs.highlights?.includes(i + 1) ? ' highlight' : '')
+      allTokens.push(['span', { class: lineClass }, ...lineTokensNodes])
 
       // Add newline between lines (except for last line)
       if (i < result.tokens.length - 1) {
@@ -164,7 +149,7 @@ export async function highlightCode(
  */
 export async function highlightCodeBlocks(
   tree: MinimarkTree,
-  options: ShikiOptions = {},
+  options: Exclude<ParseOptions['highlight'], boolean> = {},
 ): Promise<MinimarkTree> {
   const processNode = async (node: MinimarkNode): Promise<MinimarkNode> => {
     // Skip text nodes
@@ -181,14 +166,9 @@ export async function highlightCodeBlocks(
         const codeNode = children[0]
         const [, codeAttrs, content] = codeNode
 
-        // Extract language from attributes
-        const language = (attrs as any)?.language
-          || ((codeAttrs as any)?.class as string)?.replace('language-', '')
-          || 'text'
-
         if (typeof content === 'string') {
           try {
-            const { nodes, bgColor, fgColor } = await highlightCode(content, language, options)
+            const { nodes, bgColor, fgColor } = await highlightCode(content, attrs, options)
 
             // Build pre attributes with Shiki styling
             const newPreAttrs: any = {
