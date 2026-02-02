@@ -4,11 +4,6 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
-patchedDependencies:
-  markdown-it-mdc:
-    hash: 7344102ef20260b8a21d26ebab2fa94fd01ea8e31cc68f051f81754d63ea9b6e
-    path: patches/markdown-it-mdc.patch
-
 importers:
 
   .:
@@ -17,8 +12,8 @@ importers:
         specifier: ^14.1.0
         version: 14.1.0
       markdown-it-mdc:
-        specifier: ^0.2.8
-        version: 0.2.8(patch_hash=7344102ef20260b8a21d26ebab2fa94fd01ea8e31cc68f051f81754d63ea9b6e)(@types/markdown-it@14.1.2)(markdown-it@14.1.0)
+        specifier: ^0.2.9
+        version: 0.2.9(@types/markdown-it@14.1.2)(markdown-it@14.1.0)
       mdc-syntax:
         specifier: link:.
         version: 'link:'
@@ -5322,8 +5317,8 @@ packages:
       '@types/markdown-it':
         optional: true
 
-  markdown-it-mdc@0.2.8:
-    resolution: {integrity: sha512-d1cVHZ2rdpjJWSYSVZG9Q0zXXCL3BobGjFyLKHv5sOn4Uw+W7Xy5idKTrJBWizyZ/qa/IAxYcj0k/iYhCs334g==}
+  markdown-it-mdc@0.2.9:
+    resolution: {integrity: sha512-wHUDwNpABoNJnwSgsYtk8gdG642mLgWPnlN+NCIR5Rv4i0XT69qBousLraGrYabd2o2vsMtG4qKo/jnvXub03Q==}
     peerDependencies:
       '@types/markdown-it': '*'
       markdown-it: ^14.0.0
@@ -13172,7 +13167,7 @@ snapshots:
     optionalDependencies:
       '@types/markdown-it': 14.1.2
 
-  markdown-it-mdc@0.2.8(patch_hash=7344102ef20260b8a21d26ebab2fa94fd01ea8e31cc68f051f81754d63ea9b6e)(@types/markdown-it@14.1.2)(markdown-it@14.1.0):
+  markdown-it-mdc@0.2.9(@types/markdown-it@14.1.2)(markdown-it@14.1.0):
     dependencies:
       '@types/markdown-it': 14.1.2
       markdown-it: 14.1.0
