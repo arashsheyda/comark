@@ -4,6 +4,7 @@ import { join } from 'node:path'
 import { parseFrontmatter } from '../src/utils/front-matter'
 import type { ParseOptions } from '../src/index'
 import { parseAsync, renderHTML, renderMarkdown } from '../src/index'
+import cjkFriendlyPlugin from '@mdc-syntax/cjk'
 
 interface TestCase {
   input: string
@@ -157,7 +158,7 @@ describe('MDC Syntax Tests', () => {
   testCases.forEach(({ file, testCase }) => {
     describe(file, () => {
       it('should parse input to AST', { timeout: testCase.timeouts?.parse ?? 5000 }, async () => {
-        const result = await parseAsync(testCase.input, { autoUnwrap: false, ...testCase.options })
+        const result = await parseAsync(testCase.input, { autoUnwrap: false, ...testCase.options, plugins: [cjkFriendlyPlugin] })
         const expectedAST = JSON.parse(testCase.ast)
 
         expect(result.body).toEqual(expectedAST)

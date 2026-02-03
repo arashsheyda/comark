@@ -1,0 +1,63 @@
+{
+  "name": "mdc-syntax",
+  "type": "module",
+  "version": "0.0.1",
+  "description": "Markdown Component (MDC) parser with streaming support for Vue and React",
+  "author": "",
+  "license": "MIT",
+  "repository": "nuxt-content/mdc-syntax",
+  "keywords": [
+    "markdown",
+    "mdc",
+    "parser",
+    "streaming",
+    "vue",
+    "react"
+  ],
+  "exports": {
+    ".": "./dist/index.mjs",
+    "./vue": "./dist/vue/index.mjs",
+    "./react": "./dist/react/index.mjs",
+    "./stream": "./dist/stream.mjs"
+  },
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "obuild",
+    "test": "vitest run",
+    "prepack": "obuild",
+    "release": "release-it",
+    "release:dry": "release-it --dry-run"
+  },
+  "peerDependencies": {
+    "react": "^19.2.4",
+    "vue": "^3.5.27"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    },
+    "vue": {
+      "optional": true
+    }
+  },
+  "dependencies": {
+    "markdown-it": "^14.1.0",
+    "markdown-it-mdc": "^0.2.9",
+    "minimark": "https://pkg.pr.new/minimark@76668bf",
+    "shiki": "^3.21.0",
+    "shiki-stream": "^0.1.4",
+    "yaml": "^2.8.2"
+  },
+  "devDependencies": {
+    "@mdc-syntax/cjk": "workspace:*",
+    "github-slugger": "^2.0.0",
+    "hast-util-to-string": "^3.0.1",
+    "obuild": "^0.4.22",
+    "vitest": "^4.0.18"
+  }
+}

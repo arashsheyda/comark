@@ -1,7 +1,6 @@
 import type { ParseOptions } from './types'
 import MarkdownIt from 'markdown-it'
 import pluginMdc from 'markdown-it-mdc'
-import markdownItCjkFriendly from 'markdown-it-cjk-friendly'
 import markdownItTaskListsMdc from './utils/markdown-it-task-lists-mdc'
 import { applyAutoUnwrap } from './utils/auto-unwrap'
 import { generateToc } from './utils/table-of-contents'
@@ -31,7 +30,7 @@ export { applyAutoUnwrap } from './utils/auto-unwrap'
 export { highlightCode } from './utils/shiki-highlighter'
 
 // Re-export types
-export type { ParseOptions, ShikiOptions } from './types'
+export type * from './types'
 
 /**
  * Parse MDC content from a string
@@ -90,8 +89,13 @@ export function parse(source: string, options: ParseOptions = {}): ParseResult {
     .enable(['table', 'strikethrough'])
     // Custom task list plugin must run before MDC to prevent [X] being parsed as MDC syntax
     .use(markdownItTaskListsMdc)
-    .use(markdownItCjkFriendly)
     .use(pluginMdc)
+
+  for (const plugin of options.plugins || []) {
+    for (const markdownItPlugin of plugin.markdownItPlugins) {
+      markdownIt.use(markdownItPlugin)
+    }
+  }
 
   const tokens = markdownIt.parse(content, {})
 

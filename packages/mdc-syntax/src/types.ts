@@ -1,4 +1,11 @@
 import type { BundledLanguage, BundledTheme } from 'shiki'
+import type MarkdownIt from 'markdown-it'
+
+export type MarkdownItPlugin = (md: MarkdownIt) => void
+
+export type ParsePlugin = {
+  markdownItPlugins: MarkdownItPlugin[]
+}
 
 export interface ShikiOptions {
   /**
@@ -42,4 +49,10 @@ export interface ParseOptions {
    * @default false
    */
   highlight?: boolean | ShikiOptions
+
+  /**
+   * Additional plugins to use
+   * @default []
+   */
+  plugins?: ParsePlugin[]
 }

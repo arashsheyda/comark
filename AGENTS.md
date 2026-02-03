@@ -1,8 +1,10 @@
 # Agent Instructions
 
-This document provides guidance for AI agents working on the mdc-syntax codebase.
+This document provides guidance for AI agents working on the mdc-syntax monorepo.
 
 ## Project Overview
+
+This is a **monorepo** containing multiple packages related to MDC (Markdown Component) syntax parsing. The main package is `mdc-syntax`.
 
 **mdc-syntax** is a Markdown Component (MDC) parser that extends standard Markdown with component syntax. It provides:
 
@@ -12,32 +14,78 @@ This document provides guidance for AI agents working on the mdc-syntax codebase
 - Syntax highlighting via Shiki
 - Auto-close utilities for incomplete markdown (useful for AI streaming)
 
-## Architecture
+## Monorepo Structure
 
 ```
-src/
-├── index.ts              # Core parser: parse(), parseAsync(), renderHTML(), renderMarkdown()
-├── stream.ts             # Streaming: parseStream(), parseStreamIncremental()
-├── types.ts              # TypeScript interfaces
-├── vue/                  # Vue components: MDC, MDCRenderer, ShikiCodeBlock
-├── react/                # React components: MDC, MDCRenderer, ShikiCodeBlock
-└── utils/
-    ├── auto-close.ts     # Auto-close incomplete markdown/MDC syntax
-    ├── auto-unwrap.ts    # Remove unnecessary <p> wrappers
-    ├── front-matter.ts   # YAML frontmatter parsing/rendering
-    ├── token-processor.ts # markdown-it token to Minimark AST conversion
-    ├── table-of-contents.ts # TOC generation
-    └── shiki-highlighter.ts # Syntax highlighting
-
-examples/
-├── vue-vite/             # Vue 3 + Vite + Tailwind CSS v4 example
-└── react-vite/           # React 19 + Vite + Tailwind CSS v4 example
-
-test/                     # Vitest test files
-playground/               # Nuxt playground for development
-docs/                     # Documentation site (Docus-based)
-skills/                   # AI agent skills definitions
+/                         # Root workspace
+├── packages/             # All publishable packages
+│   ├── mdc-syntax/       # Main MDC parser package
+│   └── mdc-syntax-cjk/   # CJK support plugin (@mdc-syntax/cjk)
+├── examples/             # Example applications
+│   ├── vue-vite/         # Vue 3 + Vite + Tailwind CSS v4
+│   └── react-vite/       # React 19 + Vite + Tailwind CSS v4
+├── docs/                 # Documentation site (Docus-based)
+├── skills/               # AI agent skills definitions
+├── pnpm-workspace.yaml   # Workspace configuration
+└── package.json          # Root package (private, scripts only)
 ```
+
+## Package: mdc-syntax
+
+Located at `packages/mdc-syntax/`:
+
+```
+packages/mdc-syntax/
+├── src/
+│   ├── index.ts              # Core parser: parse(), parseAsync(), renderHTML(), renderMarkdown()
+│   ├── stream.ts             # Streaming: parseStream(), parseStreamIncremental()
+│   ├── types.ts              # TypeScript interfaces
+│   ├── vue/                  # Vue components: MDC, MDCRenderer, ShikiCodeBlock
+│   ├── react/                # React components: MDC, MDCRenderer, ShikiCodeBlock
+│   └── utils/
+│       ├── auto-close.ts     # Auto-close incomplete markdown/MDC syntax
+│       ├── auto-unwrap.ts    # Remove unnecessary <p> wrappers
+│       ├── front-matter.ts   # YAML frontmatter parsing/rendering
+│       ├── token-processor.ts # markdown-it token to Minimark AST conversion
+│       ├── table-of-contents.ts # TOC generation
+│       └── shiki-highlighter.ts # Syntax highlighting
+├── test/                 # Vitest test files
+├── SPEC/                 # Markdown spec test files
+├── package.json          # Package manifest
+├── tsconfig.json         # TypeScript config
+├── build.config.mjs      # Build configuration (obuild)
+└── vitest.config.ts      # Test configuration
+```
+
+## Package: @mdc-syntax/cjk
+
+CJK (Chinese, Japanese, Korean) support plugin. Located at `packages/mdc-syntax-cjk/`:
+
+```
+packages/mdc-syntax-cjk/
+├── src/
+│   └── index.ts          # Plugin export
+├── test/                 # Vitest test files (23 tests)
+├── package.json          # Package manifest
+├── tsconfig.json         # TypeScript config
+├── build.config.mjs      # Build configuration
+└── vitest.config.ts      # Test configuration
+```
+
+### Usage
+
+```typescript
+import { parse } from 'mdc-syntax'
+import cjkPlugin from '@mdc-syntax/cjk'
+
+const result = parse('中文内容 **加粗**', { plugins: [cjkPlugin] })
+```
+
+### Features
+
+- Improved line breaking between CJK and non-CJK characters
+- Better handling of soft line breaks in CJK text
+- Full support for CJK in all MDC syntax features (headings, lists, components, etc.)
 
 ## Package Exports
 
@@ -85,18 +133,19 @@ const matches = line.match(/\*+/g)  // Don't do this
 
 ### Code Organization
 
-1. Keep utility functions in `src/utils/`
-2. Framework-specific code in `src/vue/` and `src/react/`
+1. Keep utility functions in `packages/mdc-syntax/src/utils/`
+2. Framework-specific code in `packages/mdc-syntax/src/vue/` and `packages/mdc-syntax/src/react/`
 3. Export public APIs from entry points (`index.ts`, `stream.ts`)
 4. Document exported functions with JSDoc including `@example`
 
 ## Testing Guidelines
 
-Tests are in `test/` using Vitest:
+Tests are in `packages/mdc-syntax/test/` using Vitest:
 
 ```bash
-pnpm test              # Run all tests
-pnpm vitest run test/auto-close.test.ts  # Run specific test file
+pnpm test                                          # Run all package tests
+cd packages/mdc-syntax && pnpm test                # Run mdc-syntax tests
+cd packages/mdc-syntax && pnpm vitest run test/auto-close.test.ts  # Run specific test
 ```
 
 ### Test Structure
@@ -227,34 +276,93 @@ Use MDCRenderer when:
 
 ### Adding a new utility function
 
-1. Create file in `src/utils/`
-2. Export from `src/index.ts` if public API
-3. Add tests in `test/`
+1. Create file in `packages/mdc-syntax/src/utils/`
+2. Export from `packages/mdc-syntax/src/index.ts` if public API
+3. Add tests in `packages/mdc-syntax/test/`
 4. Document with JSDoc
 
 ### Modifying the parser
 
-1. Token processing is in `src/utils/token-processor.ts`
-2. Test with `test/index.test.ts`
-3. Check streaming still works with `test/stream.test.ts`
+1. Token processing is in `packages/mdc-syntax/src/utils/token-processor.ts`
+2. Test with `packages/mdc-syntax/test/index.test.ts`
+3. Check streaming still works with `packages/mdc-syntax/test/stream.test.ts`
 
 ### Adding component features
 
-1. Vue components in `src/vue/components/`
-2. React components in `src/react/components/`
+1. Vue components in `packages/mdc-syntax/src/vue/components/`
+2. React components in `packages/mdc-syntax/src/react/components/`
 3. Both should have similar APIs for consistency
+
+### Adding a new package
+
+1. Create directory in `packages/`
+2. Add `package.json` with appropriate name and dependencies
+3. Use `workspace:*` protocol for local package dependencies
+4. Package is automatically included via `pnpm-workspace.yaml`
 
 ## Scripts
 
+Root workspace scripts:
+
 ```bash
-pnpm dev          # Run playground (Nuxt)
+pnpm dev          # Alias for dev:vue
 pnpm dev:vue      # Run Vue example (Vite)
 pnpm dev:react    # Run React example (Vite)
 pnpm docs         # Run documentation site
-pnpm test         # Run tests
+pnpm build        # Build all packages
+pnpm test         # Run all package tests
 pnpm lint         # Run ESLint
 pnpm typecheck    # Run TypeScript check
 pnpm verify       # Run lint + test + typecheck
+```
+
+Package-specific scripts (from `packages/mdc-syntax/`):
+
+```bash
+pnpm build        # Build the package (obuild)
+pnpm test         # Run package tests (vitest)
+pnpm release      # Release the package
+pnpm release:dry  # Dry run release
+```
+
+## Releasing
+
+Uses [release-it](https://github.com/release-it/release-it) with conventional changelog.
+
+### Release all packages (synced versions)
+
+```bash
+pnpm release          # Interactive release
+pnpm release:dry      # Dry run to preview
+```
+
+This will:
+1. Run `pnpm verify` (lint, test, typecheck)
+2. Bump version in root and all packages
+3. Generate/update CHANGELOG.md
+4. Create git tag and GitHub release
+
+### Release individual package
+
+```bash
+cd packages/mdc-syntax
+pnpm release          # Release mdc-syntax only
+
+cd packages/mdc-syntax-cjk
+pnpm release          # Release @mdc-syntax/cjk only
+```
+
+### Commit message format
+
+Follow [Conventional Commits](https://www.conventionalcommits.org/):
+
+```
+feat: add streaming support          # Minor version bump
+fix: correct parsing edge case       # Patch version bump
+feat!: breaking API change           # Major version bump
+perf: optimize auto-close algorithm  # Patch version bump
+docs: update README                  # No version bump
+chore: update dependencies           # No version bump
 ```
 
 ## Examples
@@ -275,10 +383,10 @@ Features:
 - Uses `<Suspense>` wrapper for async MDC component
 
 Key files:
-- `src/App.vue` - Main app with editor/streaming modes
-- `src/components/StreamingPreview.vue` - Streaming demo component
-- `src/components/CustomAlert.vue` - Custom alert component
-- `src/components/CustomHeading.vue` - Custom heading component
+- `examples/vue-vite/src/App.vue` - Main app with editor/streaming modes
+- `examples/vue-vite/src/components/StreamingPreview.vue` - Streaming demo component
+- `examples/vue-vite/src/components/CustomAlert.vue` - Custom alert component
+- `examples/vue-vite/src/components/CustomHeading.vue` - Custom heading component
 
 ### React/Vite Example (`examples/react-vite/`)
 
@@ -292,10 +400,10 @@ Features:
 - Custom component registration
 
 Key files:
-- `src/App.tsx` - Main app
-- `src/components/StreamingPreview.tsx` - Streaming demo
-- `src/components/CustomAlert.tsx` - Custom alert
-- `src/components/CustomHeading.tsx` - Custom heading
+- `examples/react-vite/src/App.tsx` - Main app
+- `examples/react-vite/src/components/StreamingPreview.tsx` - Streaming demo
+- `examples/react-vite/src/components/CustomAlert.tsx` - Custom alert
+- `examples/react-vite/src/components/CustomHeading.tsx` - Custom heading
 
 ## Documentation Maintenance
 

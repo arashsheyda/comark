@@ -6,7 +6,9 @@
   },
   "dependencies": {
     "docus": "latest",
-    "mdc-syntax": "link:..",
+    "mdc-syntax": "workspace:*",
+    "@mdc-syntax/cjk": "workspace:*",
+    "markdown-it": "^14.1.0",
     "nuxt": "^4.3.0"
   }
 }

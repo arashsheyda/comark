@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { MDC } from 'mdc-syntax/vue'
+import cjkFriendlyPlugin from '@mdc-syntax/cjk'
 import { ref } from 'vue'
 
 const props = defineProps<{
@@ -59,6 +60,7 @@ defineExpose({
       class="prose dark:prose-invert max-w-none"
       :markdown="accumulated"
       :options="{
+        plugins: [cjkFriendlyPlugin],
         highlight: {
           themes: {
             light: 'github-light',
