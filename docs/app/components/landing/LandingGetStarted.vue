@@ -17,14 +17,14 @@ const markdown = \`# Hello **World**\`\n<`
     + `/script>
 
 <template>
-  <MDC :value="markdown" />
+  <MDC :markdown="markdown" />
 </template>\n\`\`\``,
   react: `\`\`\`tsx [src/App.tsx]\nimport { MDC } from 'mdc-syntax/react'
 
 export default function App() {
   const markdown = \`# Hello **World**\`
 
-  return <MDC value={markdown} />
+  return <MDC markdown={markdown} />
 }\n\`\`\``,
 }
 </script>

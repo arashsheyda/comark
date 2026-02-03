@@ -156,7 +156,7 @@ import { MDC } from 'mdc-syntax/react'
 
 export default function App() {
   const markdown = \`# Hello **World**\`
-  return <MDC value={markdown} />
+  return <MDC markdown={markdown} />
 }
 \`\`\`
 

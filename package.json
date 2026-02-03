@@ -21,9 +21,10 @@
     "dist"
   ],
   "scripts": {
-    "dev": "nuxt dev playground",
+    "dev": "pnpm dev:vue",
     "dev:prepare": "nuxt prepare playground",
     "dev:react": "vite dev examples/react-vite",
+    "dev:vue": "vite dev examples/vue-vite",
     "docs": "nuxt dev --extends docus docs",
     "test": "vitest run",
     "prepack": "obuild",

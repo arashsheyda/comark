@@ -322,17 +322,17 @@ function reset() {
         </div>
       </div>
 
-      <!-- AST Structure Column -->
+      <!-- Markdown Column -->
       <div class="flex flex-col overflow-hidden bg-neutral-950 border-l border-neutral-800">
         <div class="flex justify-between items-center px-4 py-3 bg-neutral-900 border-b border-neutral-800 flex-shrink-0">
           <h3 class="text-neutral-200 font-semibold">
-            AST Structure
+            Markdown
           </h3>
           <UBadge
             color="neutral"
             variant="soft"
           >
-            {{ elementsCount }} nodes
+            {{ state.content.length }} bytes
           </UBadge>
         </div>
         <div
@@ -347,7 +347,7 @@ function reset() {
             v-else
             class="text-center text-neutral-600 py-12"
           >
-            AST structure will appear here
+            Markdown will appear here
           </div>
         </div>
       </div>

@@ -133,9 +133,7 @@ export const MDC = defineComponent({
       }
     }
 
-    if (props.stream) {
-      watch(markdown, parseMarkdown)
-    }
+    watch(markdown, parseMarkdown)
 
     await parseMarkdown()
 
