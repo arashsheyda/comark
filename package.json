@@ -29,7 +29,8 @@
     "prepack": "obuild",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "verify": "pnpm run lint && pnpm run test && pnpm run typecheck"
+    "verify": "pnpm run lint && pnpm run test && pnpm run typecheck",
+    "postinstall": "pnpm prepack --stub"
   },
   "peerDependencies": {
     "react": "^19.2.4",
