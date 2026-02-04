@@ -135,6 +135,7 @@ function parseHtmlInline(html: string): { tag: string, attrs: Record<string, unk
 /**
  * Parse codeblock info string to extract language, highlights, filename, and meta
  * Example: "javascript {1-3} [filename.ts] meta=value"
+ * Example: "typescript[filename]{1,3-5}meta"
  */
 function parseCodeblockInfo(info: string): {
   language: string
@@ -155,8 +156,8 @@ function parseCodeblockInfo(info: string): {
 
   let remaining = info.trim()
 
-  // Extract language (first word)
-  const languageMatch = remaining.match(/^(\S+)/)
+  // Extract language (stops at [ or { or whitespace)
+  const languageMatch = remaining.match(/^([^\s\[\{]+)/)
   if (languageMatch) {
     result.language = languageMatch[1]
     remaining = remaining.slice(languageMatch[1].length).trim()

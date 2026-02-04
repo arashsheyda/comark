@@ -51,7 +51,7 @@
   "dependencies": {
     "markdown-it": "^14.1.0",
     "markdown-it-mdc": "^0.2.9",
-    "minimark": "https://pkg.pr.new/minimark@76668bf",
+    "minimark": "https://pkg.pr.new/minimark@b2f64a8",
     "shiki": "^3.22.0",
     "shiki-stream": "^0.1.4",
     "yaml": "^2.8.2"
