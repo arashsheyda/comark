@@ -18,17 +18,20 @@ export function autoCloseMarkdown(markdown: string): string {
   // Step 0: Close unclosed front matter
   let result = closeFrontmatter(markdown)
 
+  // Step 1: Close unclosed block math ($$...$$)
+  result = closeBlockMath(result)
+
   // Find the last line (where inline markers need closing)
   const lastLineStart = result.lastIndexOf('\n') + 1
   const lastLine = result.slice(lastLineStart)
 
-  // Step 1: Close inline markers on last line
+  // Step 2: Close inline markers on last line
   const inlineResult = closeInlineMarkersLinear(lastLine)
   result = lastLineStart === 0
     ? inlineResult
     : result.slice(0, lastLineStart) + inlineResult
 
-  // Step 2: Close MDC components if any
+  // Step 3: Close MDC components if any
   if (result.includes('::')) {
     result = closeMDCComponentsLinear(result)
   }
@@ -83,7 +86,47 @@ function closeFrontmatter(markdown: string): string {
 }
 
 /**
- * Closes inline markers (*, **, ***, ~~, `, [, () on the last line
+ * Closes unclosed block math ($$...$$)
+ * Block math is delimited by $$ on its own line
+ */
+function closeBlockMath(markdown: string): string {
+  const lines: string[] = []
+  let lineStart = 0
+
+  // Split into lines manually
+  for (let i = 0; i <= markdown.length; i++) {
+    if (i === markdown.length || markdown[i] === '\n') {
+      lines.push(markdown.slice(lineStart, i))
+      lineStart = i + 1
+    }
+  }
+
+  let inBlockMath = false
+
+  // Scan lines to find unclosed block math
+  for (const line of lines) {
+    const trimmed = line.trim()
+
+    // Check if line is a $$ delimiter
+    if (trimmed === '$$') {
+      inBlockMath = !inBlockMath
+    }
+  }
+
+  // If we're still in block math, close it
+  if (inBlockMath) {
+    // Add closing $$ on a new line
+    if (markdown.endsWith('\n')) {
+      return markdown + '$$'
+    }
+    return markdown + '\n$$'
+  }
+
+  return markdown
+}
+
+/**
+ * Closes inline markers (*, **, ***, ~~, `, $, $$, [, () on the last line
  * without using regex - pure character scanning in O(n) time
  */
 function closeInlineMarkersLinear(line: string): string {
@@ -94,6 +137,8 @@ function closeInlineMarkersLinear(line: string): string {
   let asteriskCount = 0
   let tildePairCount = 0 // Count ~~ pairs, not individual tildes
   let backtickCount = 0
+  let dollarCount = 0 // Count $ for math
+  let dollarPairCount = 0 // Count $$ pairs for block math
   let bracketBalance = 0 // [ minus ]
   let parenBalance = 0 // ( minus ) after last ]
   let lastBracketPos = -1
@@ -129,6 +174,17 @@ function closeInlineMarkersLinear(line: string): string {
     }
     else if (ch === '`') {
       backtickCount++
+    }
+    else if (ch === '$') {
+      // Count $$ pairs for block/display math
+      if (i + 1 < len && line[i + 1] === '$') {
+        dollarPairCount++
+        dollarCount += 2 // Count both dollars in the pair
+        i++ // Skip next $ since we counted the pair
+      }
+      else {
+        dollarCount++ // Single $ for inline math
+      }
     }
     else if (ch === '[') {
       bracketBalance++
@@ -273,6 +329,21 @@ function closeInlineMarkersLinear(line: string): string {
   // Check ` (code)
   if (!closingSuffix && backtickCount % 2 === 1) {
     closingSuffix = '`'
+  }
+
+  // Check $$ (block math) - takes priority over single $
+  // Don't close if the line is just $$ (block math delimiter on its own line)
+  if (!closingSuffix && dollarPairCount % 2 === 1) {
+    const trimmedLine = line.trim()
+    // Only close if this isn't a standalone $$ (which would be a block math delimiter)
+    if (trimmedLine !== '$$') {
+      closingSuffix = '$$'
+    }
+  }
+
+  // Check $ (inline math)
+  if (!closingSuffix && dollarCount % 2 === 1) {
+    closingSuffix = '$'
   }
 
   // Check [ ] (brackets)

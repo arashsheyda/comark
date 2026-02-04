@@ -20,7 +20,8 @@ This is a **monorepo** containing multiple packages related to MDC (Markdown Com
 /                         # Root workspace
 ├── packages/             # All publishable packages
 │   ├── mdc-syntax/       # Main MDC parser package
-│   └── mdc-syntax-cjk/   # CJK support plugin (@mdc-syntax/cjk)
+│   ├── mdc-syntax-cjk/   # CJK support plugin (@mdc-syntax/cjk)
+│   └── mdc-syntax-math/  # Math formula support (@mdc-syntax/math)
 ├── examples/             # Example applications
 │   ├── vue-vite/         # Vue 3 + Vite + Tailwind CSS v4
 │   └── react-vite/       # React 19 + Vite + Tailwind CSS v4
@@ -86,6 +87,86 @@ const result = parse('中文内容 **加粗**', { plugins: [cjkPlugin] })
 - Improved line breaking between CJK and non-CJK characters
 - Better handling of soft line breaks in CJK text
 - Full support for CJK in all MDC syntax features (headings, lists, components, etc.)
+
+## Package: @mdc-syntax/math
+
+Math formula support for MDC using KaTeX. Located at `packages/mdc-syntax-math/`:
+
+```
+packages/mdc-syntax-math/
+├── src/
+│   ├── index.ts          # Core math utilities
+│   ├── vue.ts            # Vue component
+│   └── react.tsx         # React component
+├── test/                 # Vitest test files
+├── package.json          # Package manifest
+├── tsconfig.json         # TypeScript config
+├── build.config.mjs      # Build configuration
+└── vitest.config.ts      # Test configuration
+```
+
+### Usage
+
+**Vue:**
+```vue
+<script setup>
+import { MDC } from 'mdc-syntax/vue'
+import mathPlugin from '@mdc-syntax/math'
+import { Math } from '@mdc-syntax/math/vue'
+
+const components = { math: Math }
+const markdown = `
+# Math Examples
+
+Inline math: $E = mc^2$
+
+Display math:
+$$
+\\int_0^\\infty e^{-x^2} dx = \\frac{\\sqrt{\\pi}}{2}
+$$
+`
+</script>
+
+<template>
+  <MDC :markdown="markdown" :components="components" :plugins="[mathPlugin]" />
+</template>
+```
+
+**React:**
+```tsx
+import { MDC } from 'mdc-syntax/react'
+import mathPlugin from '@mdc-syntax/math'
+import { Math } from '@mdc-syntax/math/react'
+
+const components = { math: Math }
+const markdown = `
+Inline math: $E = mc^2$
+
+Display math:
+$$
+\\int_0^\\infty e^{-x^2} dx = \\frac{\\sqrt{\\pi}}{2}
+$$
+`
+
+<MDC markdown={markdown} components={components} plugins={[mathPlugin]} />
+```
+
+**Code blocks:**
+````markdown
+```math
+x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}
+```
+````
+
+### Features
+
+- Inline math with `$...$` syntax (tokenized during parsing via markdown-it plugin)
+- Display math with `$$...$$` syntax (tokenized during parsing via markdown-it plugin)
+- Code blocks with `math` language
+- HTML output via KaTeX with built-in styling
+- Supports full LaTeX math syntax via KaTeX
+- Vue and React components for easy integration
+- Automatic tokenization at parse time (not render time) for performance
 
 ## Package Exports
 

@@ -345,6 +345,83 @@ Everything you need for modern content parsing
   })
 })
 
+describe('math syntax', () => {
+  it('should auto-close unclosed inline math', () => {
+    const input = 'The formula is $x = 5'
+    const expected = 'The formula is $x = 5$'
+    expect(autoCloseMarkdown(input)).toBe(expected)
+  })
+
+  it('should not modify properly closed inline math', () => {
+    const input = 'The formula is $x = 5$ and done'
+    expect(autoCloseMarkdown(input)).toBe(input)
+  })
+
+  it('should auto-close block math', () => {
+    const input = '$$\nx = 5'
+    const expected = '$$\nx = 5\n$$'
+    expect(autoCloseMarkdown(input)).toBe(expected)
+  })
+
+  it('should not modify properly closed block math', () => {
+    const input = '$$\nx = 5\n$$'
+    expect(autoCloseMarkdown(input)).toBe(input)
+  })
+
+  it('should handle multiple inline math expressions', () => {
+    const input = 'First $a = 1$ and second $b = 2'
+    const expected = 'First $a = 1$ and second $b = 2$'
+    expect(autoCloseMarkdown(input)).toBe(expected)
+  })
+
+  it('should handle inline math at start of line', () => {
+    const input = '$E = mc^2'
+    const expected = '$E = mc^2$'
+    expect(autoCloseMarkdown(input)).toBe(expected)
+  })
+
+  it('should handle block math with multiple lines', () => {
+    const input = '$$\nf(x) = x^2\n+ 2x + 1'
+    const expected = '$$\nf(x) = x^2\n+ 2x + 1\n$$'
+    expect(autoCloseMarkdown(input)).toBe(expected)
+  })
+
+  it('should handle block math in middle of content', () => {
+    const input = 'Some text\n$$\nx = 5\n$$\nMore text'
+    expect(autoCloseMarkdown(input)).toBe(input)
+  })
+
+  it('should handle unclosed block math with text before', () => {
+    const input = 'Introduction\n$$\nx = 5'
+    const expected = 'Introduction\n$$\nx = 5\n$$'
+    expect(autoCloseMarkdown(input)).toBe(expected)
+  })
+
+  it('should handle inline math with complex expressions', () => {
+    const input = 'The quadratic formula is $x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}'
+    const expected = 'The quadratic formula is $x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}$'
+    expect(autoCloseMarkdown(input)).toBe(expected)
+  })
+
+  it('should handle block math with LaTeX', () => {
+    const input = '$$\n\\int_{0}^{\\infty} e^{-x} dx'
+    const expected = '$$\n\\int_{0}^{\\infty} e^{-x} dx\n$$'
+    expect(autoCloseMarkdown(input)).toBe(expected)
+  })
+
+  it('should handle inline math with MDC components', () => {
+    const input = '::alert\nThe formula is $x = 5'
+    const expected = '::alert\nThe formula is $x = 5$\n::'
+    expect(autoCloseMarkdown(input)).toBe(expected)
+  })
+
+  it('should handle block math with MDC components', () => {
+    const input = '::card\n$$\nx = 5'
+    const expected = '::card\n$$\nx = 5\n$$\n::'
+    expect(autoCloseMarkdown(input)).toBe(expected)
+  })
+})
+
 describe('frontmatter', () => {
   it('should handle frontmatter', () => {
     const input = '---\ntitle: Test\n---'

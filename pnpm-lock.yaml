@@ -65,12 +65,18 @@ importers:
       '@mdc-syntax/cjk':
         specifier: workspace:*
         version: link:../packages/mdc-syntax-cjk
+      '@mdc-syntax/math':
+        specifier: workspace:*
+        version: link:../packages/mdc-syntax-math
       docus:
         specifier: latest
         version: 5.4.4(9862c9ebba485ef7f31537967b2fe0ba)
       markdown-it:
         specifier: ^14.1.0
         version: 14.1.0
+      markdown-it-math:
+        specifier: ^5.2.1
+        version: 5.2.1(temml@0.11.11)
       mdc-syntax:
         specifier: workspace:*
         version: link:../packages/mdc-syntax
@@ -194,6 +200,28 @@ importers:
       markdown-it-cjk-friendly:
         specifier: ^2.0.1
         version: 2.0.1(@types/markdown-it@14.1.2)(markdown-it@14.1.0)
+    devDependencies:
+      mdc-syntax:
+        specifier: workspace:*
+        version: link:../mdc-syntax
+      obuild:
+        specifier: ^0.4.22
+        version: 0.4.22(magicast@0.5.1)(typescript@5.9.3)(vue-tsc@3.2.4(typescript@5.9.3))
+      vitest:
+        specifier: ^4.0.18
+        version: 4.0.18(@types/node@25.2.0)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(yaml@2.8.2)
+
+  packages/mdc-syntax-math:
+    dependencies:
+      katex:
+        specifier: ^0.16.28
+        version: 0.16.28
+      react:
+        specifier: ^19.0.0
+        version: 19.2.4
+      vue:
+        specifier: ^3.5.0
+        version: 3.5.27(typescript@5.9.3)
     devDependencies:
       mdc-syntax:
         specifier: workspace:*
@@ -3968,6 +3996,10 @@ packages:
   commander@2.20.3:
     resolution: {integrity: sha512-GpVkmM8vF2vQUkj2LvZmD35JxeJOLCwJ9cUkugyk2nuhbv3+mJvpLYYt+0+USMxE+oj+ey/lJEnhZw75x/OMcQ==}
 
+  commander@8.3.0:
+    resolution: {integrity: sha512-OkTL9umf+He2DZkUq8f8J9of7yL6RJKI24dVITBmNfZBmri9zYZQrKkuXiKhyfPSu8tUhnVBB1iKXevvnlR4Ww==}
+    engines: {node: '>= 12'}
+
   comment-parser@1.4.5:
     resolution: {integrity: sha512-aRDkn3uyIlCFfk5NUA+VdwMmMsh8JGhc4hapfV4yxymHGQ3BVskMQfoXGpCo5IoBuQ9tS5iiVKhCpTcB4pW4qw==}
     engines: {node: '>= 12.0.0'}
@@ -5394,6 +5426,10 @@ packages:
     resolution: {integrity: sha512-1e4qoRgnn448pRuMvKGsFFymUCquZV0mpGgOyIKNgD3JVDTsVJyRBGH/Fm0tBb8WsWGgmB1mDe6/yJMQM37DUA==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
 
+  katex@0.16.28:
+    resolution: {integrity: sha512-YHzO7721WbmAL6Ov1uzN/l5mY5WWWhJBSW+jq4tkfZfsxmo1hu6frS0EOswvjBUnWE6NtjEs48SFn5CQESRLZg==}
+    hasBin: true
+
   keyv@4.5.4:
     resolution: {integrity: sha512-oxVHkHR/EJf2CNXnWxRLW6mg7JyCCUcG0DtEGmL2ctUo1PNTin1PUil+r/+4r5MpVgC/fn1kjsx7mjSujKqIpw==}
 
@@ -5690,6 +5726,17 @@ packages:
       markdown-it: '*'
     peerDependenciesMeta:
       '@types/markdown-it':
+        optional: true
+
+  markdown-it-math@5.2.1:
+    resolution: {integrity: sha512-0YJczaqvBxgOt13oKj/4HYs/34Y9FsHiTktsIBaWYqrE+k1JxmMSTxCcTezTVul0YjmhmCBDehK65vWxjzRbdg==}
+    peerDependencies:
+      mathup: ^1.0.0
+      temml: ^0.11.0
+    peerDependenciesMeta:
+      mathup:
+        optional: true
+      temml:
         optional: true
 
   markdown-it-mdc@0.2.9:
@@ -7304,6 +7351,10 @@ packages:
   tar@7.5.7:
     resolution: {integrity: sha512-fov56fJiRuThVFXD6o6/Q354S7pnWMJIVlDBYijsTNx6jKSE4pvrDTs6lUnmGvNyfJwFQQwWy3owKz1ucIhveQ==}
     engines: {node: '>=18'}
+
+  temml@0.11.11:
+    resolution: {integrity: sha512-Z/Ihgwad+ges0ez6+KmKWZ3o4BYbP6aZ/cU94cVtN+DwxwqxjHgcF4Z6cb9jLkKN+aU7uni165HsIxLHs5/TqA==}
+    engines: {node: '>=18.13.0'}
 
   terser@5.46.0:
     resolution: {integrity: sha512-jTwoImyr/QbOWFFso3YoU3ik0jBBDJ6JTOQiy/J2YxVJdZCc+5u7skhNwiOR3FQIygFqVUPHl7qbbxtjW2K3Qg==}
@@ -12019,6 +12070,8 @@ snapshots:
 
   commander@2.20.3: {}
 
+  commander@8.3.0: {}
+
   comment-parser@1.4.5: {}
 
   commondir@1.0.1: {}
@@ -13743,6 +13796,10 @@ snapshots:
       espree: 9.6.1
       semver: 7.7.3
 
+  katex@0.16.28:
+    dependencies:
+      commander: 8.3.0
+
   keyv@4.5.4:
     dependencies:
       json-buffer: 3.0.1
@@ -13999,6 +14056,10 @@ snapshots:
       markdown-it: 14.1.0
     optionalDependencies:
       '@types/markdown-it': 14.1.2
+
+  markdown-it-math@5.2.1(temml@0.11.11):
+    optionalDependencies:
+      temml: 0.11.11
 
   markdown-it-mdc@0.2.9(@types/markdown-it@14.1.2)(markdown-it@14.1.0):
     dependencies:
@@ -16386,6 +16447,9 @@ snapshots:
       minipass: 7.1.2
       minizlib: 3.1.0
       yallist: 5.0.0
+
+  temml@0.11.11:
+    optional: true
 
   terser@5.46.0:
     dependencies:

@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { MDC } from 'mdc-syntax/vue'
 import cjkFriendlyPlugin from '@mdc-syntax/cjk'
+import mathPlugin from '@mdc-syntax/math'
+import { Math } from '@mdc-syntax/math/vue'
 import { ref } from 'vue'
 
 const props = defineProps<{
@@ -60,7 +62,7 @@ defineExpose({
       class="prose dark:prose-invert max-w-none"
       :markdown="accumulated"
       :options="{
-        plugins: [cjkFriendlyPlugin],
+        plugins: [cjkFriendlyPlugin, mathPlugin],
         highlight: {
           themes: {
             light: 'github-light',
@@ -69,6 +71,7 @@ defineExpose({
         },
       }"
       stream
+      :components="{ math: Math }"
     />
   </div>
 </template>

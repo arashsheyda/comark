@@ -314,6 +314,10 @@ function processBlockToken(tokens: any[], startIndex: number, insideNestedContex
     return { node: paragraph, nextIndex: startIndex + 1 }
   }
 
+  if (token.type === 'math_block') {
+    return { node: ['math', { class: 'math block', content: token.content }, token.content] as MinimarkNode, nextIndex: startIndex + 1 }
+  }
+
   if (token.type === 'fence' || token.type === 'fenced_code_block' || token.type === 'code_block') {
     const content = token.content || ''
     const info = token.info || token.params || ''
@@ -813,6 +817,10 @@ function processInlineToken(tokens: any[], startIndex: number, inHeading: boolea
       return { node: ['a', attrs, ...children.nodes] as MinimarkNode, nextIndex }
     }
     return { node: null, nextIndex }
+  }
+
+  if (token.type === 'math_inline') {
+    return { node: ['math', { class: 'math inline', content: token.content }, token.content] as MinimarkNode, nextIndex: startIndex + 1 }
   }
 
   // Handle generic inline open/close pairs

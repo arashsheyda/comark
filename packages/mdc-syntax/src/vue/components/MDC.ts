@@ -147,7 +147,7 @@ export const MDC = defineComponent({
       // Render using MDCRenderer
       return h(MDCRenderer, {
         body: parsed.value?.body || { type: 'minimark', value: [] },
-        components,
+        components: components.value,
         stream: props.stream,
         componentsManifest: props.componentsManifest,
         class: `mdc-content ${props.stream ? 'mdc-stream' : ''}`,

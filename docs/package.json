@@ -5,10 +5,12 @@
     "build": "nuxt build --extends docus"
   },
   "dependencies": {
-    "docus": "latest",
-    "mdc-syntax": "workspace:*",
     "@mdc-syntax/cjk": "workspace:*",
+    "@mdc-syntax/math": "workspace:*",
+    "docus": "latest",
     "markdown-it": "^14.1.0",
+    "markdown-it-math": "^5.2.1",
+    "mdc-syntax": "workspace:*",
     "nuxt": "^4.3.0"
   }
 }

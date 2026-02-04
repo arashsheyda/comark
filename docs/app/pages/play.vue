@@ -1,0 +1,75 @@
+<script setup lang="ts">
+import { MDC } from 'mdc-syntax/vue'
+import mathPlugin from '@mdc-syntax/math'
+import { Math } from '@mdc-syntax/math/vue'
+
+import { ref } from 'vue'
+
+const markdown = ref(`
+## Linear Algebra and Calculus
+
+In linear algebra, a system of equations can be written compactly as $$A\\mathbf{x} = \\mathbf{b}$$, where $$A \\in \\mathbb{R}^{m \\times n}$$ is a matrix and $$\\mathbf{x} \\in \\mathbb{R}^n$$ is a vector of unknowns.
+
+The determinant $$\\det(A)$$ tells us whether the system has a unique solution: if $$\\det(A) \\neq 0$$, then $$A^{-1}$$ exists and $$\\mathbf{x} = A^{-1}\\mathbf{b}$$.
+
+## Block Math
+
+The gradient of a scalar-valued function $$f(x, y)$$ is given by:
+
+$$
+\\nabla f =
+\\begin{bmatrix}
+\\frac{\\partial f}{\\partial x} \\\\
+\\frac{\\partial f}{\\partial y}
+\\end{bmatrix}
+$$
+
+## Series and Limits
+
+A geometric series converges when $$|r| < 1$$:
+
+$$
+\\sum_{k=0}^{\\infty} ar^k = \\frac{a}{1 - r}
+$$
+
+The definition of a limit uses $$\\varepsilon$$–$$\\delta$$ notation:
+
+$$
+\\lim_{x \\to c} f(x) = L \\quad \\text{if for every } \\varepsilon > 0 \\text{ there exists } \\delta > 0
+$$
+
+\`\`\`mermaid
+graph TD
+  A[MDC Markdown] -->|parses| B[Components]
+  A -->|parses| C[Markdown]
+  B --> D[Vue]
+  B --> E[React]
+  C --> F[HTML]
+  D --> G[Apps]
+  E --> G
+\`\`\`
+`)
+</script>
+
+<template>
+  <div
+    class="grid grid-cols-2 gap-4 p-4"
+    style="height: calc(100vh - 64px)"
+  >
+    <div class="w-full h-full overflow-y-auto border rounded">
+      <textarea
+        v-model="markdown"
+        class="w-full h-full p-4 resize-none outline-none"
+        placeholder="Enter markdown here..."
+      />
+    </div>
+
+    <div class="w-full h-full overflow-y-auto p-4 border rounded prose prose-sm max-w-none">
+      <MDC
+        :markdown="markdown"
+        :options="{ plugins: [mathPlugin] }"
+        :components="{ math: Math }"
+      />
+    </div>
+  </div>
+</template>

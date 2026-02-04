@@ -122,4 +122,6 @@ Everything you need for modern content parsing
 
 :landing-code-block
 
+:landing-math
+
 :landing-cjk
