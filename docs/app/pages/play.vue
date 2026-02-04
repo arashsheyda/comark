@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { MDC } from 'mdc-syntax/vue'
+import { parseAsync } from 'mdc-syntax'
+import { MDCRenderer } from 'mdc-syntax/vue'
 import mathPlugin from '@mdc-syntax/math'
 import { Math } from '@mdc-syntax/math/vue'
 
@@ -49,14 +50,18 @@ graph TD
   E --> G
 \`\`\`
 `)
+
+const { data } = useAsyncData('ast', () => parseAsync(markdown.value, { plugins: [mathPlugin] }), {
+  watch: [markdown],
+})
 </script>
 
 <template>
   <div
-    class="grid grid-cols-2 gap-4 p-4"
+    class="grid grid-cols-2 grid-rows-2 gap-1 bg-neutral-100 dark:bg-neutral-800"
     style="height: calc(100vh - 64px)"
   >
-    <div class="w-full h-full overflow-y-auto border rounded">
+    <div class="w-full h-full flex flex-col overflow-y-auto bg-white dark:bg-neutral-900">
       <textarea
         v-model="markdown"
         class="w-full h-full p-4 resize-none outline-none"
@@ -64,12 +69,13 @@ graph TD
       />
     </div>
 
-    <div class="w-full h-full overflow-y-auto p-4 border rounded prose prose-sm max-w-none">
-      <MDC
-        :markdown="markdown"
-        :options="{ plugins: [mathPlugin] }"
+    <div class="w-full h-full row-span-2 overflow-y-auto p-4 bg-white dark:bg-neutral-900">
+      <MDCRenderer
+        :body="data?.body"
         :components="{ math: Math }"
       />
     </div>
+
+    <pre class="w-full h-full overflow-y-auto p-4 rounded font-mono text-sm max-w-none bg-white dark:bg-neutral-900">{{ JSON.stringify(data?.body, null, 2) }}</pre>
   </div>
 </template>
