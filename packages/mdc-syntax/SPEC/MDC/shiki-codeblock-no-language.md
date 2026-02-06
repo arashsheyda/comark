@@ -7,6 +7,7 @@ options:
   highlight:
     themes:
       light: 'github-dark'
+    preStyles: true
 ---
 
 ## Input

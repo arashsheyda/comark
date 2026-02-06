@@ -8,6 +8,7 @@ options:
     themes:
       light: 'min-light'
       dark: 'nord'
+    preStyles: true
 ---
 
 ## Input
