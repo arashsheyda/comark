@@ -34,11 +34,11 @@
     "release:dry": "release-it --dry-run"
   },
   "dependencies": {
-    "markdown-it-cjk-friendly": "^2.0.1"
+    "markdown-it-cjk-friendly": "^2.0.2"
   },
   "devDependencies": {
     "mdc-syntax": "workspace:*",
-    "obuild": "^0.4.22",
+    "obuild": "^0.4.27",
     "vitest": "^4.0.18"
   }
 }

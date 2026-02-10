@@ -53,7 +53,7 @@
   },
   "devDependencies": {
     "mdc-syntax": "workspace:*",
-    "obuild": "^0.4.22",
+    "obuild": "^0.4.27",
     "vitest": "^4.0.18"
   }
 }

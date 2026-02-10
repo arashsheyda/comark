@@ -5,6 +5,3 @@ packages:
 
 ignoredBuiltDependencies:
   - sharp
-
-patchedDependencies:
-  markdown-it-mdc: patches/markdown-it-mdc.patch

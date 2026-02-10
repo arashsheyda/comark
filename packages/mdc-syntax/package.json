@@ -51,8 +51,8 @@
   },
   "dependencies": {
     "markdown-it": "^14.1.0",
-    "markdown-it-mdc": "^0.2.9",
-    "minimark": "https://pkg.pr.new/minimark@24c408f",
+    "markdown-it-mdc": "^0.2.10",
+    "minimark": "^1.0.0",
     "shiki": "^3.22.0",
     "shiki-stream": "^0.1.4",
     "yaml": "^2.8.2"
@@ -61,7 +61,7 @@
     "@mdc-syntax/cjk": "workspace:*",
     "github-slugger": "^2.0.0",
     "hast-util-to-string": "^3.0.1",
-    "obuild": "^0.4.22",
+    "obuild": "^0.4.27",
     "vitest": "^4.0.18"
   }
 }
