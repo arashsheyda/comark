@@ -1,7 +1,7 @@
 {
   "name": "@mdc-syntax/math",
   "type": "module",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Math formula support for MDC Syntax using KaTeX",
   "author": "",
   "license": "MIT",
