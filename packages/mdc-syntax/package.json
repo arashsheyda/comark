@@ -1,7 +1,7 @@
 {
   "name": "mdc-syntax",
   "type": "module",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Markdown Component (MDC) parser with streaming support for Vue and React",
   "author": "",
   "license": "MIT",
