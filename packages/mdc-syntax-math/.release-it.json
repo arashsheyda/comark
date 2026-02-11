@@ -1,13 +1,13 @@
 {
   "git": {
-    "commitMessage": "chore(cjk): release v${version}",
-    "tagName": "@mdc-syntax/cjk@${version}",
-    "tagAnnotation": "@mdc-syntax/cjk v${version}",
+    "commitMessage": "chore(math): release v${version}",
+    "tagName": "@mdc-syntax/math@${version}",
+    "tagAnnotation": "@mdc-syntax/math v${version}",
     "requireCleanWorkingDir": true
   },
   "github": {
     "release": true,
-    "releaseName": "@mdc-syntax/cjk v${version}"
+    "releaseName": "@mdc-syntax/math v${version}"
   },
   "npm": {
     "publish": true,
