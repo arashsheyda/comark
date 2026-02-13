@@ -1,8 +1,12 @@
-# MDC Syntax
+# comark
 
-A high-performance markdown parser with MDC (Markdown Components) support.
+[![npm version](https://img.shields.io/npm/v/comark?color=black)](https://npmx.dev/comark)
+[![npm downloads](https://img.shields.io/npm/dm/comark?color=black)](https://npm.chart.dev/comark)
+[![CI](https://img.shields.io/github/actions/workflow/status/comarkdown/comark/ci.yml?branch=main&color=black)](https://github.com/comarkdown/comark/actions/workflows/ci.yml)
+[![Documentation](https://img.shields.io/badge/Documentation-black?logo=readme&logoColor=white)](https://comark.dev)
+[![license](https://img.shields.io/github/license/comarkdown/comark?color=black)](https://github.com/comarkdown/comark/blob/main/LICENSE)
 
-[![npm version](https://img.shields.io/npm/v/mdc-syntax)](https://www.npmjs.com/package/mdc-syntax)
+A high-performance markdown parser and renderer with Vue & React components support.
 
 ## Features
 
