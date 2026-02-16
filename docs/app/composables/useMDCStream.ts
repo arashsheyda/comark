@@ -1,7 +1,7 @@
 import type { Readable } from 'node:stream'
 import type { MinimarkTree } from 'minimark'
 import { readonly, ref, shallowRef } from 'vue'
-import { parseStreamIncremental } from 'mdc-syntax/stream'
+import { parseStreamIncremental } from 'comark/stream'
 
 export interface MDCStreamState {
   body: MinimarkTree
@@ -20,7 +20,7 @@ export interface MDCStreamOptions {
 }
 
 /**
- * Vue composable for handling incremental MDC stream parsing
+ * Vue composable for handling incremental Comark stream parsing
  *
  * @example
  * ```vue
@@ -37,7 +37,7 @@ export interface MDCStreamOptions {
  *
  * <template>
  *   <div>
- *     <MDCRenderer v-if="state.body" :body="state.body" />
+ *     <Comark v-if="state.body" :markdown="state.content" />
  *     <div v-if="!state.isComplete">Loading...</div>
  *   </div>
  * </template>
@@ -54,7 +54,7 @@ export function useMDCStream(options?: MDCStreamOptions) {
   const isStreaming = ref(false)
 
   /**
-   * Start streaming and parsing MDC content
+   * Start streaming and parsing Comark content
    * @param stream - Node.js Readable or Web ReadableStream
    * @param useMarkdownIt - Use markdown-it parser instead of unified/remark
    */

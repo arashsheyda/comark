@@ -1,12 +1,12 @@
 # Agent Instructions
 
-This document provides guidance for AI agents working on the mdc-syntax monorepo.
+This document provides guidance for AI agents working on the comark monorepo.
 
 ## Project Overview
 
-This is a **monorepo** containing multiple packages related to MDC (Markdown Component) syntax parsing. The main package is `mdc-syntax`.
+This is a **monorepo** containing multiple packages related to Comark (Components in Markdown) syntax parsing. The main package is `comark`.
 
-**mdc-syntax** is a Markdown Component (MDC) parser that extends standard Markdown with component syntax. It provides:
+**comark** is a Components in Markdown (Comark) parser that extends standard Markdown with component syntax. It provides:
 
 - Fast synchronous and async parsing via markdown-it
 - Streaming support for real-time/incremental parsing
@@ -19,9 +19,9 @@ This is a **monorepo** containing multiple packages related to MDC (Markdown Com
 ```
 /                         # Root workspace
 ├── packages/             # All publishable packages
-│   ├── mdc-syntax/       # Main MDC parser package
-│   ├── mdc-syntax-cjk/   # CJK support plugin (@mdc-syntax/cjk)
-│   └── mdc-syntax-math/  # Math formula support (@mdc-syntax/math)
+│   ├── comark/       # Main Comark parser package
+│   ├── comark-cjk/   # CJK support plugin (@comark/cjk)
+│   └── comark-math/  # Math formula support (@comark/math)
 ├── examples/             # Example applications
 │   ├── vue-vite/         # Vue 3 + Vite + Tailwind CSS v4
 │   └── react-vite/       # React 19 + Vite + Tailwind CSS v4
@@ -31,20 +31,20 @@ This is a **monorepo** containing multiple packages related to MDC (Markdown Com
 └── package.json          # Root package (private, scripts only)
 ```
 
-## Package: mdc-syntax
+## Package: comark
 
-Located at `packages/mdc-syntax/`:
+Located at `packages/comark/`:
 
 ```
-packages/mdc-syntax/
+packages/comark/
 ├── src/
 │   ├── index.ts              # Core parser: parse(), parseAsync(), renderHTML(), renderMarkdown()
 │   ├── stream.ts             # Streaming: parseStream(), parseStreamIncremental()
 │   ├── types.ts              # TypeScript interfaces
-│   ├── vue/                  # Vue components: MDC, MDCRenderer, ShikiCodeBlock
-│   ├── react/                # React components: MDC, MDCRenderer, ShikiCodeBlock
+│   ├── vue/                  # Vue components: Comark
+│   ├── react/                # React components: Comark
 │   └── utils/
-│       ├── auto-close.ts     # Auto-close incomplete markdown/MDC syntax
+│       ├── auto-close.ts     # Auto-close incomplete markdown/Comark
 │       ├── auto-unwrap.ts    # Remove unnecessary <p> wrappers
 │       ├── front-matter.ts   # YAML frontmatter parsing/rendering
 │       ├── token-processor.ts # markdown-it token to Minimark AST conversion
@@ -58,12 +58,12 @@ packages/mdc-syntax/
 └── vitest.config.ts      # Test configuration
 ```
 
-## Package: @mdc-syntax/cjk
+## Package: @comark/cjk
 
-CJK (Chinese, Japanese, Korean) support plugin. Located at `packages/mdc-syntax-cjk/`:
+CJK (Chinese, Japanese, Korean) support plugin. Located at `packages/comark-cjk/`:
 
 ```
-packages/mdc-syntax-cjk/
+packages/comark-cjk/
 ├── src/
 │   └── index.ts          # Plugin export
 ├── test/                 # Vitest test files (23 tests)
@@ -76,8 +76,8 @@ packages/mdc-syntax-cjk/
 ### Usage
 
 ```typescript
-import { parse } from 'mdc-syntax'
-import cjkPlugin from '@mdc-syntax/cjk'
+import { parse } from 'comark'
+import cjkPlugin from '@comark/cjk'
 
 const result = parse('中文内容 **加粗**', { plugins: [cjkPlugin] })
 ```
@@ -86,14 +86,14 @@ const result = parse('中文内容 **加粗**', { plugins: [cjkPlugin] })
 
 - Improved line breaking between CJK and non-CJK characters
 - Better handling of soft line breaks in CJK text
-- Full support for CJK in all MDC syntax features (headings, lists, components, etc.)
+- Full support for CJK in all Comark features (headings, lists, components, etc.)
 
-## Package: @mdc-syntax/math
+## Package: @comark/math
 
-Math formula support for MDC using KaTeX. Located at `packages/mdc-syntax-math/`:
+Math formula support for Comark using KaTeX. Located at `packages/comark-math/`:
 
 ```
-packages/mdc-syntax-math/
+packages/comark-math/
 ├── src/
 │   ├── index.ts          # Core math utilities
 │   ├── vue.ts            # Vue component
@@ -110,9 +110,9 @@ packages/mdc-syntax-math/
 **Vue:**
 ```vue
 <script setup>
-import { MDC } from 'mdc-syntax/vue'
-import mathPlugin from '@mdc-syntax/math'
-import { Math } from '@mdc-syntax/math/vue'
+import { Comark } from 'comark/vue'
+import mathPlugin from '@comark/math'
+import { Math } from '@comark/math/vue'
 
 const components = { math: Math }
 const markdown = `
@@ -128,15 +128,15 @@ $$
 </script>
 
 <template>
-  <MDC :markdown="markdown" :components="components" :options="{ plugins: [mathPlugin] }" />
+  <Comark :markdown="markdown" :components="components" :options="{ plugins: [mathPlugin] }" />
 </template>
 ```
 
 **React:**
 ```tsx
-import { MDC } from 'mdc-syntax/react'
-import mathPlugin from '@mdc-syntax/math'
-import { Math } from '@mdc-syntax/math/react'
+import { Comark } from 'comark/react'
+import mathPlugin from '@comark/math'
+import { Math } from '@comark/math/react'
 
 const components = { math: Math }
 const markdown = `
@@ -148,7 +148,7 @@ $$
 $$
 `
 
-<MDC markdown={markdown} components={components} options={{ plugins: [mathPlugin] }} />
+<Comark markdown={markdown} components={components} options={{ plugins: [mathPlugin] }} />
 ```
 
 **Code blocks:**
@@ -172,16 +172,16 @@ x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}
 
 ```typescript
 // Core parsing
-import { parse, parseAsync, renderHTML, renderMarkdown, autoCloseMarkdown } from 'mdc-syntax'
+import { parse, parseAsync, renderHTML, renderMarkdown, autoCloseMarkdown } from 'comark'
 
 // Stream parsing
-import { parseStream, parseStreamIncremental } from 'mdc-syntax/stream'
+import { parseStream, parseStreamIncremental } from 'comark/stream'
 
 // Vue components
-import { MDC, MDCRenderer, ShikiCodeBlock } from 'mdc-syntax/vue'
+import { Comark } from 'comark/vue'
 
 // React components
-import { MDC, MDCRenderer, ShikiCodeBlock } from 'mdc-syntax/react'
+import { Comark } from 'comark/react'
 ```
 
 ## Coding Principles
@@ -214,19 +214,19 @@ const matches = line.match(/\*+/g)  // Don't do this
 
 ### Code Organization
 
-1. Keep utility functions in `packages/mdc-syntax/src/utils/`
-2. Framework-specific code in `packages/mdc-syntax/src/vue/` and `packages/mdc-syntax/src/react/`
+1. Keep utility functions in `packages/comark/src/utils/`
+2. Framework-specific code in `packages/comark/src/vue/` and `packages/comark/src/react/`
 3. Export public APIs from entry points (`index.ts`, `stream.ts`)
 4. Document exported functions with JSDoc including `@example`
 
 ## Testing Guidelines
 
-Tests are in `packages/mdc-syntax/test/` using Vitest:
+Tests are in `packages/comark/test/` using Vitest:
 
 ```bash
 pnpm test                                          # Run all package tests
-cd packages/mdc-syntax && pnpm test                # Run mdc-syntax tests
-cd packages/mdc-syntax && pnpm vitest run test/auto-close.test.ts  # Run specific test
+cd packages/comark && pnpm test                # Run comark tests
+cd packages/comark && pnpm vitest run test/auto-close.test.ts  # Run specific test
 ```
 
 ### Test Structure
@@ -259,7 +259,7 @@ describe('functionUnderTest', () => {
 
 ### parse(source, options)
 
-Synchronous parsing of MDC content:
+Synchronous parsing of Comark content:
 
 ```typescript
 const result = parse(markdownContent, {
@@ -286,7 +286,7 @@ for await (const result of parseStreamIncremental(stream)) {
 
 ### autoCloseMarkdown(markdown)
 
-Closes unclosed inline syntax and MDC components:
+Closes unclosed inline syntax and Comark components:
 
 ```typescript
 autoCloseMarkdown('**bold text')     // '**bold text**'
@@ -322,56 +322,43 @@ Example:
 
 ## Vue/React Components
 
-### MDC Component (High-level)
+### Comark Component (High-level)
 
 Accepts markdown string, handles parsing internally.
 
-**Vue** (requires `<Suspense>` wrapper since MDC is async):
+**Vue** (requires `<Suspense>` wrapper since Comark is async):
 
 ```vue
 <Suspense>
-  <MDC :markdown="content" :components="customComponents" />
+  <Comark :markdown="content" :components="customComponents" />
 </Suspense>
 ```
 
 **React**:
 
 ```tsx
-<MDC markdown={content} components={customComponents} />
+<Comark markdown={content} components={customComponents} />
 ```
-
-### MDCRenderer Component (Low-level)
-
-Renders pre-parsed Minimark AST:
-
-```vue
-<MDCRenderer :body="parsedAst" :components="customComponents" />
-```
-
-Use MDCRenderer when:
-- Caching parsed results
-- Working with streams
-- Need more control over parsing
 
 ## Common Tasks
 
 ### Adding a new utility function
 
-1. Create file in `packages/mdc-syntax/src/utils/`
-2. Export from `packages/mdc-syntax/src/index.ts` if public API
-3. Add tests in `packages/mdc-syntax/test/`
+1. Create file in `packages/comark/src/utils/`
+2. Export from `packages/comark/src/index.ts` if public API
+3. Add tests in `packages/comark/test/`
 4. Document with JSDoc
 
 ### Modifying the parser
 
-1. Token processing is in `packages/mdc-syntax/src/utils/token-processor.ts`
-2. Test with `packages/mdc-syntax/test/index.test.ts`
-3. Check streaming still works with `packages/mdc-syntax/test/stream.test.ts`
+1. Token processing is in `packages/comark/src/utils/token-processor.ts`
+2. Test with `packages/comark/test/index.test.ts`
+3. Check streaming still works with `packages/comark/test/stream.test.ts`
 
 ### Adding component features
 
-1. Vue components in `packages/mdc-syntax/src/vue/components/`
-2. React components in `packages/mdc-syntax/src/react/components/`
+1. Vue components in `packages/comark/src/vue/components/`
+2. React components in `packages/comark/src/react/components/`
 3. Both should have similar APIs for consistency
 
 ### Adding a new package
@@ -397,7 +384,7 @@ pnpm typecheck    # Run TypeScript check
 pnpm verify       # Run lint + test + typecheck
 ```
 
-Package-specific scripts (from `packages/mdc-syntax/`):
+Package-specific scripts (from `packages/comark/`):
 
 ```bash
 pnpm build        # Build the package (obuild)
@@ -426,11 +413,11 @@ This will:
 ### Release individual package
 
 ```bash
-cd packages/mdc-syntax
-pnpm release          # Release mdc-syntax only
+cd packages/comark
+pnpm release          # Release comark only
 
-cd packages/mdc-syntax-cjk
-pnpm release          # Release @mdc-syntax/cjk only
+cd packages/comark-cjk
+pnpm release          # Release @comark/cjk only
 ```
 
 ### Commit message format
@@ -461,7 +448,7 @@ Features:
 - Streaming demo showing auto-close in action
 - Custom component registration (alert, h1)
 - Light/dark mode support via Tailwind CSS v4
-- Uses `<Suspense>` wrapper for async MDC component
+- Uses `<Suspense>` wrapper for async Comark component
 
 Key files:
 - `examples/vue-vite/src/App.vue` - Main app with editor/streaming modes
@@ -501,7 +488,7 @@ Key files:
 2. **Skills** (`skills/mdc/`)
    - Update `SKILL.md` if syntax or usage changes
    - Update reference files in `skills/mdc/references/` for:
-     - `markdown-syntax.md` - MDC syntax changes
+     - `markdown-syntax.md` - Comark changes
      - `parsing-ast.md` - Parser API or AST format changes
      - `rendering-vue.md` - Vue component changes
      - `rendering-react.md` - React component changes
@@ -509,7 +496,7 @@ Key files:
 3. **Documentation** (`docs/content/`)
    - Update relevant docs pages:
      - `1.getting-started/` - Installation or quick start changes
-     - `2.syntax/` - MDC syntax changes
+     - `2.syntax/` - Comark changes
      - `3.rendering/` - Vue/React renderer changes
      - `4.api/` - API changes (parse, auto-close, reference)
 
