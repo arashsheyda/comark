@@ -430,7 +430,9 @@ function processBlockToken(tokens: any[], startIndex: number, insideNestedContex
     return { node: null, nextIndex: children.nextIndex + 1 }
   }
 
-  return { node: null, nextIndex: startIndex + 1 }
+  const componentName = token.tag || 'component'
+  const attrs = processAttributes(token.attrs, { handleBoolean: false, handleJSON: false })
+  return { node: [componentName, attrs], nextIndex: startIndex + 1 }
 }
 
 function processBlockChildrenWithSlots(
