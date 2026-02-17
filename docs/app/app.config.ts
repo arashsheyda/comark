@@ -5,8 +5,8 @@ export default defineAppConfig({
   },
   seo: {
     title: 'Comark',
-    description: 'Markdown with Components',
-    url: 'https://comark.vercel.app',
+    description: 'Components in Markdown (Comark) parser with streaming support for Vue and React.',
+    url: 'https://comark.dev',
     socials: {
       github: 'comarkdown/comark',
     },
@@ -16,8 +16,8 @@ export default defineAppConfig({
   },
 
   title: 'Comark',
-  description: 'Markdown with Components',
-  url: 'https://comark.vercel.app',
+  description: 'Components in Markdown (Comark) parser with streaming support for Vue and React.',
+  url: 'https://comark.dev',
 
   ui: {
     colors: {
@@ -29,7 +29,7 @@ export default defineAppConfig({
   docus: {
     footer: {
       credits: {
-        text: 'Made with 💚',
+        text: 'Made with Comark',
         href: 'https://github.com/comarkdown/comark',
       },
     },
