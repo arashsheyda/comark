@@ -41,11 +41,5 @@ export default defineAppConfig({
   },
   header: {
     title: 'Comark',
-
-    logo: {
-      alt: 'Comark Logo',
-      light: '/logo-light.svg',
-      dark: '/logo-dark.svg',
-    },
   },
 })
