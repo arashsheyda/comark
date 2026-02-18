@@ -3,7 +3,8 @@ import { readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import { parseFrontmatter } from '../src/internal/front-matter'
 import type { ParseOptions } from '../src/index'
-import { parseAsync, renderHTML, renderMarkdown } from '../src/index'
+import { parseAsync } from '../src/index'
+import { renderHTML, renderMarkdown } from '../src/string'
 import cjkFriendlyPlugin from '@comark/cjk'
 
 interface TestCase {

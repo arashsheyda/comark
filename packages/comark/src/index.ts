@@ -5,11 +5,10 @@ import markdownItEmoji from './internal/parse/markdown-it-emoji'
 import markdownItTaskListsMdc from './internal/parse/markdown-it-task-lists-mdc'
 import { applyAutoUnwrap } from './internal/parse/auto-unwrap'
 import { generateToc } from './internal/parse/table-of-contents'
-import { stringify } from './internal/stringify'
 import type { ComarkTree, ComarkNode } from 'comark/ast'
 import { marmdownItTokensToComarkTree } from './internal/parse/token-processor'
 import { autoCloseMarkdown } from './internal/parse/auto-close'
-import { parseFrontmatter, renderFrontmatter } from './internal/front-matter'
+import { parseFrontmatter } from './internal/front-matter'
 
 export interface ParseResult {
   body: ComarkTree
@@ -181,12 +180,4 @@ export async function parseAsync(source: string, options: ParseOptions = {}): Pr
   }
 
   return result
-}
-
-export function renderHTML(tree: ComarkTree): string {
-  return stringify(tree, { format: 'text/html' }).trim()
-}
-
-export function renderMarkdown(tree: ComarkTree, data?: Record<string, any> | undefined | null): string {
-  return renderFrontmatter(data, stringify(tree, { format: 'markdown/mdc' }))
 }
