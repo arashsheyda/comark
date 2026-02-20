@@ -1,5 +1,4 @@
 import type { Highlighter, BundledLanguage, BundledTheme } from 'shiki'
-import { createHighlighter } from 'shiki'
 import type { ComarkNode, ComarkTree } from 'comark/ast'
 import type { ComarkPlugin } from '../types'
 
@@ -55,18 +54,30 @@ export async function getHighlighter(options: HighlightOptions = {}): Promise<Hi
     return highlighterPromise
   }
 
-  highlighterPromise = createHighlighter({
-    themes: allThemes,
-    langs: languages || [],
-  })
+  try {
+    const createJavaScriptRegexEngine = await import('shiki/engine/javascript').then(m => m.createJavaScriptRegexEngine)
+    const createHighlighter = await import('shiki').then(m => m.createHighlighter)
 
-  highlighter = await highlighterPromise
-  highlighterPromise = null
+    const engine = createJavaScriptRegexEngine({ forgiving: true })
 
-  // Track loaded themes
-  allThemes.forEach(t => loadedThemes.add(t))
+    highlighterPromise = createHighlighter({
+      themes: allThemes,
+      langs: languages || [],
+      engine,
+    })
 
-  return highlighter
+    highlighter = await highlighterPromise
+    highlighterPromise = null
+
+    // Track loaded themes
+    allThemes.forEach(t => loadedThemes.add(t))
+
+    return highlighter
+  }
+  catch (error) {
+    console.error('Failed to create highlighter: make sure `shiki` is installed', error)
+    throw error
+  }
 }
 
 /**

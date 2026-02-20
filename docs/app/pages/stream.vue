@@ -4,6 +4,7 @@ import { ComarkRenderer } from 'comark/vue'
 import { useMDCStream } from '../composables/useMDCStream'
 import { stringToStream } from '../composables/stringToStream'
 import resolveComponent from '../utils/components-manifest'
+import type { ComarkTree } from 'comark/ast'
 
 definePageMeta({
   footer: false,
@@ -280,7 +281,7 @@ function reset() {
           </div>
           <UBadge
             v-if="isStreaming && isPaused"
-            color="yellow"
+            color="warning"
             variant="soft"
           >
             Paused
@@ -298,8 +299,8 @@ function reset() {
           class="flex-1 overflow-y-auto relative scroll-smooth"
         >
           <ComarkRenderer
-            v-if="elementsCount > 0"
-            :tree="state.tree"
+            v-if="state.tree && elementsCount > 0"
+            :tree="state.tree as ComarkTree"
             :components-manifest="resolveComponent"
             :streaming="Boolean(streamController)"
             caret

@@ -92,6 +92,14 @@ export const Comark = defineComponent({
       type: Boolean as PropType<boolean>,
       default: false,
     },
+
+    /**
+     * If caret is true, a caret will be appended to the last text node in the tree
+     */
+    caret: {
+      type: [Boolean, Object] as PropType<boolean | { class: string }>,
+      default: false,
+    },
   },
 
   async setup(props) {
@@ -127,6 +135,7 @@ export const Comark = defineComponent({
         streaming: props.streaming,
         componentsManifest: props.componentsManifest,
         class: `comark-content ${props.streaming ? 'comark-stream' : ''}`,
+        caret: props.caret,
       })
     }
   },

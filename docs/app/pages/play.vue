@@ -72,6 +72,7 @@ const { data } = useAsyncData('ast', () => parse(markdown.value, { plugins: [mat
 
     <div class="w-full h-full row-span-2 overflow-y-auto p-4 bg-white dark:bg-neutral-900">
       <ComarkRenderer
+        v-if="data"
         :tree="data"
         :components="{ math: Math, mermaid: Mermaid }"
       />
