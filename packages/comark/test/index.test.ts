@@ -6,7 +6,6 @@ import { parse } from '../src/index'
 import { renderHTML, renderMarkdown } from '../src/string'
 import comarkCjk from '@comark/cjk'
 import type { HighlightOptions } from '../src/plugins/highlight'
-import comarkHighlight from '../src/plugins/highlight'
 import comarkEmoji from '../src/plugins/emoji'
 
 interface TestCase {
@@ -169,9 +168,6 @@ describe('Comark Tests', () => {
     describe(file, () => {
       it('should parse input to AST', { timeout: testCase.timeouts?.parse ?? 5000 }, async () => {
         const plugins = [comarkCjk(), comarkEmoji()]
-        if (testCase.options?.highlight) {
-          plugins.push(comarkHighlight(testCase.options?.highlight || undefined))
-        }
         const result = await parse(testCase.input, {
           autoUnwrap: false,
           ...testCase.options,
