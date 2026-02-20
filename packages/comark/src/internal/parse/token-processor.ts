@@ -298,14 +298,35 @@ function processBlockToken(tokens: any[], startIndex: number, insideNestedContex
     return { node: [componentName, attrs, ...children.nodes] as ComarkNode, nextIndex: children.nextIndex + 1 }
   }
 
-  // Handle Comark block shorthand components (e.g., standalone :inline-component)
+  // Handle Comark block shorthand components (e.g., standalone :inline-component, ::inline-component[content])
   // These should be wrapped in a paragraph
   if (token.type === 'mdc_block_shorthand') {
+    let nextIndex = startIndex + 1
     const componentName = token.tag || 'component'
     const attrs = processAttributes(token.attrs, { handleBoolean: false, handleJSON: false })
-    const component: ComarkNode = [componentName, attrs] as ComarkNode
-    const paragraph: ComarkNode = ['p', {}, component] as ComarkNode
-    return { node: paragraph, nextIndex: startIndex + 1 }
+    const children: ComarkNode[] = []
+
+    // Opening tag with content - process children until closing tag
+    if (token.nesting === 1) {
+      while (nextIndex < tokens.length) {
+        const childToken = tokens[nextIndex]
+
+        // Check for closing tag
+        if (childToken.type === 'mdc_block_shorthand' && childToken.nesting === -1) {
+          break
+        }
+
+        // Process inline token
+        if (childToken.type === 'inline') {
+          const inlineNodes = processInlineTokens(childToken.children || [], false)
+          children.push(...inlineNodes)
+        }
+
+        nextIndex++
+      }
+    }
+
+    return { node: [componentName, attrs, ...children], nextIndex: nextIndex + 1 }
   }
 
   if (token.type === 'math_block') {

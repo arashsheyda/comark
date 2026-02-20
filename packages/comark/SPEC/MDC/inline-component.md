@@ -8,7 +8,7 @@ timeout:
 ## Input
 
 ```md
-:inline-component
+an :inline-component
 
 Paragraph with :inline-component
 
@@ -27,6 +27,7 @@ Paragraph with :inline-component in middle
     [
       "p",
       {},
+      "an ",
       [
         "inline-component",
         {}
@@ -71,7 +72,7 @@ Paragraph with :inline-component in middle
 
 ```html
 <p>
-  <inline-component></inline-component>
+  an <inline-component></inline-component>
 </p>
 <p>
   Paragraph with <inline-component></inline-component>
@@ -87,7 +88,7 @@ Paragraph with :inline-component in middle
 ## Markdown
 
 ```md
-:inline-component
+an :inline-component
 
 Paragraph with :inline-component
 

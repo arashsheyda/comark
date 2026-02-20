@@ -39,7 +39,7 @@
   },
   "devDependencies": {
     "comark": "workspace:*",
-    "obuild": "^0.4.27",
+    "obuild": "^0.4.31",
     "vitest": "^4.0.18"
   }
 }

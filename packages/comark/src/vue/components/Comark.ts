@@ -2,7 +2,7 @@ import type { PropType } from 'vue'
 import { computed, defineComponent, h, shallowRef, watch } from 'vue'
 import type { ComarkTree } from '../../ast/types'
 import { parse } from '../../index'
-import type { ParseOptions } from '../../types'
+import type { ParseOptions, ComponentManifest } from '../../types'
 import { ComarkRenderer } from './ComarkRenderer'
 
 /**
@@ -73,7 +73,7 @@ export const Comark = defineComponent({
      * Used to resolve components that aren't in the components map
      */
     componentsManifest: {
-      type: Function as PropType<(name: string) => Promise<any>>,
+      type: Function as PropType<ComponentManifest>,
       default: undefined,
     },
 
@@ -122,7 +122,7 @@ export const Comark = defineComponent({
     return () => {
       // Render using ComarkRenderer
       return h(ComarkRenderer, {
-        body: parsed.value || { nodes: [], frontmatter: {}, meta: {} },
+        tree: parsed.value || { nodes: [], frontmatter: {}, meta: {} },
         components: components.value,
         streaming: props.streaming,
         componentsManifest: props.componentsManifest,

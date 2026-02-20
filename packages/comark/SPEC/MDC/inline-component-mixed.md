@@ -93,26 +93,10 @@ timeout:
 ## HTML
 
 ```html
-<p><a href="/link">
-  <component class="class">
-    text
-  </component>
-</a></p>
-<p><strong>
-  <component class="class">
-    text
-  </component>
-</strong></p>
-<p><em>
-  <component class="class">
-    text
-  </component>
-</em></p>
-<p><span>
-  <component class="class">
-    text
-  </component>
-</span></p>
+<p><a href="/link"><component class="class">text</component></a></p>
+<p><strong><component class="class">text</component></strong></p>
+<p><em><component class="class">text</component></em></p>
+<p><span><component class="class">text</component></span></p>
 ```
 
 ## Markdown

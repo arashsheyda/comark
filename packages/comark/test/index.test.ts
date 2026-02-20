@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { readdir, readFile } from 'node:fs/promises'
+import { readdirSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { parseFrontmatter } from '../src/internal/front-matter'
 import { parse } from '../src/index'
@@ -121,17 +121,16 @@ function extractTestCase(content: string): TestCase {
   }
 }
 
-async function findMarkdownFiles(dir: string, baseDir: string = dir): Promise<string[]> {
+function findMarkdownFiles(dir: string, baseDir: string = dir): string[] {
   const files: string[] = []
-  const entries = await readdir(dir, { withFileTypes: true })
+  const entries = readdirSync(dir, { withFileTypes: true })
 
   for (const entry of entries) {
     const fullPath = join(dir, entry.name)
     const relativePath = fullPath.replace(baseDir + '/', '')
 
     if (entry.isDirectory()) {
-      const subFiles = await findMarkdownFiles(fullPath, baseDir)
-      files.push(...subFiles)
+      files.push(...findMarkdownFiles(fullPath, baseDir))
     }
     else if (entry.isFile() && entry.name.endsWith('.md')) {
       files.push(relativePath)
@@ -141,18 +140,25 @@ async function findMarkdownFiles(dir: string, baseDir: string = dir): Promise<st
   return files
 }
 
-// Load test cases at module level
+// Run a single spec: SPEC=SPEC/MDC/inline-component.md pnpm vitest run test/index.test.ts
 const specDir = join(process.cwd(), 'SPEC')
-const specFiles = await findMarkdownFiles(specDir)
+const specArg = String(process.env.npm_lifecycle_script || '').split('-- -spec ')[1] || ''
 
-const testCases: Array<{ file: string, testCase: TestCase }> = []
+function loadTestCases(): Array<{ file: string, testCase: TestCase }> {
+  if (specArg) {
+    const absPath = specArg.startsWith('/') ? specArg : join(process.cwd(), specArg)
+    const relativePath = absPath.replace(specDir + '/', '')
+    const content = readFileSync(absPath, 'utf-8')
+    return [{ file: relativePath, testCase: extractTestCase(content) }]
+  }
 
-for (const file of specFiles) {
-  const filePath = join(specDir, file)
-  const content = await readFile(filePath, 'utf-8')
-  const testCase = extractTestCase(content)
-  testCases.push({ file, testCase })
+  return findMarkdownFiles(specDir).map((file) => {
+    const content = readFileSync(join(specDir, file), 'utf-8')
+    return { file, testCase: extractTestCase(content) }
+  })
 }
+
+const testCases = loadTestCases()
 
 describe('Comark Tests', () => {
   it('should load test cases from SPEC directory', () => {

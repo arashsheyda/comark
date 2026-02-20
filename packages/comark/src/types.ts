@@ -26,7 +26,7 @@ export type ComarkPlugin = {
   post?: (state: ComarkParsePostState) => Promise<void> | void
 }
 
-export type ComponentManifest = (name: string) => Promise<unknown> | null
+export type ComponentManifest = (name: string) => Promise<unknown> | undefined | null
 export interface ComarkContextProvider {
   components: Record<string, any>
   componentManifest: ComponentManifest

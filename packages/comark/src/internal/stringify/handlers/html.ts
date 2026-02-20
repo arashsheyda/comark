@@ -5,7 +5,6 @@ import { indent } from '../indent'
 
 const textBlocks = new Set(['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'li', 'td', 'th'])
 const selfCloseTags = new Set(['br', 'hr', 'img', 'input', 'link', 'meta', 'source', 'track', 'wbr'])
-const fullHtmlTags = new Set<string>([])
 const inlineTags = new Set(['strong', 'em', 'code', 'a', 'br', 'span', 'img'])
 const blockTags = new Set(['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'li', 'ul', 'ol', 'blockquote', 'hr', 'table', 'td', 'th'])
 
@@ -26,10 +25,15 @@ export function html(node: ComarkElement, state: State, parent?: ComarkElement) 
     oneLiner = true
   }
 
+  // If parent is a paragraph, it is inline
+  if (parent?.[0] === 'p' || state.context.inline) {
+    oneLiner = true
+  }
+
   const isSelfClose = selfCloseTags.has(String(tag))
 
   // Do not modify context if we are already in html mode
-  const revert = !state.context.html && fullHtmlTags.has(String(tag)) ? state.applyContext({ html: true }) : null
+  const revert = state.applyContext({ html: true, inline: oneLiner })
 
   const childrenContent = children.map(child => state.one(child, state, node))
 

@@ -50,11 +50,11 @@
     }
   },
   "dependencies": {
-    "mermaid": "^11.4.1"
+    "mermaid": "^11.12.3"
   },
   "devDependencies": {
     "comark": "workspace:*",
-    "obuild": "^0.4.27",
+    "obuild": "^0.4.31",
     "vitest": "^4.0.18"
   }
 }
