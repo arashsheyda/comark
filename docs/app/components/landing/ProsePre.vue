@@ -123,6 +123,12 @@ async function copyCode() {
   </div>
 </template>
 
+<style>
+.shiki span.line {
+  display: inline-block;
+}
+</style>
+
 <style scoped>
 html.dark .shiki-container:not(.shiki-stream) :deep(span) {
   color: var(--shiki-dark) !important;
