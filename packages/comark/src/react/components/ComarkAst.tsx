@@ -1,44 +1,10 @@
-import type { ComarkElement, ComarkNode, ComarkTree } from 'comark/ast'
+import type { ComarkElement, ComarkNode, ComarkTree } from '../../ast'
 import React, { lazy, Suspense, useMemo } from 'react'
 import { camelCase, pascalCase } from 'scule'
 import { findLastTextNodeAndAppendNode, getCaret } from '../../utils/caret'
 
 /**
- * Default HTML tag mappings for Comark elements
- */
-const defaultTagMap: Record<string, string> = {
-  p: 'p',
-  h1: 'h1',
-  h2: 'h2',
-  h3: 'h3',
-  h4: 'h4',
-  h5: 'h5',
-  h6: 'h6',
-  ul: 'ul',
-  ol: 'ol',
-  li: 'li',
-  a: 'a',
-  strong: 'strong',
-  em: 'em',
-  code: 'code',
-  pre: 'pre',
-  blockquote: 'blockquote',
-  hr: 'hr',
-  br: 'br',
-  img: 'img',
-  table: 'table',
-  thead: 'thead',
-  tbody: 'tbody',
-  tr: 'tr',
-  th: 'th',
-  td: 'td',
-  del: 'del',
-  div: 'div',
-  span: 'span',
-}
-
-/**
- * Helper to get tag from a ComarkNode
+ * Helper to get tag from a MinimarkNode
  */
 function getTag(node: ComarkNode): string | null {
   if (Array.isArray(node) && node.length >= 1) {
@@ -124,22 +90,24 @@ function renderNode(
     const nodeProps = getProps(node)
     const children = getChildren(node)
 
-    // Check if there's a custom component for this tag (exact match or PascalCase)
-    let customComponent = components[tag] || components[pascalCase(tag)]
+    const pascalTag = pascalCase(tag)
+    const proseTag = `Prose${pascalTag}`
+    // Check if there's a custom component for this tag
+    let customComponent = components[proseTag] || components[tag]
 
     // If not in components map and manifest is provided, try dynamic resolution
-    if (!customComponent && componentsManifest && !defaultTagMap[tag]) {
+    if (!customComponent && componentsManifest) {
       const cacheKey = tag
       if (!asyncComponentCache.has(cacheKey)) {
-        asyncComponentCache.set(
-          cacheKey,
-          lazy(() => componentsManifest(tag)),
-        )
+        const resolved = componentsManifest(tag)
+        if (resolved) {
+          asyncComponentCache.set(cacheKey, lazy(() => resolved))
+        }
       }
       customComponent = asyncComponentCache.get(cacheKey)
     }
 
-    const Component = customComponent || defaultTagMap[tag] || tag
+    const Component = customComponent || tag
 
     // Prepare props
     const props: Record<string, any> = { ...nodeProps }
@@ -197,7 +165,7 @@ function renderNode(
   return null
 }
 
-export interface MDCRendererProps {
+export interface ComarkAstProps {
   /**
    * The Comark tree to render
    */
@@ -250,11 +218,11 @@ export interface MDCRendererProps {
  * }
  *
  * export default function App() {
- *   return <ComarkAst body={mdcAst} components={customComponents} />
+ *   return <ComarkAst body={comarkBody} components={customComponents} />
  * }
  * ```
  */
-export const ComarkAst: React.FC<MDCRendererProps> = ({
+export const ComarkAst: React.FC<ComarkAstProps> = ({
   body,
   components: customComponents = {},
   componentsManifest,

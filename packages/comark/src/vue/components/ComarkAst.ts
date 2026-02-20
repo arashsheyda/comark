@@ -1,11 +1,14 @@
 import type { PropType, VNode } from 'vue'
-import type { ComarkElement, ComarkNode, ComarkTree } from 'comark/ast'
-import { computed, defineAsyncComponent, defineComponent, h, onErrorCaptured, ref, toRaw } from 'vue'
-import { pascalCase } from 'scule'
+import type { ComarkElement, ComarkNode, ComarkTree } from '../../ast'
+import { computed, defineAsyncComponent, defineComponent, getCurrentInstance, h, inject, onErrorCaptured, ref, toRaw } from 'vue'
+import { camelize, capitalize } from '@vue/shared'
 import { findLastTextNodeAndAppendNode, getCaret } from '../../utils/caret'
+import type { ComponentManifest, ComarkContextProvider } from '../../types'
 
 // Cache for dynamically resolved components
 const asyncComponentCache = new Map<string, any>()
+
+const pascalCase = (str: string) => capitalize(camelize(str))
 
 /**
  * Helper to get tag from a ComarkNode
@@ -58,7 +61,7 @@ function renderNode(
   node: ComarkNode,
   components: Record<string, any> = {},
   key?: string | number,
-  componentsManifest?: (name: string) => Promise<any>,
+  componentsManifest?: ComponentManifest,
   parent?: ComarkNode,
 ): VNode | string | null {
   // Handle text nodes (strings)
@@ -77,8 +80,16 @@ function renderNode(
     // Check if there's a custom component for this tag
     let customComponent = tag
 
+    const appComponents = getCurrentInstance()?.appContext?.components
     if ((parent as ComarkElement | undefined)?.[0] !== 'pre') {
-      customComponent = components[tag] || components[pascalCase(tag)]
+      const pascalTag = pascalCase(tag)
+      const proseTag = `Prose${pascalTag}`
+      customComponent = appComponents?.[proseTag]
+        || components[proseTag]
+        || appComponents?.[pascalTag]
+        || components[tag]
+        || components[pascalTag]
+
       // If not in components map and manifest is provided, try dynamic resolution
       if (!customComponent && componentsManifest) {
         // Check cache first to avoid creating duplicate async components
@@ -86,7 +97,7 @@ function renderNode(
         if (!asyncComponentCache.has(cacheKey)) {
           const promise = componentsManifest(tag)
           if (promise) {
-            asyncComponentCache.set(cacheKey, defineAsyncComponent(() => promise))
+            asyncComponentCache.set(cacheKey, defineAsyncComponent(() => promise as Promise<any>))
           }
         }
         customComponent = asyncComponentCache.get(cacheKey)
@@ -120,8 +131,7 @@ function renderNode(
       props.key = key
     }
 
-    // Handle self-closing tags
-    if (['hr', 'br', 'img'].includes(tag)) {
+    if (node.length === 2) {
       return h(component, props)
     }
 
@@ -240,7 +250,7 @@ export const ComarkAst = defineComponent({
      * Used to resolve components that aren't in the components map
      */
     componentsManifest: {
-      type: Function as PropType<(name: string) => Promise<any>>,
+      type: Function as PropType<ComponentManifest>,
       default: undefined,
     },
 
@@ -283,6 +293,21 @@ export const ComarkAst = defineComponent({
       return false
     })
 
+    const comark = inject<ComarkContextProvider>('comark', { components: {}, componentManifest: () => null })
+
+    const components = computed(() => ({
+      ...comark?.components,
+      ...props.components,
+    }))
+
+    const componentManifest: ComponentManifest = (name: string) => {
+      let resolved = props.componentsManifest?.(name)
+      if (!resolved) {
+        resolved = comark?.componentManifest(name)
+      }
+      return resolved || null
+    }
+
     const caret = computed<ComarkElement | null>(() => getCaret(props.caret))
 
     return () => {
@@ -297,7 +322,7 @@ export const ComarkAst = defineComponent({
       }
 
       const children = nodes
-        .map((node, index) => renderNode(node, props.components, index, props.componentsManifest))
+        .map((node, index) => renderNode(node, components.value, index, componentManifest))
         .filter((child): child is VNode | string => child !== null)
 
       // Wrap in a fragment

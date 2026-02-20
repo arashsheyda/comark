@@ -88,7 +88,7 @@ export const Comark = defineComponent({
     /**
      * If document has a <!-- more --> comment, only render the content before the comment
      */
-    excerpt: {
+    summary: {
       type: Boolean as PropType<boolean>,
       default: false,
     },
@@ -96,7 +96,7 @@ export const Comark = defineComponent({
 
   async setup(props) {
     const markdown = computed(() => {
-      if (props.excerpt) {
+      if (props.summary) {
         return props.markdown.split('<!-- more -->')[0]
       }
       return props.markdown

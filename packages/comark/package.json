@@ -22,7 +22,8 @@
     "./react": "./dist/react/index.mjs",
     "./react/*": "./dist/react/*.mjs",
     "./string": "./dist/string.mjs",
-    "./plugins/*": "./dist/plugins/*.mjs"
+    "./plugins/*": "./dist/plugins/*.mjs",
+    "./nuxt": "./dist/nuxt/module.mjs"
   },
   "main": "./dist/index.mjs",
   "module": "./dist/index.mjs",
@@ -56,6 +57,7 @@
     "shiki": "^3.22.0"
   },
   "devDependencies": {
+    "@nuxt/kit": "^4.3.1",
     "@comark/cjk": "workspace:*",
     "@types/js-yaml": "^4.0.9",
     "github-slugger": "^2.0.0",

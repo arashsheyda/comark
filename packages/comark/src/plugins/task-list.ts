@@ -93,7 +93,7 @@ function findParentList(tokens: MarkdownItToken[], listItemIndex: number): numbe
   return -1
 }
 
-export function markdownItTaskList(md: MarkdownIt, options?: TaskListOptions) {
+function markdownItTaskList(md: MarkdownIt, options?: TaskListOptions) {
   const disableCheckboxes = !(options?.enabled ?? false)
 
   // Run BEFORE inline parsing to prevent Comark from processing task list markers
