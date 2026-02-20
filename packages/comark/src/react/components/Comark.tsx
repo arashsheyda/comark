@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { parse } from '../../index'
 import type { ComarkTree } from '../../ast/types'
 import type { ParseOptions } from '../../types'
-import { ComarkAst } from './ComarkAst'
+import { ComarkRenderer } from './ComarkRenderer'
 
 export interface ComarkProps {
   /**
@@ -43,7 +43,7 @@ export interface ComarkProps {
  * Comark component
  *
  * High-level component that accepts markdown as a string prop,
- * parses it, and renders it using ComarkAst.
+ * parses it, and renders it using ComarkRenderer.
  *
  * @example
  * ```tsx
@@ -103,8 +103,8 @@ export const Comark: React.FC<ComarkProps> = ({
   }
 
   return (
-    <ComarkAst
-      body={parsed}
+    <ComarkRenderer
+      tree={parsed}
       components={customComponents}
       componentsManifest={componentsManifest}
       streaming={streaming}

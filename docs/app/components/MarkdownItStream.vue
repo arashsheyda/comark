@@ -22,7 +22,7 @@ async function startStream() {
   let accumulated = ''
 
   const chunkSize = props.chunkSize ?? 10
-  const delayMs = props.delayMs ?? 50
+  const delayMs = props.delayMs ?? 100
 
   for (let i = 0; i < props.markdown.length; i += chunkSize) {
     if (controller.value.signal.aborted) break

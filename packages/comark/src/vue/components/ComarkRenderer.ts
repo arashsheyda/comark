@@ -199,7 +199,7 @@ function renderNode(
 }
 
 /**
- * ComarkAst component
+ * ComarkRenderer component
  *
  * Renders a Comark tree to Vue components/HTML.
  * Supports custom component mapping for element tags.
@@ -211,7 +211,7 @@ function renderNode(
  * </template>
  *
  * <script setup lang="ts">
- * import { ComarkAst } from 'comark/vue'
+ * import { ComarkRenderer } from 'comark/vue'
  * import CustomHeading from './CustomHeading.vue'
  *
  * const customComponents = {
@@ -223,14 +223,14 @@ function renderNode(
  * </script>
  * ```
  */
-export const ComarkAst = defineComponent({
-  name: 'ComarkAst',
+export const ComarkRenderer = defineComponent({
+  name: 'ComarkRenderer',
 
   props: {
     /**
      * The Comark tree to render
      */
-    body: {
+    tree: {
       type: Object as PropType<ComarkTree>,
       required: true,
     },
@@ -282,7 +282,7 @@ export const ComarkAst = defineComponent({
 
       // Log error in development
       if (import.meta.dev) {
-        console.warn(`[ComarkAst] Error in component "${componentName}":`, err)
+        console.warn(`[ComarkRenderer] Error in component "${componentName}":`, err)
         console.warn('Error info:', info)
       }
 
@@ -312,7 +312,7 @@ export const ComarkAst = defineComponent({
 
     return () => {
       // Render all nodes from the tree value
-      const nodes = toRaw(props.body.nodes || []) || []
+      const nodes = toRaw(props.tree.nodes || []) || []
 
       if (props.streaming && caret.value && nodes.length > 0) {
         const hasstramCaret = findLastTextNodeAndAppendNode(nodes[nodes.length - 1] as ComarkElement, caret.value)

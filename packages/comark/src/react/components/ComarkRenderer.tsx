@@ -165,11 +165,11 @@ function renderNode(
   return null
 }
 
-export interface ComarkAstProps {
+export interface ComarkRendererProps {
   /**
    * The Comark tree to render
    */
-  body: ComarkTree
+  tree: ComarkTree
 
   /**
    * Custom component mappings for element tags
@@ -202,14 +202,14 @@ export interface ComarkAstProps {
 }
 
 /**
- * ComarkAst component
+ * ComarkRenderer component
  *
  * Renders a Comark tree to React components/HTML.
  * Supports custom component mapping for element tags.
  *
  * @example
  * ```tsx
- * import { ComarkAst } from 'comark/react'
+ * import { ComarkRenderer } from 'comark/react'
  * import CustomHeading from './CustomHeading'
  *
  * const customComponents = {
@@ -218,12 +218,12 @@ export interface ComarkAstProps {
  * }
  *
  * export default function App() {
- *   return <ComarkAst body={comarkBody} components={customComponents} />
+ *   return <ComarkRenderer tree={comarkTree} components={customComponents} />
  * }
  * ```
  */
-export const ComarkAst: React.FC<ComarkAstProps> = ({
-  body,
+export const ComarkRenderer: React.FC<ComarkRendererProps> = ({
+  tree,
   components: customComponents = {},
   componentsManifest,
   streaming = false,
@@ -233,7 +233,7 @@ export const ComarkAst: React.FC<ComarkAstProps> = ({
   const caret = useMemo(() => getCaret(caretProp), [caretProp])
 
   const renderedNodes = useMemo(() => {
-    const nodes = [...(body.nodes || [])]
+    const nodes = [...(tree.nodes || [])]
 
     if (streaming && caret && nodes.length > 0) {
       const hasStreamCaret = findLastTextNodeAndAppendNode(nodes[nodes.length - 1] as ComarkElement, caret)
@@ -245,7 +245,7 @@ export const ComarkAst: React.FC<ComarkAstProps> = ({
     return nodes
       .map((node, index) => renderNode(node, customComponents, index, componentsManifest))
       .filter(child => child !== null)
-  }, [body, customComponents, componentsManifest, streaming, caret])
+  }, [tree, customComponents, componentsManifest, streaming, caret])
 
   return (
     <div className={`comark-content ${className || ''}`}>

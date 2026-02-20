@@ -2,9 +2,9 @@ import { describe, expect, it, vi } from 'vitest'
 import { computed, createSSRApp, defineComponent, h } from 'vue'
 import { renderToString } from 'vue/server-renderer'
 import { parse } from '../src/index'
-import { ComarkAst } from '../src/vue/components/ComarkAst'
+import { ComarkRenderer } from '../src/vue/components/ComarkRenderer'
 
-describe('ComarkAst Error Handling', () => {
+describe('ComarkRenderer Error Handling', () => {
   it('should handle component errors gracefully without crashing', async () => {
     const markdown = `::error-component
 Some content
@@ -27,8 +27,8 @@ Some content
     try {
       const app = createSSRApp({
         setup() {
-          return () => h(ComarkAst, {
-            body: result,
+          return () => h(ComarkRenderer, {
+            tree: result,
             components: {
               'error-component': ErrorComponent,
             },
@@ -79,8 +79,8 @@ Some content
     try {
       const app = createSSRApp({
         setup() {
-          return () => h(ComarkAst, {
-            body: result,
+          return () => h(ComarkRenderer, {
+            tree: result,
             components: {
               'required-prop-test': RequiredPropTest,
             },
@@ -131,8 +131,8 @@ Good content
     try {
       const app = createSSRApp({
         setup() {
-          return () => h(ComarkAst, {
-            body: result,
+          return () => h(ComarkRenderer, {
+            tree: result,
             components: {
               'error-component': ErrorComponent,
               'good-component': GoodComponent,

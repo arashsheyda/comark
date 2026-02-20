@@ -5,7 +5,7 @@ import type { AsyncComponentLoader, PropType } from 'vue'
 import htmlTags from '@nuxtjs/mdc/runtime/parser/utils/html-tags-list'
 import { globalComponents, localComponents } from '#content/components'
 import { useRuntimeConfig } from '#imports'
-import { ComarkAst } from 'comark/vue'
+import { ComarkRenderer } from 'comark/vue'
 import { Mermaid } from '@comark/mermaid/vue'
 import type { ComarkNode, ComarkTree, ComarkElement } from 'comark/ast'
 import type { MinimarkTree } from 'minimark'
@@ -227,16 +227,16 @@ function findMappedTag(node: ComarkElement, tags: Record<string, string>) {
 </script>
 
 <template>
-  <ComarkAst
+  <ComarkRenderer
     v-if="!isEmpty"
-    :body="body as unknown as ComarkTree"
+    :tree="body as unknown as ComarkTree"
     :components="componentsMap"
     :data-content-id="debug ? value.id : undefined"
   />
   <slot
     v-else
     name="empty"
-    :body="body"
+    :tree="body"
     :data="data"
     :data-content-id="debug ? value.id : undefined"
   >

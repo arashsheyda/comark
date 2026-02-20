@@ -74,7 +74,7 @@ packages/comark/
 │   │   ├── index.ts          # Vue entry point (comark/vue)
 │   │   └── components/
 │   │       ├── Comark.ts     # High-level markdown → render component
-│   │       ├── ComarkAst.ts  # Low-level AST → render component
+│   │       ├── ComarkRenderer.ts  # Low-level AST → render component
 │   │       ├── index.ts      # Component re-exports
 │   │       └── prose/
 │   │           └── ProsePre.vue # Code block prose component
@@ -82,7 +82,7 @@ packages/comark/
 │   │   ├── index.ts          # React entry point (comark/react)
 │   │   └── components/
 │   │       ├── Comark.tsx    # High-level markdown → render component
-│   │       ├── ComarkAst.tsx # Low-level AST → render component
+│   │       ├── ComarkRenderer.tsx # Low-level AST → render component
 │   │       ├── index.tsx     # Component re-exports
 │   │       └── prose/
 │   │           └── ProsePre.tsx # Code block prose component
@@ -314,21 +314,9 @@ const result = await parse(markdownContent, {
   autoClose: true,    // Auto-close incomplete syntax
 })
 
-result.body   // ComarkTree - Parsed AST
-result.data   // Frontmatter data object
-result.toc    // Table of contents
-```
-
-### parseStreamIncremental(stream, options)
-
-For real-time streaming (e.g., AI chat):
-
-```typescript
-for await (const result of parseStreamIncremental(stream)) {
-  // result.body - Current AST state (with auto-closed syntax)
-  // result.chunk - Current chunk text
-  // result.isComplete - Whether stream finished
-}
+result.nodes   // ComarkNodes list
+result.frontmatter   // Frontmatter data object
+result.meta    // Additional metadata
 ```
 
 ### autoCloseMarkdown(markdown)
@@ -355,9 +343,10 @@ type ComarkElement = [string, ComarkElementAttributes, ...ComarkNode[]]
 
 type ComarkNode = ComarkElement | ComarkText
 
-type ComarkTree = {
-  type: 'comark'
-  value: ComarkNode[]
+export type ComarkTree = {
+  nodes: ComarkNode[]
+  frontmatter: Record<string, any>
+  meta: Record<string, any>
 }
 ```
 
@@ -366,10 +355,11 @@ Example:
 // Input: "# Hello **World**"
 // Output:
 {
-  type: 'comark',
-  value: [
+  nodes: [
     ['h1', { id: 'hello' }, 'Hello ', ['strong', {}, 'World']]
-  ]
+  ],
+  frontmatter: {},
+  meta: {}
 }
 ```
 

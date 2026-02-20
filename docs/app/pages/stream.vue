@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, nextTick, ref } from 'vue'
-import { ComarkAst } from 'comark/vue'
+import { ComarkRenderer } from 'comark/vue'
 import { useMDCStream } from '../composables/useMDCStream'
 import { stringToStream } from '../composables/stringToStream'
 import resolveComponent from '../utils/components-manifest'
@@ -297,9 +297,9 @@ function reset() {
           ref="outputColumn"
           class="flex-1 overflow-y-auto relative scroll-smooth"
         >
-          <ComarkAst
+          <ComarkRenderer
             v-if="elementsCount > 0"
-            :body="state.tree"
+            :tree="state.tree"
             :components-manifest="resolveComponent"
             :streaming="Boolean(streamController)"
             caret

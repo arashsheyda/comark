@@ -3,7 +3,7 @@ import { computed, defineComponent, h, shallowRef, watch } from 'vue'
 import type { ComarkTree } from '../../ast/types'
 import { parse } from '../../index'
 import type { ParseOptions } from '../../types'
-import { ComarkAst } from './ComarkAst'
+import { ComarkRenderer } from './ComarkRenderer'
 
 /**
  * Comark component
@@ -120,8 +120,8 @@ export const Comark = defineComponent({
     await parseMarkdown()
 
     return () => {
-      // Render using ComarkAst
-      return h(ComarkAst, {
+      // Render using ComarkRenderer
+      return h(ComarkRenderer, {
         body: parsed.value || { nodes: [], frontmatter: {}, meta: {} },
         components: components.value,
         streaming: props.streaming,

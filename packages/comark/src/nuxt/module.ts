@@ -22,9 +22,9 @@ export default defineNuxtModule<ComarkModuleOptions>({
       priority: 1,
     })
     addComponent({
-      name: 'ComarkAst',
-      export: 'ComarkAst',
-      filePath: resolver.resolve('../vue/components/ComarkAst'),
+      name: 'ComarkRenderer',
+      export: 'ComarkRenderer',
+      filePath: resolver.resolve('../vue/components/ComarkRenderer'),
       priority: 1,
     })
 

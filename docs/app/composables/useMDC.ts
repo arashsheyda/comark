@@ -31,7 +31,7 @@ export interface MDCOptions extends ParseOptions {
  *
  * <template>
  *   <div>
- *     <ComarkAst v-if="state.tree" :body="state.tree" />
+ *     <ComarkRenderer v-if="state.tree" :tree="state.tree" />
  *     <div v-if="state.isLoading">Loading...</div>
  *     <div v-if="state.error">Error: {{ state.error.message }}</div>
  *   </div>

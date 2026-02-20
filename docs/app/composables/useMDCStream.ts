@@ -39,7 +39,7 @@ const plugins = [comarkHighlight()]
  *
  * <template>
  *   <div>
- *     <ComarkAst v-if="state.tree" :body="state.tree" :streaming="!state.isComplete" />
+ *     <ComarkRenderer v-if="state.tree" :tree="state.tree" :streaming="!state.isComplete" />
  *     <div v-if="isStreaming">Streaming...</div>
  *   </div>
  * </template>

@@ -2,9 +2,9 @@ import { describe, expect, it } from 'vitest'
 import { createSSRApp, defineComponent, h } from 'vue'
 import { renderToString } from 'vue/server-renderer'
 import { parse } from '../src/index'
-import { ComarkAst } from '../src/vue/components/ComarkAst'
+import { ComarkRenderer } from '../src/vue/components/ComarkRenderer'
 
-describe('ComarkAst with Slots', () => {
+describe('ComarkRenderer with Slots', () => {
   it('should pass named slots to components', async () => {
     const markdown = `::test-component
 Default content
@@ -32,10 +32,10 @@ Footer content
 
     // Create app with the renderer
     const app = createSSRApp({
-      components: { ComarkAst },
+      components: { ComarkRenderer },
       setup() {
-        return () => h(ComarkAst, {
-          body: result,
+        return () => h(ComarkRenderer, {
+          tree: result,
           components: {
             'test-component': TestComponent,
           },
@@ -82,8 +82,8 @@ This is a description
 
     const app = createSSRApp({
       setup() {
-        return () => h(ComarkAst, {
-          body: result,
+        return () => h(ComarkRenderer, {
+          tree: result,
           components: {
             Callout,
           },
@@ -123,8 +123,8 @@ Copyright by Nuxt
 
     const app = createSSRApp({
       setup() {
-        return () => h(ComarkAst, {
-          body: result,
+        return () => h(ComarkRenderer, {
+          tree: result,
           components: {
             'multi-slot-test': MultiSlotTest,
           },
