@@ -41,7 +41,7 @@ export function findLastTextNodeAndAppendNode(parent: ComarkElement, nodeToAppen
 
     if (Array.isArray(node)) {
       // This is an element node - recursively check its children
-      if (findLastTextNodeAndAppendNode(node, nodeToAppend)) {
+      if (findLastTextNodeAndAppendNode(node as ComarkElement, nodeToAppend)) {
         return true
       }
     }

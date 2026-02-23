@@ -17,8 +17,10 @@ import { mdc } from './mdc'
 import { br } from './br'
 import { template } from './template'
 import { table, thead, tbody, tr, th, td } from './table'
+import { comment } from './comment'
+import type { NodeHandler } from '../types'
 
-export const handlers = {
+export const handlers: Record<string, NodeHandler> = {
   code,
   pre,
   hr,
@@ -48,4 +50,5 @@ export const handlers = {
   tr,
   th,
   td,
+  comment,
 }

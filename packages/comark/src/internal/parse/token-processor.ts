@@ -288,6 +288,12 @@ function processBlockToken(tokens: any[], startIndex: number, insideNestedContex
     return { node: ['hr', {}] as ComarkNode, nextIndex: startIndex + 1 }
   }
 
+  if (token.type === 'html_block') {
+    if (token.content.startsWith('<!--')) {
+      return { node: [null, {}, token.content.trim().slice(4, -3)], nextIndex: startIndex + 1 }
+    }
+  }
+
   // Handle Comark block components (e.g., ::component ... ::)
   if (token.type === 'mdc_block_open') {
     const componentName = token.tag || 'component'

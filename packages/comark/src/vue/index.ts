@@ -22,7 +22,7 @@ export function defineComarkComponent(config: DefineComarkComponentOptions = {})
        */
       markdown: {
         type: String as PropType<string>,
-        required: true,
+        default: undefined,
       },
 
       /**
@@ -76,7 +76,7 @@ export function defineComarkComponent(config: DefineComarkComponentOptions = {})
         default: false,
       },
     },
-    setup(props) {
+    setup(props, { slots }) {
       const options = computed(() => ({
         ...parseOptions,
         ...props.options,
@@ -100,6 +100,8 @@ export function defineComarkComponent(config: DefineComarkComponentOptions = {})
           streaming: props.streaming,
           summary: props.summary,
           caret: props.caret,
+        }, {
+          default: slots.default,
         })
       }
     },

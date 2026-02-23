@@ -1,12 +1,14 @@
 export type ComarkText = string
 
+export type ComarkComment = [null, {}, string]
+
 export type ComarkElementAttributes = {
   [key: string]: unknown
 }
 
 export type ComarkElement = [string, ComarkElementAttributes, ...ComarkNode[]]
 
-export type ComarkNode = ComarkElement | ComarkText
+export type ComarkNode = ComarkElement | ComarkText | ComarkComment
 
 export type ComarkTree = {
   nodes: ComarkNode[]

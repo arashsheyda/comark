@@ -37,7 +37,7 @@ function getCellContent(cell: ComarkNode, state: State): string {
     if (typeof child === 'string') {
       return child
     }
-    return state.one(child, state, cell)
+    return state.one(child, state, cell as unknown as ComarkElement)
   }).join('').trim()
 
   return escapePipes(content)

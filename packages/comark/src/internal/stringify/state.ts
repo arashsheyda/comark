@@ -17,6 +17,10 @@ export function one(node: ComarkNode, state: State, parent?: ComarkElement) {
     return node
   }
 
+  if (node[0] === null) {
+    return state.handlers.comment(node as unknown as ComarkElement, state)
+  }
+
   const userHandler = state.context.handlers[node[0] as string]
   if (userHandler) {
     return userHandler(node, state, parent)
