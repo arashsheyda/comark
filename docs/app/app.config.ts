@@ -1,8 +1,5 @@
 // @ts-expect-error - Nuxt types are not loaded
 export default defineAppConfig({
-  site: {
-    url: 'https://comark.vercel.app',
-  },
   seo: {
     title: 'Comark',
     description: 'Components in Markdown (Comark) parser with streaming support for Vue and React.',

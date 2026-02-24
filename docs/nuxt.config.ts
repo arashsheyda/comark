@@ -2,7 +2,6 @@ import { defineNuxtConfig } from 'nuxt/config'
 
 export default defineNuxtConfig({
   extends: ['docus'],
-
   modules: ['nuxt-studio'],
 
   app: {
@@ -16,10 +15,6 @@ export default defineNuxtConfig({
   },
 
   css: ['~/assets/styles/main.css'],
-
-  site: {
-    url: 'https://comark.vercel.app',
-  },
 
   content: {
     experimental: {
