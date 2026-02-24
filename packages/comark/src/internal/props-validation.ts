@@ -62,11 +62,14 @@ export function validateProps(type: string, props?: Record<string, any>) {
     return {}
   }
 
-  if (!props) {
-    return {}
-  }
+  if (!props) return {}
+
+  const entries = Object.entries(props)
+
+  if (entries.length === 0) return {}
+
   props = Object.fromEntries(
-    Object.entries(props).filter(([name, value]) => {
+    entries.filter(([name, value]) => {
       const isValid = validateProp(name, value)
 
       if (name === 'id' && !value) {

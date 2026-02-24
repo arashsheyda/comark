@@ -30,22 +30,50 @@ export function textContent(node: ComarkNode, options: { decodeUnicodeEntities?:
  * @param checker - A function that checks if a node should be visited
  * @param visitor - A function that visits a node
  */
-export function visit(tree: ComarkTree, checker: (node: ComarkNode) => boolean, visitor: (node: ComarkNode) => ComarkNode | undefined) {
-  function walk(node: ComarkNode, parent: ComarkNode | ComarkNode[], index: number) {
+export function visit(tree: ComarkTree, checker: (node: ComarkNode) => boolean, visitor: (node: ComarkNode) => ComarkNode | false | undefined) {
+  function walk(node: ComarkNode, parent: ComarkNode | ComarkNode[], index: number): boolean {
+    let currentNode = node
+
     if (checker(node)) {
       const res = visitor(node)
+      if (res === false) {
+        // remove the node from the parent
+        (parent as ComarkNode[]).splice(index, 1)
+        return true // signal that node was removed
+      }
+
       if (res !== undefined) {
         (parent as ComarkNode[])[index] = res
+        currentNode = res
       }
     }
-    if (Array.isArray(node) && node.length > 2) {
-      for (let i = 2; i < node.length; i++) {
-        walk(node[i] as ComarkNode, node, i)
+
+    if (Array.isArray(currentNode) && currentNode.length > 2) {
+      // Use a while loop to handle removals correctly - don't increment if node was removed
+      let i = 2
+      while (i < currentNode.length) {
+        const childRemoved = walk(currentNode[i] as ComarkNode, currentNode, i)
+        if (childRemoved) {
+          // If removed, i stays the same (next node is now at this index)
+          continue
+        }
+
+        i += 1
       }
     }
+
+    return false
   }
 
-  tree.nodes.forEach((node, i) => {
-    walk(node, tree.nodes, i)
-  })
+  // Use a while loop to handle removals correctly - don't increment if node was removed
+  let i = 0
+  while (i < tree.nodes.length) {
+    const removed = walk(tree.nodes[i], tree.nodes, i)
+    if (removed) {
+      // If removed, i stays the same (next node is now at this index)
+      continue
+    }
+
+    i += 1
+  }
 }

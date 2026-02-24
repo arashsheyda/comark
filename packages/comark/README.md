@@ -26,15 +26,6 @@ npm install comark
 pnpm add comark
 ```
 
-Then, update your Tailwind `main.css` to include the following so that Tailwind can detect the utility classes used by Comark.
-
-```css
-@source "../node_modules/comark/dist/*.mjs";
-```
-
-The path must be relative from your CSS file to the node_modules folder containing comark.
-
-
 ## Usage
 
 ### Vue
