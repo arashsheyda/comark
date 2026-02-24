@@ -89,7 +89,7 @@ const multilines = `
 | Table's | are most important |
 `
 
-describe.only('auto close inlines', () => {
+describe('auto close inlines', () => {
   inlines.trim().split('\n').forEach((inline) => {
     it(`should auto-close ${inline}`, () => {
       const [input, expected] = inline.split(' → ')
@@ -98,7 +98,7 @@ describe.only('auto close inlines', () => {
   })
 })
 
-describe.only('auto close multilines', () => {
+describe('auto close multilines', () => {
   multilines.trim().split('###').forEach((multiline) => {
     it(`should auto-close ${multiline}`, () => {
       const [input, expected] = multiline.trim().split('\n→\n')
