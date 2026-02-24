@@ -3,6 +3,8 @@
  * Useful for streaming/incremental parsing where content may be partial
  */
 
+import { closeTables } from './table'
+
 /**
  * Linear-time auto-close implementation without regex
  * Processes markdown in O(n) time by scanning character-by-character
@@ -21,17 +23,20 @@ export function autoCloseMarkdown(markdown: string): string {
   // Step 1: Close unclosed block math ($$...$$)
   result = closeBlockMath(result)
 
+  // Step 2: Close unclosed tables
+  result = closeTables(result)
+
   // Find the last line (where inline markers need closing)
   const lastLineStart = result.lastIndexOf('\n') + 1
   const lastLine = result.slice(lastLineStart)
 
-  // Step 2: Close inline markers on last line
+  // Step 3: Close inline markers on last line
   const inlineResult = closeInlineMarkersLinear(lastLine)
   result = lastLineStart === 0
     ? inlineResult
     : result.slice(0, lastLineStart) + inlineResult
 
-  // Step 3: Close Comark components if any
+  // Step 4: Close Comark components if any
   if (result.includes('::')) {
     result = closeComponentsLinear(result)
   }
@@ -135,7 +140,8 @@ function closeInlineMarkersLinear(line: string): string {
 
   // Count markers by scanning
   let asteriskCount = 0
-  let tildePairCount = 0 // Count ~~ pairs, not individual tildes
+  let underscoreCount = 0
+  let tildeCount = 0 // Count individual tildes
   let backtickCount = 0
   let dollarCount = 0 // Count $ for math
   let dollarPairCount = 0 // Count $$ pairs for block math
@@ -152,6 +158,7 @@ function closeInlineMarkersLinear(line: string): string {
 
   // Track ** positions for O(n) complete pair detection (avoids O(n^3) nested loops)
   const doubleAsteriskPositions: number[] = []
+  const doubleUnderscorePositions: number[] = []
 
   // Single-pass scan through the line - O(n)
   for (let i = 0; i < len; i++) {
@@ -167,10 +174,15 @@ function closeInlineMarkersLinear(line: string): string {
         }
       }
     }
-    else if (ch === '~' && i + 1 < len && line[i + 1] === '~') {
-      // Count ~~ pairs (strikethrough uses pairs, not individual tildes)
-      tildePairCount++
-      i++ // Skip next tilde since we counted the pair
+    else if (ch === '_') {
+      underscoreCount++
+      // Track __ positions (for bold)
+      if (i + 1 < len && line[i + 1] === '_') {
+        doubleUnderscorePositions.push(i)
+      }
+    }
+    else if (ch === '~') {
+      tildeCount++
     }
     else if (ch === '`') {
       backtickCount++
@@ -320,10 +332,77 @@ function closeInlineMarkersLinear(line: string): string {
     }
   }
 
+  // Check __ (double underscore bold)
+  if (!closingSuffix && underscoreCount >= 2) {
+    const remainder = underscoreCount % 4
+    if (remainder === 2) {
+      // Only check for __ if there are actually __ markers in the line
+      if (doubleUnderscorePositions.length > 0) {
+        const hasCompleteUnderscorePair = doubleUnderscorePositions.length >= 2
+
+        // Check if marker at end with no content
+        const endsWithMarker = contentEnd >= 2 && line[contentEnd - 1] === '_' && line[contentEnd - 2] === '_'
+        const markerAtEnd = endsWithMarker && (contentEnd === 2 || line[contentEnd - 3] === ' ')
+
+        if (!markerAtEnd && !hasCompleteUnderscorePair) {
+          closingSuffix = '__'
+          if (hasTrailingSpace && !endsWithMarker) {
+            shouldTrim = true
+          }
+        }
+      }
+    }
+    else if (remainder > 2 && remainder < 4) {
+      const needed = 4 - remainder
+      closingSuffix = '_'.repeat(needed)
+    }
+  }
+
+  // Check _ (underscore italic)
+  if (!closingSuffix && underscoreCount % 2 === 1) {
+    // Check if _ followed by space (invalid italic)
+    let validItalic = false
+    for (let i = 0; i < len; i++) {
+      if (line[i] === '_') {
+        const nextCh = i + 1 < len ? line[i + 1] : ''
+        const prevCh = i > 0 ? line[i - 1] : ''
+        // Valid if not followed by space, or if it's preceded by space (closing)
+        if (nextCh !== ' ' || prevCh === ' ') {
+          validItalic = true
+          break
+        }
+      }
+    }
+
+    if (validItalic) {
+      // Check marker at end with no content
+      const markerAtEnd = contentEnd >= 1 && line[contentEnd - 1] === '_'
+        && (contentEnd === 1 || line[contentEnd - 2] === ' ')
+
+      if (!markerAtEnd) {
+        closingSuffix = '_'
+        const endsWithMarker = line[contentEnd - 1] === '_'
+        if (hasTrailingSpace && !endsWithMarker) {
+          shouldTrim = true
+        }
+      }
+    }
+  }
+
   // Check ~~ (strikethrough)
-  if (!closingSuffix && tildePairCount % 2 === 1) {
-    closingSuffix = '~~'
-    if (hasTrailingSpace) shouldTrim = true
+  if (!closingSuffix && tildeCount >= 2) {
+    const remainder = tildeCount % 4
+    if (remainder === 2) {
+      // Two tildes unclosed, close with ~~
+      closingSuffix = '~~'
+      if (hasTrailingSpace) shouldTrim = true
+    }
+    else if (remainder > 2 && remainder < 4) {
+      // Partial marker like ~~text~ (3 tildes), need 1 more
+      const needed = 4 - remainder
+      closingSuffix = '~'.repeat(needed)
+      if (hasTrailingSpace) shouldTrim = true
+    }
   }
 
   // Check ` (code)

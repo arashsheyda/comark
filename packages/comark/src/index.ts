@@ -5,7 +5,7 @@ import comarkTaskList from './plugins/task-list'
 import { applyAutoUnwrap } from './internal/parse/auto-unwrap'
 import type { ComarkTree, ComarkNode } from 'comark/ast'
 import { marmdownItTokensToComarkTree } from './internal/parse/token-processor'
-import { autoCloseMarkdown } from './internal/parse/auto-close'
+import { autoCloseMarkdown } from './internal/parse/auto-close/index'
 import { parseFrontmatter } from './internal/front-matter'
 import comarkHighlight from './plugins/highlight'
 

@@ -1,42 +1,114 @@
 import { describe, expect, it } from 'vitest'
 import { autoCloseMarkdown } from '../src/internal/parse/auto-close'
 
+const inlines = `
+_test → _test_
+__text → __text__
+__text_ → __text__
+*text → *text*
+*italic text → *italic text*
+**text → **text**
+**text* → **text**
+***text → ***text***
+**bold text → **bold text**
+**djddsds** *dsd → **djddsds** *dsd*
+**djddsds** *dsd* → **djddsds** *dsd*
+Some text with **bold → Some text with **bold**
+~~text → ~~text~~
+~~text~ → ~~text~~
+\`code → \`code\`
+\`code text → \`code text\`
+~~strikethrough text → ~~strikethrough text~~
+**bold** and *italic* and \`code\` → **bold** and *italic* and \`code\`
+[text](url → [text](url)
+$$formula → $$formula$$`
+
+const multilines = `
+| Month    | Savings
+→
+| Month    | Savings |
+| --- | --- |
+###
+| Month    | Savings |
+| :
+→
+| Month    | Savings |
+| :- | --- |
+###
+| Month    | Savings |
+| -: |
+→
+| Month    | Savings |
+| -: | --- |
+###
+| Month    | Savings |
+| :-
+→
+| Month    | Savings |
+| :- | --- |
+###
+| Month    | Savings |
+| :-: 
+→
+| Month    | Savings |
+| :-: | --- |
+###
+| Month    | Savings |
+| --- | --- |
+→
+| Month    | Savings |
+| --- | --- |
+###
+| Month    | Savings \\| Money
+→
+| Month    | Savings \\| Money |
+| --- | --- |
+###
+| Month    | Savings |
+| ------
+→
+| Month    | Savings |
+| ------ | --- |
+###
+| Month    | Savings |
+| --- | ----- |
+| January  | 250    |
+| February | 80
+→
+| Month    | Savings |
+| --- | ----- |
+| January  | 250    |
+| February | 80     |
+###
+| Prop       | Default       |
+| -: | --- |
+| Table's | are most important |
+→
+| Prop       | Default       |
+| -: | --- |
+| Table's | are most important |
+`
+
+describe.only('auto close inlines', () => {
+  inlines.trim().split('\n').forEach((inline) => {
+    it(`should auto-close ${inline}`, () => {
+      const [input, expected] = inline.split(' → ')
+      expect(autoCloseMarkdown(input)).toBe(expected)
+    })
+  })
+})
+
+describe.only('auto close multilines', () => {
+  multilines.trim().split('###').forEach((multiline) => {
+    it(`should auto-close ${multiline}`, () => {
+      const [input, expected] = multiline.trim().split('\n→\n')
+      console.log({ input, expected })
+      expect(autoCloseMarkdown(input)).toBe(expected)
+    })
+  })
+})
+
 describe('autoCloseMarkdown - Inline Syntax', () => {
-  it('should auto-close unclosed bold syntax', () => {
-    const input = '**bold text'
-    const expected = '**bold text**'
-    expect(autoCloseMarkdown(input)).toBe(expected)
-  })
-
-  it('should auto-close unclosed italic syntax', () => {
-    const input = '*italic text'
-    const expected = '*italic text*'
-    expect(autoCloseMarkdown(input)).toBe(expected)
-  })
-
-  it('should auto-close unclosed inline code', () => {
-    const input = '`code text'
-    const expected = '`code text`'
-    expect(autoCloseMarkdown(input)).toBe(expected)
-  })
-
-  it('should auto-close unclosed strikethrough', () => {
-    const input = '~~strikethrough text'
-    const expected = '~~strikethrough text~~'
-    expect(autoCloseMarkdown(input)).toBe(expected)
-  })
-
-  it('should not modify properly closed syntax', () => {
-    const input = '**bold** and *italic* and `code`'
-    expect(autoCloseMarkdown(input)).toBe(input)
-  })
-
-  it('should handle multiple unclosed inline syntax', () => {
-    const input = 'Some text with **bold'
-    const expected = 'Some text with **bold**'
-    expect(autoCloseMarkdown(input)).toBe(expected)
-  })
-
   it('should not close syntax in the middle of content', () => {
     const input = 'First line **bold\nSecond line'
     // Should only close at the end of the content
@@ -48,17 +120,6 @@ describe('autoCloseMarkdown - Inline Syntax', () => {
   it('should handle bold at the end of last line', () => {
     const input = 'First line\nSecond line **bold'
     const expected = 'First line\nSecond line **bold**'
-    expect(autoCloseMarkdown(input)).toBe(expected)
-  })
-
-  it('should handle bold at the end of last line', () => {
-    const input = '**djddsds** *dsd'
-    const expected = '**djddsds** *dsd*'
-    expect(autoCloseMarkdown(input)).toBe(expected)
-  })
-  it('should handle bold at the end of last line', () => {
-    const input = '**djddsds** *dsd*'
-    const expected = '**djddsds** *dsd*'
     expect(autoCloseMarkdown(input)).toBe(expected)
   })
 })
