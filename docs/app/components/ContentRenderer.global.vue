@@ -7,7 +7,7 @@ import { globalComponents, localComponents } from '#content/components'
 import { useRuntimeConfig } from '#imports'
 import { ComarkRenderer } from 'comark/vue'
 import { Mermaid } from '@comark/mermaid/vue'
-import type { ComarkNode, ComarkTree, ComarkElement } from 'comark/ast'
+import type { ComarkTree, ComarkElement } from 'comark/ast'
 import type { MinimarkNode, MinimarkTree } from 'minimark'
 
 interface Renderable {
