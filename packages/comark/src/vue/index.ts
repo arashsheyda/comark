@@ -29,8 +29,16 @@ export function defineComarkComponent(config: DefineComarkComponentOptions = {})
        * Parser options
        */
       options: {
-        type: Object as PropType<ParseOptions>,
+        type: Object as PropType<Exclude<ParseOptions, 'plugins'>>,
         default: () => ({}),
+      },
+
+      /**
+       * Additional plugins to use
+       */
+      plugins: {
+        type: Array as PropType<ParseOptions['plugins']>,
+        default: () => [],
       },
 
       /**
@@ -80,11 +88,12 @@ export function defineComarkComponent(config: DefineComarkComponentOptions = {})
       const options = computed(() => ({
         ...parseOptions,
         ...props.options,
-        plugins: [
-          ...(config.plugins || []),
-          ...props.options?.plugins || [],
-        ],
       }))
+
+      const plugins = computed(() => [
+        ...(config.plugins || []),
+        ...(props.plugins || []),
+      ])
 
       const components = computed(() => ({
         ...config.components,
@@ -95,6 +104,7 @@ export function defineComarkComponent(config: DefineComarkComponentOptions = {})
         return h(Comark, {
           markdown: props.markdown,
           options: options.value,
+          plugins: plugins.value,
           components: components.value,
           componentsManifest: props.componentsManifest,
           streaming: props.streaming,

@@ -54,8 +54,16 @@ export const Comark = defineComponent({
      * Parser options
      */
     options: {
-      type: Object as PropType<ParseOptions>,
+      type: Object as PropType<Exclude<ParseOptions, 'plugins'>>,
       default: () => ({}),
+    },
+
+    /**
+     * Additional plugins to use
+     */
+    plugins: {
+      type: Array as PropType<ParseOptions['plugins']>,
+      default: () => [],
     },
 
     /**
@@ -125,6 +133,7 @@ export const Comark = defineComponent({
     async function parseMarkdown() {
       parsed.value = await parse(markdown.value, {
         ...props.options,
+        plugins: props.plugins,
       })
     }
 

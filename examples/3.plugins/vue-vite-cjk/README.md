@@ -79,7 +79,7 @@ CJK文字とLatin文字를 함께 사용할 수 있습니다.
 <template>
   <Suspense>
     <Comark
-      :options="{ plugins: [cjk()] }"
+      :plugins="[cjk()]"
     >{{ markdown }}</Comark>
   </Suspense>
 </template>
@@ -173,9 +173,9 @@ This example demonstrates how to use Comark with CJK (Chinese, Japanese, Korean)
    import cjk from '@comark/cjk'
    ```
 
-2. Pass the plugin to Comark options:
+2. Pass the plugin to Comark:
    ```vue
-   <Comark :options="{ plugins: [cjk()] }" />
+   <Comark :plugins="[cjk()]" />
    ```
 
 3. Write markdown in any CJK language:

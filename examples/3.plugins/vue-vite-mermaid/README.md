@@ -52,7 +52,7 @@ sequenceDiagram
   <Suspense>
     <Comark
       :components="{ mermaid: Mermaid }"
-      :options="{ plugins: [mermaid()] }"
+      :plugins="[mermaid()]"
     >{{ markdown }}</Comark>
   </Suspense>
 </template>
@@ -147,9 +147,9 @@ This example demonstrates how to use Comark with Mermaid diagrams in Vue:
    import { Mermaid } from '@comark/mermaid/vue'
    ```
 
-2. Pass the plugin to Comark options:
+2. Pass the plugin to Comark:
    ```vue
-   <Comark :options="{ plugins: [mermaid()] }" />
+   <Comark :plugins="[mermaid()]" />
    ```
 
 3. Register the Mermaid component:

@@ -40,15 +40,17 @@ export function defineComarkComponent(config: DefineComarkComponentOptions = {})
   const { name, components: configComponents = {}, ...parseOptions } = config
 
   const ComarkComponent: React.FC<ComarkProps> = (props) => {
-    // Merge options
-    const mergedOptions: ParseOptions = {
+    // Merge options (excluding plugins)
+    const mergedOptions: Exclude<ParseOptions, 'plugins'> = {
       ...parseOptions,
       ...props.options,
-      plugins: [
-        ...(config.plugins || []),
-        ...(props.options?.plugins || []),
-      ],
     }
+
+    // Merge plugins (config plugins + prop plugins)
+    const mergedPlugins = [
+      ...(config.plugins || []),
+      ...(props.plugins || []),
+    ]
 
     // Merge components (props override config)
     const mergedComponents = {
@@ -59,6 +61,7 @@ export function defineComarkComponent(config: DefineComarkComponentOptions = {})
     return React.createElement(Comark, {
       ...props,
       options: mergedOptions,
+      plugins: mergedPlugins,
       components: mergedComponents,
     })
   }

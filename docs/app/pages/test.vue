@@ -188,7 +188,7 @@ Thanks for trying the **Comark test page**! 🚀
   <UContainer>
     <Comark
       :components-manifest="resolveComponent"
-      :options="{ plugins: [highlight()] }"
+      :plugins="[highlight()]"
     >
       {{ markdown }}
     </Comark>

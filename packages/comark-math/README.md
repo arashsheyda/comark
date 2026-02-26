@@ -53,7 +53,7 @@ const components = {
 
 <template>
   <Suspense>
-    <Comark :components="components" :options="{ plugins: [math()] }">{{ markdown }}</Comark>
+    <Comark :components="components" :plugins="[math()]">{{ markdown }}</Comark>
   </Suspense>
 </template>
 ```
@@ -86,7 +86,7 @@ $$
 $$
   `
 
-  return <Comark components={components} options={{ plugins: [math()] }}>{markdown}</Comark>
+  return <Comark components={components} plugins={[math()]}>{markdown}</Comark>
 }
 ```
 

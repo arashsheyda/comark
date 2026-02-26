@@ -49,7 +49,7 @@ $$
   <Suspense>
     <Comark
       :components="{ math: Math }"
-      :options="{ plugins: [math()] }"
+      :plugins="[math()]"
     >
       {{ markdown }}
     </Comark>

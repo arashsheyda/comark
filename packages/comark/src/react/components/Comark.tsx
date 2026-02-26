@@ -16,9 +16,14 @@ export interface ComarkProps {
   markdown?: string
 
   /**
-   * Parser options
+   * Parser options (excluding plugins)
    */
-  options?: ParseOptions
+  options?: Exclude<ParseOptions, 'plugins'>
+
+  /**
+   * Additional plugins to use
+   */
+  plugins?: ParseOptions['plugins']
 
   /**
    * Custom component mappings for element tags
@@ -79,6 +84,7 @@ export const Comark: React.FC<ComarkProps> = ({
   children,
   markdown = '',
   options = {},
+  plugins = [],
   components: customComponents = {},
   componentsManifest,
   streaming = false,
@@ -91,7 +97,10 @@ export const Comark: React.FC<ComarkProps> = ({
     let isMounted = true
 
     // Use async parse for non-streaming mode (supports code highlighting, etc.)
-    parse(children ? String(children) : markdown, options).then((result) => {
+    parse(children ? String(children) : markdown, {
+      ...options,
+      plugins,
+    }).then((result) => {
       if (isMounted) {
         setParsed(result)
       }
@@ -102,7 +111,7 @@ export const Comark: React.FC<ComarkProps> = ({
     return () => {
       isMounted = false
     }
-  }, [markdown, children, streaming])
+  }, [markdown, children, plugins, streaming])
 
   if (!parsed) {
     return null

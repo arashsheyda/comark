@@ -164,7 +164,7 @@ $$
 </script>
 
 <template>
-  <Comark :components="components" :options="{ plugins: [math()] }">{{ markdown }}</Comark>
+  <Comark :components="components" :plugins="[math()]">{{ markdown }}</Comark>
 </template>
 ```
 
@@ -184,7 +184,7 @@ $$
 $$
 `
 
-<Comark components={components} options={{ plugins: [math()] }}>{markdown}</Comark>
+<Comark components={components} plugins={[math()]}>{markdown}</Comark>
 ```
 
 **Code blocks:**

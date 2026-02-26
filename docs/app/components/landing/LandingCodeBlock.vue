@@ -29,6 +29,6 @@ export const Button: React.FC<ButtonProps> = ({ label, onClick }) => (
     title="Code Block"
     description="Comark supports code blocks out of the box, so you get things like syntax highlighting, line numbers, and more."
     :markdown="markdown"
-    :options="{ plugins: [highlight()] }"
+    :comark-props="{ plugins: [highlight()] }"
   />
 </template>
