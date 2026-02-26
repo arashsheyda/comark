@@ -1,12 +1,20 @@
 import type MarkdownIt from 'markdown-it'
 import type { ComarkPlugin, MarkdownItPlugin } from 'comark'
 
+export type ThemeNames = 'zinc-light' | 'zinc-dark' | 'tokyo-night' | 'tokyo-night-storm' | 'tokyo-night-light' | 'catppuccin-mocha' | 'catppuccin-latte' | 'nord' | 'nord-light' | 'dracula' | 'github-light' | 'github-dark' | 'solarized-light' | 'solarized-dark' | 'one-dark'
+
 export interface MermaidConfig {
   /**
    * Theme for mermaid diagrams
-   * @default 'default'
+   * @default undefined
    */
-  theme?: 'default' | 'dark' | 'forest' | 'neutral'
+  theme?: ThemeNames
+
+  /**
+   * Theme for mermaid diagrams in dark mode
+   * @default undefined
+   */
+  themeDark?: ThemeNames
 }
 
 /**
@@ -36,6 +44,9 @@ function markdownItMermaid(md: MarkdownIt, config?: MermaidConfig) {
         }
         if (config?.theme) {
           token.attrSet('theme', config.theme)
+        }
+        if (config?.themeDark) {
+          token.attrSet('theme-dark', config.themeDark)
         }
         token.info = info
         token.attrSet('content', token.content)

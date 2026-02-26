@@ -2,7 +2,6 @@
 import { Comark } from 'comark/vue'
 import { Mermaid } from '@comark/mermaid/vue'
 import mermaid from '@comark/mermaid'
-import Alert from './components/Alert.vue'
 
 const markdown = `
 # Mermaid Diagram Example
@@ -19,7 +18,7 @@ graph TD
 
 ## Sequence Diagram
 
-\`\`\`mermaid
+\`\`\`mermaid {theme='zinc-dark'}
 sequenceDiagram
     participant User
     participant App
@@ -35,7 +34,7 @@ sequenceDiagram
 <template>
   <Suspense>
     <Comark
-      :components="{ Alert, Mermaid }"
+      :components="{ Mermaid }"
       :options="{ plugins: [mermaid()] }"
     >
       {{ markdown }}

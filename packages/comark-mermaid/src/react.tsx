@@ -1,18 +1,14 @@
 import { useState, useEffect } from 'react'
-import mermaid from 'mermaid'
-
-// Initialize mermaid once
-mermaid.initialize({
-  startOnLoad: false,
-  theme: 'default',
-})
+import { renderMermaidSVG, THEMES, type DiagramColors } from 'beautiful-mermaid'
+import type { ThemeNames } from '.'
 
 export interface MermaidProps {
   content: string
   class?: string
   height?: string
   width?: string
-  theme?: 'default' | 'base' | 'dark' | 'forest' | 'neutral' | 'null'
+  theme?: ThemeNames | DiagramColors
+  themeDark?: ThemeNames | DiagramColors
 }
 
 export function Mermaid({
@@ -20,24 +16,57 @@ export function Mermaid({
   class: className = '',
   height = '400px',
   width = '100%',
-  theme = 'default',
+  theme,
+  themeDark,
 }: MermaidProps) {
   const [svgContent, setSvgContent] = useState<string>('')
   const [error, setError] = useState<string | null>(null)
+  const [isDark, setIsDark] = useState(false)
+
+  // Detect dark mode from HTML class
+  useEffect(() => {
+    const htmlEl = document.querySelector('html')
+    if (htmlEl) {
+      setIsDark(htmlEl.classList.contains('dark') || false)
+
+      // Watch for class changes on HTML element
+      const observer = new MutationObserver(() => {
+        const newIsDark = htmlEl.classList.contains('dark')
+        setIsDark(newIsDark)
+      })
+
+      observer.observe(htmlEl, {
+        attributes: true,
+        attributeFilter: ['class'],
+      })
+
+      return () => observer.disconnect()
+    }
+  }, [])
 
   // Update mermaid theme when it changes
-  useEffect(() => {
-    mermaid.initialize({
-      theme,
-    })
-  }, [theme])
-
   useEffect(() => {
     const renderDiagram = async () => {
       try {
         setError(null)
-        const id = `mermaid-${Math.random().toString(36).substring(2, 9)}`
-        const { svg } = await mermaid.render(id, content)
+
+        // Determine which theme to use based on dark mode and props
+        const themeProp = isDark ? themeDark : theme
+
+        let resolvedTheme
+        if (typeof themeProp === 'string') {
+          resolvedTheme = THEMES[themeProp]
+        }
+        else if (typeof themeProp === 'object') {
+          resolvedTheme = themeProp
+        }
+
+        // Fallback to default themes if no prop is set
+        if (!resolvedTheme) {
+          resolvedTheme = THEMES[isDark ? 'tokyo-night' : 'tokyo-light']
+        }
+
+        const svg = renderMermaidSVG(content, resolvedTheme)
         setSvgContent(svg)
       }
       catch (err) {
@@ -46,7 +75,7 @@ export function Mermaid({
     }
 
     renderDiagram()
-  }, [content, theme])
+  }, [content, theme, themeDark, isDark])
 
   return (
     <div

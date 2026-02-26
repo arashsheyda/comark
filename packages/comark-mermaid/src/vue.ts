@@ -1,12 +1,7 @@
 import type { PropType } from 'vue'
-import { defineComponent, h, ref, onMounted, watch } from 'vue'
-import mermaid from 'mermaid'
-
-// Initialize mermaid once
-mermaid.initialize({
-  startOnLoad: false,
-  theme: 'default',
-})
+import { defineComponent, h, ref, onMounted, watch, computed } from 'vue'
+import { renderMermaidSVG, THEMES, type DiagramColors } from 'beautiful-mermaid'
+import type { ThemeNames } from '.'
 
 export const Mermaid = defineComponent({
   name: 'Mermaid',
@@ -28,25 +23,49 @@ export const Mermaid = defineComponent({
       default: '100%',
     },
     theme: {
-      type: String as PropType<'default' | 'base' | 'dark' | 'forest' | 'neutral' | 'null'>,
-      default: 'default',
+      type: [String, Object] as PropType<ThemeNames | DiagramColors>,
+      default: undefined,
+    },
+    themeDark: {
+      type: [String, Object] as PropType<ThemeNames | DiagramColors>,
+      default: undefined,
     },
   },
   setup(props) {
     const svgContent = ref<string>('')
     const error = ref<string | null>(null)
+    const isDark = ref(false)
 
-    watch(() => props.theme, () => {
-      mermaid.initialize({
-        theme: props.theme,
-      })
+    const beautifulTheme = computed(() => {
+      // Determine which theme to use based on dark mode and props
+      const isDarkMode = isDark.value
+
+      // Get theme-dark prop (using bracket notation for kebab-case prop)
+      const themeDarkProp = props.themeDark
+
+      // If dark mode, prefer theme-dark, otherwise prefer theme
+      const themeProp = isDarkMode ? themeDarkProp : props.theme
+
+      let theme
+      if (typeof themeProp === 'string') {
+        theme = THEMES[themeProp]
+      }
+      else if (typeof themeProp === 'object') {
+        theme = themeProp
+      }
+
+      // Fallback to default themes if no prop is set
+      if (!theme) {
+        theme = THEMES[isDarkMode ? 'tokyo-night' : 'tokyo-light']
+      }
+
+      return theme
     })
 
-    const renderDiagram = async () => {
+    const renderDiagram = () => {
       try {
         error.value = null
-        const id = `mermaid-${Math.random().toString(36).substring(2, 9)}`
-        const { svg } = await mermaid.render(id, props.content)
+        const svg = renderMermaidSVG(props.content, beautifulTheme.value)
         svgContent.value = svg
       }
       catch (err) {
@@ -55,10 +74,30 @@ export const Mermaid = defineComponent({
     }
 
     onMounted(() => {
+      const htmlEl = document.querySelector('html')
+
+      if (htmlEl) {
+        isDark.value = htmlEl.classList.contains('dark') || false
+
+        // Watch for class changes on HTML element
+        const observer = new MutationObserver(() => {
+          const newIsDark = htmlEl.classList.contains('dark')
+          if (newIsDark !== isDark.value) {
+            isDark.value = newIsDark
+          }
+        })
+
+        observer.observe(htmlEl, {
+          attributes: true,
+          attributeFilter: ['class'],
+        })
+      }
+
       renderDiagram()
     })
 
-    watch(() => [props.content, props.theme], () => {
+    // Watch for theme changes (including isDark changes that affect beautifulTheme)
+    watch([beautifulTheme, () => props.content, isDark, () => props.theme, () => props.themeDark], () => {
       renderDiagram()
     })
 
