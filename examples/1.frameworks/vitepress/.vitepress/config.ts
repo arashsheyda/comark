@@ -1,5 +1,5 @@
 import { defineConfig } from 'vitepress'
-import pluginMdc from 'markdown-it-mdc'
+import pluginMdc from '@comark/markdown-it'
 
 export default defineConfig({
   title: 'Comark + VitePress',

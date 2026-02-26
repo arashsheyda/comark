@@ -6,6 +6,53 @@ import type { ParseOptions, ComponentManifest } from '../../types'
 import { ComarkRenderer } from './ComarkRenderer'
 
 /**
+ * Props for the Comark component
+ */
+export interface ComarkProps {
+  /**
+   * The markdown content to parse and render
+   */
+  markdown?: string
+
+  /**
+   * Parser options (excluding plugins)
+   */
+  options?: Exclude<ParseOptions, 'plugins'>
+
+  /**
+   * Additional plugins to use
+   */
+  plugins?: ParseOptions['plugins']
+
+  /**
+   * Custom component mappings for element tags
+   */
+  components?: Record<string, any>
+
+  /**
+   * Dynamic component resolver function
+   */
+  componentsManifest?: ComponentManifest
+
+  /**
+   * Enable streaming mode with stream-specific components
+   */
+  streaming?: boolean
+
+  /**
+   * If document has a <!-- more --> comment, only render the content before the comment
+   */
+  summary?: boolean
+
+  /**
+   * If caret is true, a caret will be appended to the last text node in the tree
+   */
+  caret?: boolean | { class: string }
+}
+
+type ComarkComponent = ReturnType<typeof defineComponent<ComarkProps>>
+
+/**
  * Comark component
  *
  * Comark component that accepts markdown as a string prop,
@@ -38,7 +85,7 @@ import { ComarkRenderer } from './ComarkRenderer'
  * </script>
  * ```
  */
-export const Comark = defineComponent({
+export const Comark: ComarkComponent = defineComponent({
   name: 'Comark',
 
   props: {

@@ -157,9 +157,9 @@ importers:
 
   examples/1.frameworks/vitepress:
     dependencies:
-      markdown-it-mdc:
-        specifier: ^0.2.5
-        version: 0.2.12(@types/markdown-it@14.1.2)(markdown-it@14.1.1)
+      '@comark/markdown-it':
+        specifier: ^0.3.0
+        version: 0.3.0(@types/markdown-it@14.1.2)(markdown-it@14.1.1)
       vue:
         specifier: ^3.5.28
         version: 3.5.28(typescript@5.9.3)
@@ -338,6 +338,9 @@ importers:
       '@comark/cjk':
         specifier: workspace:*
         version: link:../comark-cjk
+      '@comark/markdown-it':
+        specifier: ^0.3.0
+        version: 0.3.0(@types/markdown-it@14.1.2)(markdown-it@14.1.1)
       '@nuxt/kit':
         specifier: ^4.3.1
         version: 4.3.1(magicast@0.5.1)
@@ -359,9 +362,6 @@ importers:
       markdown-it:
         specifier: ^14.1.1
         version: 14.1.1
-      markdown-it-mdc:
-        specifier: ^0.2.12
-        version: 0.2.12(@types/markdown-it@14.1.2)(markdown-it@14.1.1)
       minimark:
         specifier: 0.2.0
         version: 0.2.0
@@ -767,6 +767,12 @@ packages:
   '@cloudflare/kv-asset-handler@0.4.2':
     resolution: {integrity: sha512-SIOD2DxrRRwQ+jgzlXCqoEFiKOFqaPjhnNTGKXSRLvp1HiOvapLaFG2kEr9dYQTYe8rKrd9uvDUzmAITeNyaHQ==}
     engines: {node: '>=18.0.0'}
+
+  '@comark/markdown-it@0.3.0':
+    resolution: {integrity: sha512-wteRXFYAPpb4QQJFFbf1mZ/zZ/1PMTWi68ws35IZ+ePXBVWhg+Yx5MjTGF145H4DTlpODtRPwelZs9kc2QdQRg==}
+    peerDependencies:
+      '@types/markdown-it': '*'
+      markdown-it: ^14.0.0
 
   '@conventional-changelog/git-client@2.5.1':
     resolution: {integrity: sha512-lAw7iA5oTPWOLjiweb7DlGEMDEvzqzLLa6aWOly2FSZ64IwLE8T458rC+o+WvI31Doz6joM7X2DoNog7mX8r4A==}
@@ -6703,12 +6709,6 @@ packages:
       temml:
         optional: true
 
-  markdown-it-mdc@0.2.12:
-    resolution: {integrity: sha512-kXdgH+wvEFw1KaFDL+IdjJijtjDBj0bhhvVANvl9bhRokkyhcGEd1HCYsj336YqJHihgMEYcbGWLm/qjLMTdzg==}
-    peerDependencies:
-      '@types/markdown-it': '*'
-      markdown-it: ^14.0.0
-
   markdown-it@14.1.1:
     resolution: {integrity: sha512-BuU2qnTti9YKgK5N+IeMubp14ZUKUUw7yeJbkjtosvHiP0AZ5c8IAgEMk79D0eC8F23r4Ac/q8cAIFdm2FtyoA==}
     hasBin: true
@@ -9826,6 +9826,12 @@ snapshots:
       sisteransi: 1.0.5
 
   '@cloudflare/kv-asset-handler@0.4.2': {}
+
+  '@comark/markdown-it@0.3.0(@types/markdown-it@14.1.2)(markdown-it@14.1.1)':
+    dependencies:
+      '@types/markdown-it': 14.1.2
+      js-yaml: 4.1.1
+      markdown-it: 14.1.1
 
   '@conventional-changelog/git-client@2.5.1(conventional-commits-filter@5.0.0)(conventional-commits-parser@6.2.1)':
     dependencies:
@@ -16330,12 +16336,6 @@ snapshots:
   markdown-it-math@5.2.1(temml@0.11.11):
     optionalDependencies:
       temml: 0.11.11
-
-  markdown-it-mdc@0.2.12(@types/markdown-it@14.1.2)(markdown-it@14.1.1):
-    dependencies:
-      '@types/markdown-it': 14.1.2
-      markdown-it: 14.1.1
-      yaml: 2.8.2
 
   markdown-it@14.1.1:
     dependencies:

@@ -37,7 +37,7 @@ function deepCompareNodes(
       const props1 = node1.props || {}
       const props2 = node2.props || {}
 
-      // Normalize props by removing ':' prefix (markdown-it-mdc uses :boolean, unified uses boolean)
+      // Normalize props by removing ':' prefix (@comark/markdown-it uses :boolean, unified uses boolean)
       // Also filter out attributes that start with ':' if unified parser doesn't include them
       // Also ignore 'align' and 'style' props as parsers handle table alignment differently
       // TODO: This normalization can be removed later when both parsers produce consistent prop names

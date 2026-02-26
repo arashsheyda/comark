@@ -1,7 +1,7 @@
 import { bench, run } from 'mitata'
 import MarkdownIt from 'markdown-it'
 import MarkdownExit from 'markdown-exit'
-import pluginMdc from 'markdown-it-mdc'
+import pluginMdc from '@comark/markdown-it'
 import { createParse } from './src/index'
 import { renderHTML } from './src/string'
 

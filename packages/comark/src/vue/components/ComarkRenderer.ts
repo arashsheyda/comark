@@ -201,6 +201,38 @@ function renderNode(
 }
 
 /**
+ * Props for the ComarkRenderer component
+ */
+export interface ComarkRendererProps {
+  /**
+   * The Comark tree to render
+   */
+  tree: ComarkTree
+
+  /**
+   * Custom component mappings for element tags
+   */
+  components?: Record<string, any>
+
+  /**
+   * Dynamic component resolver function
+   */
+  componentsManifest?: ComponentManifest
+
+  /**
+   * Enable streaming mode with enhanced components
+   */
+  streaming?: boolean
+
+  /**
+   * If caret is true, a caret will be appended to the last text node in the tree
+   */
+  caret?: boolean | { class: string }
+}
+
+type ComarkRendererComponent = ReturnType<typeof defineComponent<ComarkRendererProps>>
+
+/**
  * ComarkRenderer component
  *
  * Renders a Comark tree to Vue components/HTML.
@@ -225,7 +257,7 @@ function renderNode(
  * </script>
  * ```
  */
-export const ComarkRenderer = defineComponent({
+export const ComarkRenderer: ComarkRendererComponent = defineComponent({
   name: 'ComarkRenderer',
 
   props: {
@@ -310,7 +342,7 @@ export const ComarkRenderer = defineComponent({
       return resolved || null
     }
 
-    const caret = computed<ComarkElement | null>(() => getCaret(props.caret))
+    const caret = computed<ComarkElement | null>(() => getCaret(props.caret || false))
 
     return () => {
       // Render all nodes from the tree value

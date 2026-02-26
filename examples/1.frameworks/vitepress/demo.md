@@ -2,7 +2,7 @@
 
 This page uses [Comark syntax](https://github.com/comarkdown/comark) directly in VitePress Markdown — no wrapper component needed.
 
-The `markdown-it-mdc` plugin is added to VitePress's markdown-it config, enabling the `::` component syntax natively.
+The `@comark/markdown-it` plugin is added to VitePress's markdown-it config, enabling the `::` component syntax natively.
 
 ## Alerts
 
@@ -24,13 +24,13 @@ This is a danger alert — useful for critical warnings.
 
 ## How it works
 
-1. Add `markdown-it-mdc` to VitePress's markdown-it config
+1. Add `@comark/markdown-it` to VitePress's markdown-it config
 2. Register Vue components globally in the theme
 3. Write `::component{props}` syntax directly in your `.md` files
 
 ```ts
 // .vitepress/config.ts
-import pluginMdc from 'markdown-it-mdc'
+import pluginMdc from '@comark/markdown-it'
 
 export default defineConfig({
   markdown: {
