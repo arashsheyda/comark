@@ -44,6 +44,12 @@ export interface ComarkProps {
   streaming?: boolean
 
   /**
+   * If caret is true, a caret will be appended to the last text node in the tree
+   * If caret is an object, it will be appended to the last text node in the tree with the given class
+   */
+  caret?: boolean | { class: string }
+
+  /**
    * Additional className for the wrapper div
    */
   className?: string
@@ -88,6 +94,7 @@ export const Comark: React.FC<ComarkProps> = ({
   components: customComponents = {},
   componentsManifest,
   streaming = false,
+  caret = false,
   className,
 }) => {
   const [parsed, setParsed] = useState<ComarkTree | null>(null)
@@ -124,6 +131,7 @@ export const Comark: React.FC<ComarkProps> = ({
       componentsManifest={componentsManifest}
       streaming={streaming}
       className={className}
+      caret={caret}
     />
   )
 }
