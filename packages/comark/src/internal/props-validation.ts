@@ -77,7 +77,7 @@ export function validateProps(type: string, props?: Record<string, any>) {
       }
 
       if (!isValid) {
-        console.warn(`[@nuxtjs/mdc] removing unsafe attribute: ${name}="${value}"`)
+        console.warn(`[comark/plugins/security] removing unsafe attribute: ${name}="${value}"`)
       }
 
       return isValid

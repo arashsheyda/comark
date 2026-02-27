@@ -5,7 +5,7 @@
  * task list markers [X] and [ ] as Comark inline span syntax.
  */
 
-import type { ComarkPlugin } from '../types'
+import type { ComarkPlugin } from 'comark'
 
 interface MarkdownItToken {
   type: string

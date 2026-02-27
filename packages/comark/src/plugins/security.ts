@@ -1,7 +1,7 @@
 import type { ComarkElement } from '../ast/types'
 import { visit } from '../ast/utils'
 import { validateProps } from '../internal/props-validation'
-import type { ComarkPlugin } from '../types'
+import type { ComarkPlugin } from 'comark'
 
 interface SecurityOptions {
   drop?: string[]

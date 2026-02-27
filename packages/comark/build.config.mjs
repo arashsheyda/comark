@@ -3,12 +3,19 @@ import { defineBuildConfig } from 'obuild/config'
 export default defineBuildConfig({
   entries: [
     {
+      type: 'transform',
+      input: './src/plugins',
+      outDir: './dist/plugins',
+    },
+    {
       type: 'bundle',
       input: [
         './src/index.ts',
         './src/react/index.ts',
         './src/react/components/Comark.tsx',
         './src/react/components/ComarkRenderer.tsx',
+        './src/plugins/summary.ts',
+        './src/plugins/security.ts',
         './src/ast/index.ts',
         './src/string.ts',
       ],
@@ -27,11 +34,6 @@ export default defineBuildConfig({
       type: 'transform',
       input: './src/nuxt',
       outDir: './dist/nuxt',
-    },
-    {
-      type: 'transform',
-      input: './src/plugins',
-      outDir: './dist/plugins',
     },
   ],
 })

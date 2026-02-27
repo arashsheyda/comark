@@ -1,4 +1,4 @@
-import type { ComarkPlugin } from '../types'
+import type { ComarkPlugin } from 'comark'
 import type { ComarkNode, ComarkTree } from 'comark/ast'
 
 export interface TocLink {
