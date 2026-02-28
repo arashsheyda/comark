@@ -1,0 +1,309 @@
+<script setup lang="ts">
+import { parse } from 'comark'
+import { ComarkRenderer } from 'comark/vue'
+import { Splitpanes, Pane } from 'splitpanes'
+import { defaultMarkdown } from '~/constants'
+import { watchDebounced, useClipboard } from '@vueuse/core'
+import type { TabsItem } from '@nuxt/ui'
+import type { ComarkTree } from 'comark/ast'
+
+definePageMeta({
+  footer: false,
+})
+
+const markdown = ref<string>(defaultMarkdown.trim())
+const tree = ref<ComarkTree | null>(null)
+const parseTime = ref<number>(0)
+const nodeCount = ref<number>(0)
+const currentTab = ref<string>('ast')
+const error = ref<string | null>(null)
+
+const { copy, copied } = useClipboard({ copiedDuring: 2000 })
+
+const tabItems: TabsItem[] = [
+  { label: 'AST', value: 'ast', icon: 'i-lucide-braces' },
+  { label: 'Frontmatter', value: 'frontmatter', icon: 'i-lucide-file-cog' },
+  { label: 'Raw JSON', value: 'raw', icon: 'i-lucide-file-json' },
+]
+
+/** Recursively count all nodes (elements + text) in the Comark AST */
+function countNodes(nodes: unknown[]): number {
+  let count = 0
+  for (const node of nodes) {
+    count++
+    if (Array.isArray(node) && node.length > 2) {
+      for (let i = 2; i < node.length; i++) {
+        if (Array.isArray(node[i])) {
+          count += countNodes([node[i]])
+        }
+        else if (typeof node[i] === 'string') {
+          count++
+        }
+      }
+    }
+  }
+  return count
+}
+
+/** Parse the markdown input and update the AST, timing, and node count */
+async function parseMarkdown(): Promise<void> {
+  const start = performance.now()
+  try {
+    const result = await parse(markdown.value, {
+      autoClose: true,
+      autoUnwrap: true,
+    })
+    tree.value = result
+    parseTime.value = Math.round((performance.now() - start) * 10) / 10
+    nodeCount.value = countNodes(result.nodes)
+    error.value = null
+  }
+  catch (err: any) {
+    error.value = err.message || 'Failed to parse markdown'
+  }
+}
+
+watchDebounced(markdown, parseMarkdown, { debounce: 300 })
+
+// Initial parse on component mount
+parseMarkdown()
+
+function resetComark(): void {
+  markdown.value = defaultMarkdown.trim()
+}
+
+/** Copy the current tab's output JSON to clipboard */
+function copyOutput(): void {
+  if (!tree.value) return
+  let text = ''
+  if (currentTab.value === 'ast') {
+    text = JSON.stringify(tree.value.nodes, null, 2)
+  }
+  else if (currentTab.value === 'frontmatter') {
+    text = JSON.stringify({ frontmatter: tree.value.frontmatter, meta: tree.value.meta }, null, 2)
+  }
+  else {
+    text = JSON.stringify(tree.value, null, 2)
+  }
+  copy(text)
+}
+
+const outputData = computed(() => {
+  if (!tree.value) return null
+  if (currentTab.value === 'ast') return tree.value.nodes
+  if (currentTab.value === 'frontmatter') return { frontmatter: tree.value.frontmatter, meta: tree.value.meta }
+  return tree.value
+})
+</script>
+
+<template>
+  <div class="h-[calc(100vh-64px)] flex flex-col overflow-hidden">
+    <Splitpanes class="flex-1 min-h-0">
+      <!-- Pane 1: Markdown Input -->
+      <Pane :size="33">
+        <UCard
+          variant="soft"
+          class="h-full min-w-0"
+          :ui="{
+            root: 'rounded-none border-0 ring-0 flex flex-col h-full shadow-none',
+            header: 'py-0 px-4 sm:px-4',
+            body: 'flex-1 min-h-0 p-0 sm:p-0',
+          }"
+        >
+          <template #header>
+            <div class="flex items-center justify-between h-10">
+              <div class="flex items-center gap-1.5">
+                <UIcon
+                  name="i-lucide-pencil"
+                  class="size-4 text-muted"
+                />
+                <span class="text-xs font-semibold uppercase tracking-wide text-muted">Markdown Input</span>
+              </div>
+              <UTooltip text="Reset to default content">
+                <UButton
+                  :disabled="markdown === defaultMarkdown.trim()"
+                  size="xs"
+                  color="neutral"
+                  variant="ghost"
+                  icon="i-lucide-rotate-ccw"
+                  label="Reset"
+                  @click="resetComark"
+                />
+              </UTooltip>
+            </div>
+          </template>
+
+          <UTextarea
+            v-model="markdown"
+            variant="none"
+            :rows="1"
+            placeholder="Type your Comark markdown here..."
+            :spellcheck="false"
+            :ui="{
+              root: 'h-full w-full',
+              base: 'h-full font-mono text-[13px] leading-relaxed resize-none',
+            }"
+          />
+        </UCard>
+      </Pane>
+
+      <!-- Pane 2: Comark AST Output -->
+      <Pane :size="34">
+        <UCard
+          variant="soft"
+          class="h-full min-w-0"
+          :ui="{
+            root: 'rounded-none border-0 ring-0 flex flex-col h-full shadow-none',
+            header: 'py-0 px-4 sm:px-4',
+            body: 'flex-1 min-h-0 p-0 sm:p-0',
+          }"
+        >
+          <template #header>
+            <div class="flex items-center justify-between h-10">
+              <UTabs
+                v-model="currentTab"
+                :content="false"
+                :items="tabItems"
+                size="xs"
+                color="primary"
+                variant="pill"
+              />
+              <UTooltip :text="copied ? 'Copied!' : 'Copy to clipboard'">
+                <UButton
+                  :disabled="!tree"
+                  size="xs"
+                  color="neutral"
+                  variant="ghost"
+                  :icon="copied ? 'i-lucide-check' : 'i-lucide-copy'"
+                  label="Copy"
+                  @click="copyOutput"
+                />
+              </UTooltip>
+            </div>
+          </template>
+
+          <UScrollArea
+            class="h-full"
+            :ui="{ viewport: 'p-4 sm:p-6' }"
+          >
+            <UAlert
+              v-if="error"
+              color="error"
+              variant="soft"
+              icon="i-lucide-circle-alert"
+              :title="error"
+            />
+            <pre
+              v-else-if="outputData"
+              class="font-mono text-xs leading-7 whitespace-pre-wrap wrap-break-word m-0 text-highlighted"
+            >
+              {{ JSON.stringify(outputData, null, 2) }}
+            </pre>
+            <div
+              v-else
+              class="flex flex-col items-center justify-center py-16 gap-2 text-muted"
+            >
+              <UIcon
+                name="i-lucide-loader-circle"
+                class="size-5 animate-spin"
+              />
+              <span class="text-sm">Parsing...</span>
+            </div>
+          </UScrollArea>
+        </UCard>
+      </Pane>
+
+      <!-- Pane 3: Rendered Preview -->
+      <Pane :size="33">
+        <UCard
+          variant="soft"
+          class="h-full min-w-0"
+          :ui="{
+            root: 'rounded-none border-0 ring-0 flex flex-col h-full shadow-none',
+            header: 'py-0 px-4 sm:px-4',
+            body: 'flex-1 min-h-0 p-0 sm:p-0',
+          }"
+        >
+          <template #header>
+            <div class="flex items-center justify-between gap-2 h-10">
+              <div class="flex items-center gap-1.5">
+                <UIcon
+                  name="i-lucide-eye"
+                  class="size-4 text-muted"
+                />
+                <span class="text-xs font-semibold uppercase tracking-wide text-muted">Preview</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <UTooltip text="Nodes in AST">
+                  <UBadge
+                    color="neutral"
+                    variant="soft"
+                    size="xs"
+                  >
+                    <UIcon
+                      name="i-lucide-git-branch"
+                      class="size-3"
+                    />
+                    {{ nodeCount }} nodes
+                  </UBadge>
+                </UTooltip>
+                <UTooltip text="Parse duration">
+                  <UBadge
+                    color="neutral"
+                    variant="soft"
+                    size="xs"
+                  >
+                    <UIcon
+                      name="i-lucide-timer"
+                      class="size-3"
+                    />
+                    {{ parseTime }}ms
+                  </UBadge>
+                </UTooltip>
+              </div>
+            </div>
+          </template>
+
+          <UScrollArea
+            class="h-full"
+            :ui="{ viewport: 'p-4 sm:p-6' }"
+          >
+            <UAlert
+              v-if="error"
+              color="error"
+              variant="soft"
+              icon="i-lucide-circle-alert"
+              :title="error"
+            />
+            <div
+              v-else-if="tree"
+              class="prose prose-sm dark:prose-invert max-w-none"
+            >
+              <Suspense>
+                <ComarkRenderer :tree="tree" />
+              </Suspense>
+            </div>
+            <div
+              v-else
+              class="flex flex-col items-center justify-center py-16 gap-2 text-muted"
+            >
+              <UIcon
+                name="i-lucide-loader-circle"
+                class="size-5 animate-spin"
+              />
+              <span class="text-sm">Parsing...</span>
+            </div>
+          </UScrollArea>
+        </UCard>
+      </Pane>
+    </Splitpanes>
+  </div>
+</template>
+
+<style lang="scss">
+@import 'splitpanes/dist/splitpanes.css';
+
+.splitpanes--vertical > .splitpanes__splitter {
+  background: var(--background-color-border);
+}
+</style>
