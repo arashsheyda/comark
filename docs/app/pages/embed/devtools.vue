@@ -17,6 +17,7 @@ const parseTime = ref<number>(0)
 const nodeCount = ref<number>(0)
 const currentTab = ref<string>('ast')
 const error = ref<string | null>(null)
+const parsing = ref<boolean>(false)
 
 const { copy, copied } = useClipboard({ copiedDuring: 2000 })
 
@@ -47,6 +48,14 @@ function countNodes(nodes: unknown[]): number {
 
 /** Parse the markdown input and update the AST, timing, and node count */
 async function parseMarkdown(): Promise<void> {
+  if (!markdown.value.trim()) {
+    tree.value = null
+    parseTime.value = 0
+    nodeCount.value = 0
+    error.value = null
+    return
+  }
+  parsing.value = true
   const start = performance.now()
   try {
     const result = await parse(markdown.value, {
@@ -60,6 +69,9 @@ async function parseMarkdown(): Promise<void> {
   }
   catch (err: any) {
     error.value = err.message || 'Failed to parse markdown'
+  }
+  finally {
+    parsing.value = false
   }
 }
 
@@ -100,7 +112,10 @@ const outputData = computed(() => {
   <div class="h-[calc(100vh-64px)] flex flex-col overflow-hidden">
     <Splitpanes class="flex-1 min-h-0">
       <!-- Pane 1: Markdown Input -->
-      <Pane :size="33">
+      <Pane
+        :size="33"
+        :min-size="20"
+      >
         <UCard
           variant="soft"
           class="h-full min-w-0"
@@ -148,14 +163,17 @@ const outputData = computed(() => {
       </Pane>
 
       <!-- Pane 2: Comark AST Output -->
-      <Pane :size="34">
+      <Pane
+        :size="34"
+        :min-size="20"
+      >
         <UCard
           variant="soft"
           class="h-full min-w-0"
           :ui="{
             root: 'rounded-none border-0 ring-0 flex flex-col h-full shadow-none',
             header: 'py-0 px-4 sm:px-4',
-            body: 'flex-1 min-h-0 p-0 sm:p-0',
+            body: 'flex-1 flex flex-col min-h-0 p-0 sm:p-0',
           }"
         >
           <template #header>
@@ -182,7 +200,37 @@ const outputData = computed(() => {
             </div>
           </template>
 
+          <!-- Loading state -->
+          <div
+            v-if="parsing && !outputData"
+            class="flex flex-1 flex-col items-center justify-center gap-3 text-muted"
+          >
+            <UIcon
+              name="i-lucide-loader-circle"
+              class="size-6 animate-spin text-primary"
+            />
+            <span class="text-sm">Parsing markdown...</span>
+          </div>
+          <!-- Empty input state -->
+          <div
+            v-else-if="!outputData && !error"
+            class="flex flex-1 flex-col items-center justify-center gap-3 text-muted"
+          >
+            <UIcon
+              name="i-lucide-code"
+              class="size-8 opacity-40"
+            />
+            <div class="text-center">
+              <p class="text-sm font-medium">
+                No output yet
+              </p>
+              <p class="text-xs opacity-70">
+                Type some markdown to see the AST
+              </p>
+            </div>
+          </div>
           <UScrollArea
+            v-else
             class="h-full"
             :ui="{ viewport: 'p-4 sm:p-6' }"
           >
@@ -199,29 +247,22 @@ const outputData = computed(() => {
             >
               {{ JSON.stringify(outputData, null, 2) }}
             </pre>
-            <div
-              v-else
-              class="flex flex-col items-center justify-center py-16 gap-2 text-muted"
-            >
-              <UIcon
-                name="i-lucide-loader-circle"
-                class="size-5 animate-spin"
-              />
-              <span class="text-sm">Parsing...</span>
-            </div>
           </UScrollArea>
         </UCard>
       </Pane>
 
       <!-- Pane 3: Rendered Preview -->
-      <Pane :size="33">
+      <Pane
+        :size="33"
+        :min-size="20"
+      >
         <UCard
           variant="soft"
           class="h-full min-w-0"
           :ui="{
             root: 'rounded-none border-0 ring-0 flex flex-col h-full shadow-none',
             header: 'py-0 px-4 sm:px-4',
-            body: 'flex-1 min-h-0 p-0 sm:p-0',
+            body: 'flex-1 flex flex-col min-h-0 p-0 sm:p-0',
           }"
         >
           <template #header>
@@ -264,7 +305,37 @@ const outputData = computed(() => {
             </div>
           </template>
 
+          <!-- Loading state -->
+          <div
+            v-if="parsing && !tree"
+            class="flex flex-1 flex-col items-center justify-center gap-3 text-muted"
+          >
+            <UIcon
+              name="i-lucide-loader-circle"
+              class="size-6 animate-spin text-primary"
+            />
+            <span class="text-sm">Rendering preview...</span>
+          </div>
+          <!-- Empty input state -->
+          <div
+            v-else-if="!tree && !error"
+            class="flex flex-1 flex-col items-center justify-center gap-3 text-muted"
+          >
+            <UIcon
+              name="i-lucide-eye-off"
+              class="size-8 opacity-40"
+            />
+            <div class="text-center">
+              <p class="text-sm font-medium">
+                Nothing to preview
+              </p>
+              <p class="text-xs opacity-70">
+                Type some markdown to see the rendered output
+              </p>
+            </div>
+          </div>
           <UScrollArea
+            v-else
             class="h-full"
             :ui="{ viewport: 'p-4 sm:p-6' }"
           >
@@ -282,16 +353,6 @@ const outputData = computed(() => {
               <Suspense>
                 <ComarkRenderer :tree="tree" />
               </Suspense>
-            </div>
-            <div
-              v-else
-              class="flex flex-col items-center justify-center py-16 gap-2 text-muted"
-            >
-              <UIcon
-                name="i-lucide-loader-circle"
-                class="size-5 animate-spin"
-              />
-              <span class="text-sm">Parsing...</span>
             </div>
           </UScrollArea>
         </UCard>
