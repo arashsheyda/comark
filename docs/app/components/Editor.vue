@@ -1,44 +1,39 @@
-<script setup>
-import { ref, onMounted, watch } from 'vue'
+<script setup lang="ts">
 import loader from '@monaco-editor/loader'
 import { language as mdc } from '@nuxtlabs/monarch-mdc'
 
-const props = defineProps({
-  modelValue: {
-    type: String,
-    required: true,
-  },
-  language: {
-    type: String,
-    default: 'mdc',
-  },
-  readOnly: {
-    type: Boolean,
-    default: false,
-  },
+const {
+  language = 'mdc',
+  readOnly = false,
+} = defineProps<{
+  language?: string
+  readOnly?: boolean
+}>()
+
+const model = defineModel<string>({
+  type: String,
+  required: true,
 })
 
-const emit = defineEmits(['update:modelValue'])
-const editorContainer = ref(null)
-let editor = null
+const editorContainer = useTemplateRef('editorContainer')
+let editor: any = null
+let monaco: any | null = null
 const colorMode = useColorMode()
-const theme = computed(() => {
-  return colorMode.value === 'dark' ? 'vs-dark' : 'vs-light'
-})
+const theme = computed<string>(() => colorMode.value === 'dark' ? 'vs-dark' : 'vs-light')
 
 onMounted(async () => {
-  const monaco = await loader.init()
+  monaco = await loader.init()
 
   // Register the MDC language
   monaco.languages.register({ id: 'mdc' })
   monaco.languages.setMonarchTokensProvider('mdc', mdc)
 
   editor = monaco.editor.create(editorContainer.value, {
-    value: props.modelValue,
-    language: props.language,
+    value: model.value,
+    language: language,
     theme: theme.value,
     automaticLayout: true,
-    readOnly: props.readOnly,
+    readOnly: readOnly,
     minimap: {
       enabled: false,
     },
@@ -57,19 +52,19 @@ onMounted(async () => {
   })
 
   editor.onDidChangeModelContent(() => {
-    emit('update:modelValue', editor.getValue())
+    model.value = editor.getValue()
   })
 
   monaco.editor.setTheme(theme.value)
 })
 
-watch(() => props.modelValue, (newCode) => {
+watch(model, (newCode) => {
   if (editor && editor.getValue() !== newCode) {
     editor.setValue(newCode)
   }
 })
 
-watch(() => props.language, (newLanguage) => {
+watch(() => language, (newLanguage) => {
   if (editor) {
     const model = editor.getModel()
     if (model) {
@@ -78,7 +73,7 @@ watch(() => props.language, (newLanguage) => {
   }
 })
 
-watch(() => theme.value, (newTheme) => {
+watch(theme, (newTheme) => {
   if (editor) {
     monaco.editor.setTheme(newTheme)
   }
