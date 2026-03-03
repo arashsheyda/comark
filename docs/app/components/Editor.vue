@@ -58,6 +58,10 @@ onMounted(async () => {
   monaco.editor.setTheme(theme.value)
 })
 
+onBeforeUnmount(() => {
+  editor?.dispose()
+})
+
 watch(model, (newCode) => {
   if (editor && editor.getValue() !== newCode) {
     editor.setValue(newCode)
@@ -65,7 +69,7 @@ watch(model, (newCode) => {
 })
 
 watch(() => language, (newLanguage) => {
-  if (editor) {
+  if (monaco && editor) {
     const model = editor.getModel()
     if (model) {
       monaco.editor.setModelLanguage(model, newLanguage === 'vue' ? 'mdc' : newLanguage)
@@ -74,7 +78,7 @@ watch(() => language, (newLanguage) => {
 })
 
 watch(theme, (newTheme) => {
-  if (editor) {
+  if (monaco) {
     monaco.editor.setTheme(newTheme)
   }
 })
