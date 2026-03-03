@@ -300,6 +300,7 @@ const isMatch = computed(() =>
 
 <style lang="scss">
 @import 'splitpanes/dist/splitpanes.css';
+@import 'vue-json-pretty/lib/styles.css';
 
 .splitpanes--vertical > .splitpanes__splitter {
   width: 1px !important;

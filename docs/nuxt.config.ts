@@ -15,7 +15,7 @@ export default defineNuxtConfig({
     },
   },
 
-  css: ['~/assets/styles/main.css', 'vue-json-pretty/lib/styles.css'],
+  css: ['~/assets/styles/main.css'],
 
   content: {
     experimental: {
