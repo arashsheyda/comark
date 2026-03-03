@@ -12,6 +12,7 @@
     "@nuxtlabs/monarch-mdc": "^0.9.0",
     "@vercel/analytics": "^1.6.1",
     "@vercel/speed-insights": "^1.3.1",
+    "vue-json-pretty": "^2.4.0",
     "comark": "workspace:*",
     "docus": "latest",
     "markdown-it": "^14.1.1",

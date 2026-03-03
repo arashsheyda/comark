@@ -1,11 +1,13 @@
 <script setup lang="ts">
-import { parse, stringify, renderFrontmatter } from 'comark'
+import { parse } from 'comark'
+import { renderMarkdown } from 'comark/string'
 import { ComarkRenderer } from 'comark/vue'
 import { Splitpanes, Pane } from 'splitpanes'
 import { defaultMarkdown } from '~/constants'
 import { watchDebounced } from '@vueuse/core'
 import type { ComarkTree } from 'comark/ast'
 import { ProseCallout, ProseNote, ProseTip, ProseWarning, ProseCaution } from '#components'
+import VueJsonPretty from 'vue-json-pretty'
 
 const props = defineProps<{
   compact?: boolean
@@ -25,6 +27,9 @@ const parseTime = ref<number>(0)
 const nodeCount = ref<number>(0)
 const error = ref<string | null>(null)
 const parsing = ref<boolean>(false)
+
+const colorMode = useColorMode()
+const isDark = computed(() => colorMode.value === 'dark')
 
 const activeTab = ref('preview')
 const tabs = [
@@ -89,15 +94,13 @@ function resetComark(): void {
   markdown.value = defaultMarkdown.trim()
 }
 
-const astJson = computed(() =>
-  tree.value ? JSON.stringify(tree.value, null, 2) : '',
+const formattedOutput = computed<string>(() =>
+  tree.value ? renderMarkdown(tree.value as ComarkTree) : '',
 )
 
-const formattedOutput = computed<string>(() => {
-  if (!tree.value) return ''
-  const fm = tree.value.frontmatter as Record<string, any>
-  const content = stringify(tree.value)
-  return renderFrontmatter(fm, content) + '\n'
+const formattedOutputModel = computed({
+  get: () => formattedOutput.value,
+  set: () => {},
 })
 
 const isMatch = computed(() =>
@@ -107,24 +110,17 @@ const isMatch = computed(() =>
 
 <template>
   <div
-    class="flex flex-col overflow-hidden"
+    class="overflow-hidden"
     :class="compact ? 'h-[420px] rounded-xl border border-default bg-elevated shadow-lg' : 'h-[calc(100vh-64px)]'"
   >
-    <Splitpanes>
+    <Splitpanes class="h-full">
       <!-- ── Left pane: Markdown editor ── -->
       <Pane
         :size="50"
         :min-size="20"
       >
         <div class="h-full flex flex-col">
-          <div class="shrink-0 flex items-center justify-between px-3 h-9 border-b border-default bg-default">
-            <div class="flex items-center gap-1.5">
-              <UIcon
-                name="i-lucide-pencil"
-                class="size-3.5 text-muted"
-              />
-              <span class="text-xs font-semibold uppercase tracking-wide text-muted">Markdown</span>
-            </div>
+          <div class="shrink-0 flex items-center gap-2 px-3 h-9 border-b border-default bg-default">
             <UTooltip text="Reset to default content">
               <UButton
                 :disabled="markdown === defaultMarkdown.trim()"
@@ -138,7 +134,10 @@ const isMatch = computed(() =>
             </UTooltip>
           </div>
           <div class="flex-1 min-h-0">
-            <Editor v-model="markdown" />
+            <Editor
+              v-model="markdown"
+              :font-size="compact ? 12 : 14"
+            />
           </div>
         </div>
       </Pane>
@@ -149,7 +148,6 @@ const isMatch = computed(() =>
         :min-size="20"
       >
         <div class="h-full flex flex-col">
-          <!-- Right header: Preview label (compact) or tabs (full) -->
           <div class="shrink-0 flex items-center px-3 h-9 border-b border-default bg-default">
             <!-- Roundtrip match indicator (full mode only) -->
             <div
@@ -170,13 +168,15 @@ const isMatch = computed(() =>
               v-else
               class="flex-1"
             />
-            <template v-if="compact">
-              <UIcon
-                name="i-lucide-eye"
-                class="size-3.5 text-muted"
-              />
-              <span class="ml-1.5 text-xs font-semibold uppercase tracking-wide text-muted">Preview</span>
-            </template>
+            <UButton
+              v-if="compact"
+              to="/play"
+              size="xs"
+              color="neutral"
+              variant="soft"
+              trailing-icon="i-lucide-arrow-right"
+              label="Try playground"
+            />
             <UTabs
               v-else
               v-model="activeTab"
@@ -191,10 +191,13 @@ const isMatch = computed(() =>
           </div>
 
           <!-- Preview -->
-          <template v-if="currentTab === 'preview'">
+          <div
+            v-if="currentTab === 'preview'"
+            class="flex-1 min-h-0 relative overflow-hidden bg-white dark:bg-neutral-900"
+          >
             <div
               v-if="parsing && !tree"
-              class="flex flex-1 flex-col items-center justify-center gap-3 text-muted"
+              class="absolute inset-0 flex flex-col items-center justify-center gap-3 text-muted"
             >
               <UIcon
                 name="i-lucide-loader-circle"
@@ -204,7 +207,7 @@ const isMatch = computed(() =>
             </div>
             <div
               v-else-if="!tree && !error"
-              class="flex flex-1 flex-col items-center justify-center gap-3 text-muted"
+              class="absolute inset-0 flex flex-col items-center justify-center gap-3 text-muted"
             >
               <UIcon
                 name="i-lucide-eye-off"
@@ -216,7 +219,7 @@ const isMatch = computed(() =>
             </div>
             <UScrollArea
               v-else
-              class="flex-1 min-h-0"
+              class="h-full"
               :ui="{ viewport: 'p-4 sm:p-6' }"
             >
               <UAlert
@@ -229,6 +232,7 @@ const isMatch = computed(() =>
               <div
                 v-else-if="tree"
                 class="prose prose-sm dark:prose-invert max-w-none"
+                :style="compact ? { zoom: '0.85' } : {}"
               >
                 <Suspense>
                   <ComarkRenderer
@@ -238,7 +242,7 @@ const isMatch = computed(() =>
                 </Suspense>
               </div>
             </UScrollArea>
-          </template>
+          </div>
 
           <!-- AST -->
           <UScrollArea
@@ -246,17 +250,27 @@ const isMatch = computed(() =>
             class="flex-1 min-h-0"
             :ui="{ viewport: 'p-4' }"
           >
-            <pre class="font-mono text-xs leading-relaxed text-default whitespace-pre-wrap break-all">{{ astJson }}</pre>
+            <VueJsonPretty
+              v-if="tree"
+              :data="(tree as any)"
+              :theme="isDark ? 'dark' : 'light'"
+              :deep="2"
+              show-line
+            />
           </UScrollArea>
 
           <!-- Formatted -->
-          <UScrollArea
+          <div
             v-else-if="currentTab === 'formatted'"
             class="flex-1 min-h-0"
-            :ui="{ viewport: 'p-4' }"
           >
-            <pre class="font-mono text-xs leading-relaxed text-default whitespace-pre-wrap">{{ formattedOutput }}</pre>
-          </UScrollArea>
+            <Editor
+              v-model="formattedOutputModel"
+              language="mdc"
+              :read-only="true"
+              :font-size="compact ? 12 : 14"
+            />
+          </div>
 
           <!-- Status bar (full mode only) -->
           <div
@@ -291,5 +305,24 @@ const isMatch = computed(() =>
   width: 1px !important;
   background: var(--ui-border);
   margin: 0 !important;
+}
+
+.vjs-value-string {
+  color: var(--ui-primary) !important;
+}
+
+.vjs-tree-node.is-highlight,
+.vjs-tree-node:hover {
+  background-color: var(--color-primary-200) !important;
+}
+
+.vjs-tree-node.dark.is-highlight,
+.vjs-tree-node.dark:hover {
+  background-color: var(--color-primary-200) !important;
+}
+
+.vjs-tree-node .vjs-tree-node-actions,
+.vjs-tree-node.dark .vjs-tree-node-actions {
+  background-color: var(--color-primary-200) !important;
 }
 </style>

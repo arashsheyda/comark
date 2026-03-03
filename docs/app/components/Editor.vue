@@ -5,9 +5,11 @@ import { language as mdc } from '@nuxtlabs/monarch-mdc'
 const {
   language = 'mdc',
   readOnly = false,
+  fontSize = 14,
 } = defineProps<{
   language?: string
   readOnly?: boolean
+  fontSize?: number
 }>()
 
 const model = defineModel<string>({
@@ -20,6 +22,7 @@ let editor: any = null
 let monaco: any | null = null
 const colorMode = useColorMode()
 const theme = computed<string>(() => colorMode.value === 'dark' ? 'vs-dark' : 'vs-light')
+const loaded = ref(false)
 
 onMounted(async () => {
   monaco = await loader.init()
@@ -37,7 +40,7 @@ onMounted(async () => {
     minimap: {
       enabled: false,
     },
-    fontSize: 14,
+    fontSize,
     lineNumbers: 'on',
     scrollBeyondLastLine: false,
     roundedSelection: false,
@@ -56,6 +59,7 @@ onMounted(async () => {
   })
 
   monaco.editor.setTheme(theme.value)
+  loaded.value = true
 })
 
 onBeforeUnmount(() => {
@@ -85,8 +89,20 @@ watch(theme, (newTheme) => {
 </script>
 
 <template>
-  <div
-    ref="editorContainer"
-    class="h-full w-full"
-  />
+  <div class="relative h-full w-full bg-white dark:bg-[#1e1e1e]">
+    <div
+      v-if="!loaded"
+      class="absolute inset-0 flex flex-col items-center justify-center gap-3 text-muted"
+    >
+      <UIcon
+        name="i-lucide-loader-circle"
+        class="size-6 animate-spin text-primary"
+      />
+      <span class="text-sm">Loading editor...</span>
+    </div>
+    <div
+      ref="editorContainer"
+      class="h-full w-full"
+    />
+  </div>
 </template>
