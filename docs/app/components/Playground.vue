@@ -298,7 +298,7 @@ const isMatch = computed(() =>
   </div>
 </template>
 
-<style lang="scss">
+<style>
 @import 'splitpanes/dist/splitpanes.css';
 @import 'vue-json-pretty/lib/styles.css';
 
