@@ -39,10 +39,10 @@ console.log(tree.nodes)
 
 ### Table
 
-| Feature | Status |
-|---------|--------|
-| Parsing | ✅ |
-| Streaming | ✅ |
-| Vue | ✅ |
-| React | ✅ |
+| Feature   | Status |
+| --------- | ------ |
+| Parsing   | ✅      |
+| Streaming | ✅      |
+| Vue       | ✅      |
+| React     | ✅      |
 `
