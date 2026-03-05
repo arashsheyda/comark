@@ -1,6 +1,5 @@
 <template>
   <svg
-    class="h-6 w-auto shrink-0"
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 576 128"
     fill="none"
