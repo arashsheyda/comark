@@ -1,7 +1,7 @@
 export default defineAppConfig({
   seo: {
     title: 'Comark',
-    description: 'Components in Markdown (Comark) parser with streaming support for Vue and React.',
+    description: 'Components in Markdown (Comark) parser with streaming support for Vue, React and Svelte.',
     url: 'https://comark.dev',
     socials: {
       github: 'comarkdown/comark',
@@ -49,7 +49,7 @@ export default defineAppConfig({
   },
 
   title: 'Comark',
-  description: 'Components in Markdown (Comark) parser with streaming support for Vue and React.',
+  description: 'Components in Markdown (Comark) parser with streaming support for Vue, React and Svelte.',
   url: 'https://comark.dev',
 
   ui: {
@@ -69,6 +69,7 @@ export default defineAppConfig({
         'md': 'i-custom-comark',
         'react': 'i-logos-react',
         'html': 'i-vscode-icons-file-type-html',
+        'svelte': 'i-simple-icons-svelte',
       },
     },
   },
