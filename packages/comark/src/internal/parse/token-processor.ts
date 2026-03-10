@@ -109,7 +109,13 @@ function processAttributes(
         }
       }
 
-      attrs[key] = value
+      // Handle class attribute (multiple classes)
+      if (key === 'class' && typeof attrs[key] === 'string') {
+        attrs[key] = `${attrs[key]} ${value}`
+      }
+      else {
+        attrs[key] = value
+      }
     }
   }
 
