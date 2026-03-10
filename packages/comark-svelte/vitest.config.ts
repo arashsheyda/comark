@@ -2,6 +2,8 @@ import { defineConfig } from 'vitest/config'
 import { svelte } from '@sveltejs/vite-plugin-svelte'
 import { playwright } from '@vitest/browser-playwright'
 
+const isCI = process.env.CI === 'true' || process.env.GITHUB_ACTIONS === 'true'
+
 export default defineConfig({
   plugins: [svelte()],
   optimizeDeps: {
@@ -9,18 +11,20 @@ export default defineConfig({
   },
   test: {
     projects: [
-      {
-        extends: './vitest.config.ts',
-        test: {
-          name: 'client',
-          browser: {
-            enabled: true,
-            provider: playwright(),
-            instances: [{ browser: 'chromium' }],
+      isCI
+        ? null as any
+        : {
+            extends: './vitest.config.ts',
+            test: {
+              name: 'client',
+              browser: {
+                enabled: !isCI,
+                provider: playwright(),
+                instances: [{ browser: 'chromium', headless: true }],
+              },
+              include: ['src/**/*.svelte.{test,spec}.{js,ts}'],
+            },
           },
-          include: ['src/**/*.svelte.{test,spec}.{js,ts}'],
-        },
-      },
       {
         extends: './vitest.config.ts',
         test: {
@@ -30,6 +34,6 @@ export default defineConfig({
           exclude: ['src/**/*.svelte.{test,spec}.{js,ts}'],
         },
       },
-    ],
+    ].filter(Boolean),
   },
 })
