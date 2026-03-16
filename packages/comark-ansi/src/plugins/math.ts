@@ -1,13 +1,12 @@
-export * from 'comark/plugins/math'
-export { default } from 'comark/plugins/math'
-
 import type { NodeHandler } from 'comark/string'
 import { textContent } from 'comark/ast'
 import { MAGENTA, YELLOW, RESET } from '../escape.ts'
 
+export * from 'comark/plugins/math'
+export { default } from 'comark/plugins/math'
+
 export const Math: NodeHandler = (node, state, parent) => {
   const content = textContent(node).trim()
-  console.log({state})
   const { colors } = state.context
 
   // Inline math: parent has string siblings alongside this node
