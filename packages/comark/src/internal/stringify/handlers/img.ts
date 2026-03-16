@@ -1,6 +1,6 @@
 import type { State } from '../types'
 import type { ComarkElement } from '../../../ast/types'
-import { comarkAttributes } from '../attributes'
+import { comarkAttributes } from '../attributes.ts'
 
 export function img(node: ComarkElement, _state: State) {
   const [_, attrs] = node

@@ -1,4 +1,4 @@
-import { stringifyYaml } from '../yaml'
+import { stringifyYaml } from '../yaml.ts'
 
 /**
  * Convert attributes to a string of Comark attributes

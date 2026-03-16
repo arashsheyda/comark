@@ -1,6 +1,6 @@
 import type { State } from '../types'
 import type { ComarkElement, ComarkNode } from '../../../ast/types'
-import { indent } from '../indent'
+import { indent } from '../indent.ts'
 
 export function ol(node: ComarkElement, state: State) {
   const children = node.slice(2) as ComarkNode[]
