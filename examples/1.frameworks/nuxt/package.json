@@ -9,10 +9,9 @@
     "preview": "nuxt preview"
   },
   "dependencies": {
-    "@nuxt/fonts": "^0.14.0",
-    "comark": "workspace:*",
+    "@comark/nuxt": "latest",
+    "@nuxt/ui": "https://pkg.pr.new/@nuxt/ui@0b06c38",
     "nuxt": "^4.3.1",
-    "vue": "^3.5.29",
-    "vue-router": "^5.0.3"
+    "tailwindcss": "^4.2.1"
   }
 }
