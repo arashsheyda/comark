@@ -28,6 +28,6 @@ export function render(tree: ComarkTree, context: RenderOptions = {}) {
  * @returns The markdown string with optional frontmatter
  */
 export function renderMarkdown(tree: ComarkTree, options?: RenderMarkdownOptions): string {
-  const content = render(tree, { format: 'markdown/mdc', ...options })
+  const content = render(tree, { format: 'markdown/comark', ...options })
   return renderFrontmatter(tree.frontmatter, content)
 }

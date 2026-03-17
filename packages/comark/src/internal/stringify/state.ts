@@ -36,7 +36,7 @@ export function one(node: ComarkNode, state: State, parent?: ComarkElement) {
     return nodeHandler(node, state, parent)
   }
 
-  return state.context.format === 'markdown/mdc'
+  return state.context.format === 'markdown/comark'
     ? state.handlers.mdc(node, state, parent)
     : state.handlers.html(node, state, parent)
 }
@@ -56,7 +56,7 @@ export function createState(ctx: Partial<Context> = {}): State {
   const context = {
     ...ctx,
     blockSeparator: ctx.blockSeparator || '\n\n',
-    format: ctx.format || 'markdown/mdc',
+    format: ctx.format || 'markdown/comark',
     handlers: ctx.handlers || {}, // user defined node handlers
     // Enable html mode for text/html format
     html: ctx.format === 'text/html',
@@ -95,7 +95,7 @@ export const state: State = {
   data: {},
   context: {
     blockSeparator: '\n\n',
-    format: 'markdown/mdc',
+    format: 'markdown/comark',
     handlers: {}, // user defined node handlers
   },
   flow,

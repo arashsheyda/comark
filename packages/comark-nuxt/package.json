@@ -20,6 +20,7 @@
     "stub": "node ../../scripts/stub.mjs",
     "build": "tsc",
     "dev": "tsc --watch",
+    "test": "vitest run",
     "prepack": "tsc",
     "release": "release-it"
   },
@@ -29,5 +30,10 @@
   "dependencies": {
     "@comark/vue": "^0.0.1",
     "@nuxt/kit": "^4.3.1"
+  },
+  "devDependencies": {
+    "@vue/server-renderer": "^3.5.0",
+    "vitest": "^4.0.18",
+    "vue": "^3.5.0"
   }
 }
