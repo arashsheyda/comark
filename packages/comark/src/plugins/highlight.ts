@@ -201,11 +201,6 @@ export async function highlightCode(
 
       const lineClass = 'line' + (attrs.highlights?.includes(i + 1) ? ' highlight' : '')
       allTokens.push(['span', { class: lineClass }, ...lineTokensNodes])
-
-      // Add newline between lines (except for last line)
-      if (i < result.length - 1) {
-        allTokens.push('\n')
-      }
     }
 
     return {

@@ -142,10 +142,6 @@ function onSelect(e: Event, item: CodeExplorerTreeItem) {
   border-radius: 0;
   height: 100%;
 }
-
-.code-explorer-content :deep(.shiki span.line) {
-  display: inline-block;
-}
 </style>
 
 <style>

@@ -4,7 +4,7 @@
 
 <style scoped>
 .shiki-container :deep(span.line) {
-  display: inline-block;
+  display: block;
 }
 html.dark .shiki-container:not(.shiki-stream) :deep(span) {
   color: var(--shiki-dark) !important;

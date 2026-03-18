@@ -98,7 +98,6 @@ options:
             ">"
           ]
         ],
-        "\n",
         [
           "span",
           {
@@ -140,7 +139,6 @@ options:
             ">"
           ]
         ],
-        "\n",
         [
           "span",
           {
@@ -182,7 +180,6 @@ options:
             ">"
           ]
         ],
-        "\n",
         [
           "span",
           {
@@ -252,7 +249,6 @@ options:
             ">"
           ]
         ],
-        "\n",
         [
           "span",
           {
@@ -289,11 +285,7 @@ options:
 ## HTML
 
 ```html
-<pre language="html" filename="template.html" class="shiki github-dark dark:github-dark" tabindex="0" style="background-color:#24292e;color:#e1e4e8"><code class="language-html"><span class="line"><span style="color:#E1E4E8">&lt;</span><span style="color:#85E89D">div</span><span style="color:#E1E4E8"> </span><span style="color:#B392F0">class</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"container"</span><span style="color:#E1E4E8">&gt;</span></span>
-<span class="line"><span style="color:#E1E4E8">  &lt;</span><span style="color:#85E89D">h1</span><span style="color:#E1E4E8">&gt;Title & Subtitle&lt;/</span><span style="color:#85E89D">h1</span><span style="color:#E1E4E8">&gt;</span></span>
-<span class="line"><span style="color:#E1E4E8">  &lt;</span><span style="color:#85E89D">p</span><span style="color:#E1E4E8">&gt;Text with "quotes" and 'apostrophes'&lt;/</span><span style="color:#85E89D">p</span><span style="color:#E1E4E8">&gt;</span></span>
-<span class="line"><span style="color:#E1E4E8">  &lt;</span><span style="color:#85E89D">script</span><span style="color:#E1E4E8">&gt;</span><span style="color:#B392F0">alert</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">'XSS &lt; &gt; test'</span><span style="color:#E1E4E8">);&lt;/</span><span style="color:#85E89D">script</span><span style="color:#E1E4E8">&gt;</span></span>
-<span class="line"><span style="color:#E1E4E8">&lt;/</span><span style="color:#85E89D">div</span><span style="color:#E1E4E8">&gt;</span></span></code></pre>
+<pre language="html" filename="template.html" class="shiki github-dark dark:github-dark" tabindex="0" style="background-color:#24292e;color:#e1e4e8"><code class="language-html"><span class="line"><span style="color:#E1E4E8">&lt;</span><span style="color:#85E89D">div</span><span style="color:#E1E4E8"> </span><span style="color:#B392F0">class</span><span style="color:#E1E4E8">=</span><span style="color:#9ECBFF">"container"</span><span style="color:#E1E4E8">&gt;</span></span><span class="line"><span style="color:#E1E4E8">  &lt;</span><span style="color:#85E89D">h1</span><span style="color:#E1E4E8">&gt;Title & Subtitle&lt;/</span><span style="color:#85E89D">h1</span><span style="color:#E1E4E8">&gt;</span></span><span class="line"><span style="color:#E1E4E8">  &lt;</span><span style="color:#85E89D">p</span><span style="color:#E1E4E8">&gt;Text with "quotes" and 'apostrophes'&lt;/</span><span style="color:#85E89D">p</span><span style="color:#E1E4E8">&gt;</span></span><span class="line"><span style="color:#E1E4E8">  &lt;</span><span style="color:#85E89D">script</span><span style="color:#E1E4E8">&gt;</span><span style="color:#B392F0">alert</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">'XSS &lt; &gt; test'</span><span style="color:#E1E4E8">);&lt;/</span><span style="color:#85E89D">script</span><span style="color:#E1E4E8">&gt;</span></span><span class="line"><span style="color:#E1E4E8">&lt;/</span><span style="color:#85E89D">div</span><span style="color:#E1E4E8">&gt;</span></span></code></pre>
 ```
 
 ## Markdown
