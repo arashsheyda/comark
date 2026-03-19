@@ -6,12 +6,26 @@ import highlight from 'comark/plugins/highlight'
 import githubLight from '@shikijs/themes/github-light'
 import githubDark from '@shikijs/themes/github-dark'
 
-export default defineComarkComponent({
-  name: 'ComarkDocs',
+// This base renderer created to demonstrate how to create a base renderer for a specific use case.
+const BaseComarkDocs = defineComarkComponent({
+  name: 'BaseComarkDocs',
   autoClose: true,
   plugins: [
     math(),
     mermaid(),
+  ],
+  components: {
+    Math,
+    Mermaid,
+    ProsePre,
+  },
+})
+
+// This renderer extends the base renderer and adds the syntax highlighting.
+export default defineComarkComponent({
+  extends: BaseComarkDocs,
+  name: 'ComarkDocs',
+  plugins: [
     highlight({
       themes: {
         light: githubLight,
@@ -19,9 +33,4 @@ export default defineComarkComponent({
       },
     }),
   ],
-  components: {
-    Math,
-    Mermaid,
-    ProsePre,
-  },
 })

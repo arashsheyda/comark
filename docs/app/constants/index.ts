@@ -28,6 +28,24 @@ Write Markdown with component syntax and see the parsed AST in real-time.
 This is a Comark component using MDC syntax.
 ::
 
+### Github Alert
+
+> [!WARNING]
+> This is a warning alert.
+
+### Math
+
+$$
+\\int_0^\\infty e^{-x^2} dx = \\frac{\\sqrt{\\pi}}{2}
+$$
+
+### Mermaid
+
+\`\`\`mermaid
+graph TD
+A[Start] --> B[Stop]
+\`\`\`
+
 ### Code Block
 
 \`\`\`ts [example.ts]

@@ -36,11 +36,17 @@ export default defineNuxtModule<ComarkModuleOptions>({
       priority: 1,
     })
 
-    addImports({
-      name: 'defineComarkComponent',
-      as: 'defineComarkComponent',
-      from: '@comark/vue',
-    })
+    addImports([
+      {
+        name: 'defineComarkComponent',
+        as: 'defineComarkComponent',
+        from: '@comark/vue',
+      }, {
+        name: 'defineComarkRendererComponent',
+        as: 'defineComarkRendererComponent',
+        from: '@comark/vue',
+      },
+    ])
 
     const resolver = createResolver(import.meta.url)
 

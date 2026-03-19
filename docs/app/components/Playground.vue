@@ -1,28 +1,19 @@
 <script setup lang="ts">
 import { parse } from 'comark'
-import highlight from 'comark/plugins/highlight'
+import highlight from '@comark/vue/plugins/highlight'
+import math from '@comark/vue/plugins/math'
+import mermaid from '@comark/vue/plugins/mermaid'
+
 import { renderMarkdown } from 'comark/render'
-import { ComarkRenderer } from '@comark/vue'
 import { Splitpanes, Pane } from 'splitpanes'
 import { defaultMarkdown } from '~/constants'
 import { watchDebounced } from '@vueuse/core'
 import type { ComarkTree } from 'comark'
-import { ProseCallout, ProseNote, ProseTip, ProseWarning, ProseCaution } from '#components'
-import ProsePre from './landing/ProsePre.vue'
 import VueJsonPretty from 'vue-json-pretty'
 
 const props = defineProps<{
   compact?: boolean
 }>()
-
-const components = {
-  callout: ProseCallout,
-  note: ProseNote,
-  tip: ProseTip,
-  warning: ProseWarning,
-  caution: ProseCaution,
-  pre: ProsePre,
-}
 
 const markdown = ref<string>(defaultMarkdown.trim())
 const tree = ref<ComarkTree | null>(null)
@@ -71,7 +62,7 @@ async function parseMarkdown(): Promise<void> {
     return
   }
   parsing.value = true
-  const plugins = [highlight()]
+  const plugins = [highlight(), math(), mermaid()]
   const start = performance.now()
   try {
     const result = await parse(markdown.value, {
@@ -241,9 +232,8 @@ const isMatch = computed(() =>
                 v-else-if="tree"
                 class="prose prose-sm dark:prose-invert max-w-none prose-headings:no-underline"
               >
-                <ComarkRenderer
+                <ComarkDocsRenderer
                   :tree="tree"
-                  :components="components"
                 />
               </div>
             </UScrollArea>

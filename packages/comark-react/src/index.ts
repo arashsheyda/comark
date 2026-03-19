@@ -1,6 +1,8 @@
 import React from 'react'
 import { Comark } from './components/Comark'
+import { ComarkRenderer } from './components/ComarkRenderer'
 import type { ComarkProps } from './components/Comark'
+import type { ComarkRendererProps } from './components/ComarkRenderer'
 import type { ParseOptions } from 'comark'
 
 export { ComarkRenderer } from './components/ComarkRenderer'
@@ -9,6 +11,9 @@ export { Comark }
 export type * from 'comark'
 
 interface DefineComarkComponentOptions extends ParseOptions {
+  /** Extend an existing defined component — inherits its plugins and components. */
+  extends?: React.FC<ComarkProps>
+  /** Display name shown in React DevTools. */
   name?: string
   components?: Record<string, React.ComponentType<any>>
 }
@@ -16,50 +21,46 @@ interface DefineComarkComponentOptions extends ParseOptions {
 /**
  * Create a pre-configured Comark component with default options, plugins, and components.
  *
+ * Use `extends` to inherit configuration from another defined component.
+ *
  * @example
  * ```tsx
  * import { defineComarkComponent } from '@comark/react'
- * import math, { Math } from '@comark/react/plugins/math'
  * import highlight from '@comark/react/plugins/highlight'
+ * import toc from '@comark/react/plugins/toc'
  *
- * export const AppComark = defineComarkComponent({
- *   name: 'AppComark',
- *   plugins: [
- *     math(),
- *     highlight({
- *       themes: {
- *         light: 'github-light',
- *         dark: 'github-dark',
- *       },
- *     }),
- *   ],
- *   components: { Math },
+ * const BaseComark = defineComarkComponent({
+ *   name: 'BaseComark',
+ *   plugins: [highlight({ themes: { light: githubLight, dark: githubDark } })],
+ * })
+ *
+ * export const ArticleComark = defineComarkComponent({
+ *   name: 'ArticleComark',
+ *   extends: BaseComark,
+ *   plugins: [toc({ depth: 3 })],
  * })
  * ```
  */
 export function defineComarkComponent(config: DefineComarkComponentOptions = {}) {
-  const { name, components: configComponents = {}, ...parseOptions } = config
+  const { name, components: configComponents = {}, extends: BaseComponent, ...parseOptions } = config
 
   const ComarkComponent: React.FC<ComarkProps> = (props) => {
-    // Merge options (excluding plugins)
     const mergedOptions: Exclude<ParseOptions, 'plugins'> = {
       ...parseOptions,
       ...props.options,
     }
 
-    // Merge plugins (config plugins + prop plugins)
     const mergedPlugins = [
       ...(config.plugins || []),
       ...(props.plugins || []),
     ]
 
-    // Merge components (props override config)
     const mergedComponents = {
       ...configComponents,
       ...props.components,
     }
 
-    return React.createElement(Comark, {
+    return React.createElement(BaseComponent ?? Comark, {
       ...props,
       options: mergedOptions,
       plugins: mergedPlugins,
@@ -70,4 +71,58 @@ export function defineComarkComponent(config: DefineComarkComponentOptions = {})
   ComarkComponent.displayName = name || 'ComarkComponent'
 
   return ComarkComponent
+}
+
+interface DefineComarkRendererOptions {
+  /** Extend an existing defined renderer — inherits its component mappings. */
+  extends?: React.FC<ComarkRendererProps>
+  /** Display name shown in React DevTools. */
+  name?: string
+  components?: Record<string, React.ComponentType<any>>
+}
+
+/**
+ * Create a pre-configured ComarkRenderer component with default component mappings.
+ *
+ * Use this when parsing happens separately (server, build step, API) and you want
+ * a reusable renderer with baked-in component mappings.
+ *
+ * Use `extends` to inherit mappings from another defined renderer.
+ *
+ * @example
+ * ```tsx
+ * import { defineComarkRendererComponent } from '@comark/react'
+ * import Alert from './Alert'
+ * import CodeBlock from './CodeBlock'
+ *
+ * export const ArticleRenderer = defineComarkRendererComponent({
+ *   name: 'ArticleRenderer',
+ *   components: { alert: Alert, pre: CodeBlock },
+ * })
+ *
+ * // In a Server Component:
+ * export default async function Page() {
+ *   const tree = await parse(markdown)
+ *   return <ArticleRenderer tree={tree} />
+ * }
+ * ```
+ */
+export function defineComarkRendererComponent(config: DefineComarkRendererOptions = {}) {
+  const { name, components: configComponents = {}, extends: BaseComponent } = config
+
+  const RendererComponent: React.FC<ComarkRendererProps> = (props) => {
+    const mergedComponents = {
+      ...configComponents,
+      ...props.components,
+    }
+
+    return React.createElement(BaseComponent ?? ComarkRenderer, {
+      ...props,
+      components: mergedComponents,
+    })
+  }
+
+  RendererComponent.displayName = name || 'ComarkRendererComponent'
+
+  return RendererComponent
 }
