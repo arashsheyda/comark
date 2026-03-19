@@ -47,7 +47,7 @@ function startStream() {
   hasPlayed.value = true
 
   let i = 0
-  const chunkSize = 3
+  const chunkSize = 4
 
   function next() {
     if (i >= props.demoMarkdown.length) {
