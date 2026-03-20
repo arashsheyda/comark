@@ -11,12 +11,12 @@ export { default } from 'comark/plugins/math'
  *
  * @example
  * ```typescript
- * import math, { math as mathRenderer } from '@comark/html/plugins/math'
+ * import math, { Math } from '@comark/html/plugins/math'
  * import { createRender } from '@comark/html'
  *
  * const render = createRender({
- *   parse: { plugins: [math()] },
- *   render: { components: { math: mathRenderer } },
+ *   plugins: [math()],
+ *   components: { Math },
  * })
  * ```
  */

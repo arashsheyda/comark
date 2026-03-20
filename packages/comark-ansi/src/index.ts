@@ -32,8 +32,8 @@ export interface LogOptions extends RenderOptions, ParseOptions {
  * import math from 'comark/plugins/math'
  *
  * const log = createLog({
- *   parse: { plugins: [math()] },
- *   render: { width: 120 },
+ *   plugins: [math()],
+ *   width: 120,
  *   write: (s) => process.stderr.write(s)
  * })
  *

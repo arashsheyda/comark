@@ -11,12 +11,12 @@ export { default } from 'comark/plugins/mermaid'
  *
  * @example
  * ```typescript
- * import mermaid, { mermaid as mermaidRenderer } from '@comark/html/plugins/mermaid'
- * import { createRender } from '@comark/html'
+ * import mermaid, { Mermaid } from '@comark/ansi/plugins/mermaid'
+ * import { createRender } from '@comark/ansi'
  *
  * const render = createRender({
- *   parse: { plugins: [mermaid()] },
- *   render: { components: { mermaid: mermaidRenderer } },
+ *   plugins: [mermaid()],
+ *   components: { Mermaid },
  * })
  * ```
  */
