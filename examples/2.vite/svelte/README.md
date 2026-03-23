@@ -1,7 +1,8 @@
 ---
 title: Svelte
 description: A minimal example showing how to use Comark with Svelte and Vite.
-navigation.icon: i-simple-icons-svelte
+navigation:
+  icon:  i-simple-icons-svelte
 category: Vite
 path: /examples/vite/svelte
 ---

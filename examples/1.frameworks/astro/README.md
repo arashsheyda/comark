@@ -1,7 +1,8 @@
 ---
 title: Astro
 description: A blog example using Comark with Astro content collections and React components.
-navigation.icon: i-simple-icons:astro
+navigation:
+  icon: i-simple-icons:astro
 category: Frameworks
 path: /examples/frameworks/astro
 ---

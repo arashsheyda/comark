@@ -1,7 +1,8 @@
 ---
 title: Syntax Highlighting
 description: Example showing how to use Comark with syntax highlighting using Shiki in Vue and Vite.
-navigation.icon: i-lucide-code
+navigation:
+  icon:  i-lucide-code
 category: Plugins
 path: /examples/plugins/vue-vite-highlight
 ---

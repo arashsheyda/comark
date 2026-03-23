@@ -1,7 +1,8 @@
 ---
 title: HTML Preview
 description: A live markdown editor that renders Comark content to HTML and displays it in a sandboxed iframe preview, with syntax highlighting support.
-navigation.icon: i-lucide-file-code
+navigation:
+  icon:  i-lucide-file-code
 category: Vite
 path: /examples/vite/html
 ---

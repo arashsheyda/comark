@@ -1,7 +1,8 @@
 ---
 title: Next.js
 description: A blog example using Comark with Next.js App Router and React Server Components.
-navigation.icon: i-simple-icons:nextdotjs
+navigation:
+  icon:  i-simple-icons:nextdotjs
 category: Frameworks
 path: /examples/frameworks/nextjs
 demo: https://comark-nextjs.vercel.app
