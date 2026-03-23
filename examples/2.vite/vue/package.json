@@ -12,14 +12,14 @@
     "@comark/vue": "latest",
     "@nuxt/ui": "https://pkg.pr.new/@nuxt/ui@0b06c38",
     "vue": "^3.5.30",
-    "vue-router": "^5.0.3"
+    "vue-router": "^5.0.4"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^6.0.5",
     "autoprefixer": "^10.4.27",
     "postcss": "^8.5.8",
     "typescript": "^5.9.3",
-    "vite": "^8.0.1",
+    "vite": "^8.0.2",
     "vue-tsc": "^3.2.6"
   }
 }

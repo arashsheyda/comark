@@ -42,8 +42,8 @@
   },
   "devDependencies": {
     "comark": "workspace:*",
-    "katex": "^0.16.38",
+    "katex": "^0.16.40",
     "beautiful-mermaid": "^1.1.3",
-    "vitest": "^4.1.0"
+    "vitest": "^4.1.1"
   }
 }
