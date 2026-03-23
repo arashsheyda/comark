@@ -1,7 +1,7 @@
 {
   "name": "@comark/html",
   "type": "module",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "HTML renderer for Comark",
   "exports": {
     ".": "./dist/index.js",
@@ -36,9 +36,15 @@
     "shiki": "^3.22.0"
   },
   "peerDependenciesMeta": {
-    "katex": { "optional": true },
-    "beautiful-mermaid": { "optional": true },
-    "shiki": { "optional": true }
+    "katex": {
+      "optional": true
+    },
+    "beautiful-mermaid": {
+      "optional": true
+    },
+    "shiki": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "comark": "workspace:*",
