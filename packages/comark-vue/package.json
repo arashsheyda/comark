@@ -1,7 +1,7 @@
 {
   "name": "@comark/vue",
   "type": "module",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Vue components for Comark",
   "exports": {
     ".": "./dist/index.js",
