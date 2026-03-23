@@ -119,12 +119,18 @@ async function registerDefaults(options: HighlightOptions) {
     )
   }
   if (options.registerDefaultLanguages !== false) {
-    const langs = ['vue', 'tsx', 'svelte', 'typescript', 'javascript', 'mdc', 'bash', 'json', 'yaml']
-    for (const lang of langs) {
-      promises.push(
-        import(`@shikijs/langs/${lang}`).then(m => ({ type: 'lang' as const, value: m.default })),
-      )
-    }
+    promises.push(
+      import('@shikijs/langs/vue').then(m => ({ type: 'lang' as const, value: m.default })),
+      import('@shikijs/langs/tsx').then(m => ({ type: 'lang' as const, value: m.default })),
+      import('@shikijs/langs/svelte').then(m => ({ type: 'lang' as const, value: m.default })),
+      import('@shikijs/langs/typescript').then(m => ({ type: 'lang' as const, value: m.default })),
+      import('@shikijs/langs/javascript').then(m => ({ type: 'lang' as const, value: m.default })),
+      import('@shikijs/langs/mdc').then(m => ({ type: 'lang' as const, value: m.default })),
+      import('@shikijs/langs/bash').then(m => ({ type: 'lang' as const, value: m.default })),
+      import('@shikijs/langs/json').then(m => ({ type: 'lang' as const, value: m.default })),
+      import('@shikijs/langs/yaml').then(m => ({ type: 'lang' as const, value: m.default })),
+      import('@shikijs/langs/astro').then(m => ({ type: 'lang' as const, value: m.default })),
+    )
   }
 
   const results = await Promise.all(promises)
