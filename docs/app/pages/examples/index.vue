@@ -53,8 +53,8 @@ defineOgImageComponent('Docs', {
         :key="category"
         class="mb-12"
       >
-        <h2 class="text-xl font-semibold mb-4 flex items-center gap-2">
-          {{ String(category).charAt(0).toUpperCase() + String(category).slice(1) }}
+        <h2 class="text-xl font-semibold mb-4 flex items-center gap-2 capitalize">
+          {{ category }}
         </h2>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
