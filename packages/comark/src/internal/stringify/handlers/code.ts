@@ -1,6 +1,6 @@
 import type { State } from 'comark/render'
 import type { ComarkElement } from 'comark'
-import { comarkAttributes } from '../attributes'
+import { comarkAttributes } from '../attributes.ts'
 import { textContent } from 'comark/utils'
 
 export function code(node: ComarkElement, _state: State) {

@@ -44,6 +44,18 @@ pre code {
   font-size: 85%;
   white-space: pre;
 }
+.shiki span.line {
+  display: block;
+}
+.shiki span.line:empty {
+  height: 1lh;
+}
+.shiki span.line.highlight {
+  background-color: rgba(255, 255, 0, 0.1);
+  display: block;
+  margin: 0 -1rem;
+  padding: 0 1rem;
+}
 blockquote {
   border-left: 4px solid #d0d7de;
   margin: 0 0 16px;

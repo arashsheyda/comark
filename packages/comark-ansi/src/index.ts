@@ -2,7 +2,7 @@ import type { ParseOptions, RenderOptions } from 'comark'
 import { createParse } from 'comark'
 import { renderANSI } from './render.ts'
 
-export { renderANSI, RenderANSIOptions } from './render'
+export { renderANSI, RenderANSIOptions } from './render.ts'
 
 function defaultWrite(string: string) {
   if (typeof process !== 'undefined') {

@@ -1,4 +1,4 @@
-import type { ComarkElement } from 'comark'
+import type { ComarkElement, State } from 'comark'
 import type { ThemeNames } from 'comark/plugins/mermaid'
 import { renderMermaidASCII, THEMES } from 'beautiful-mermaid'
 
@@ -20,16 +20,16 @@ export { default } from 'comark/plugins/mermaid'
  * })
  * ```
  */
-export const Mermaid = ([, attrs]: ComarkElement): string => {
+export const Mermaid = ([, attrs]: ComarkElement, state: State): string => {
   const content = String(attrs.content ?? '')
   const themeName = attrs.theme as ThemeNames | undefined
   const theme = (themeName && THEMES[themeName]) ?? THEMES['zinc-light']
 
   try {
     const svg = renderMermaidASCII(content, { theme })
-    return svg
+    return svg + state.context.blockSeparator
   }
   catch {
-    return content
+    return content + state.context.blockSeparator
   }
 }

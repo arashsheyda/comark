@@ -1,13 +1,13 @@
 import { createRender } from '@comark/html'
 import highlight from 'comark/plugins/highlight'
-import math, { math as mathRenderer } from '@comark/html/plugins/math'
-import mermaid, { mermaid as mermaidRenderer } from '@comark/html/plugins/mermaid'
+import math, { Math } from '@comark/html/plugins/math'
+import mermaid, { Mermaid } from '@comark/html/plugins/mermaid'
 import katexCss from 'katex/dist/katex.min.css?raw'
 import previewCss from './preview.css?raw'
 
 const render = createRender({
-  parse: { plugins: [highlight(), math(), mermaid()] },
-  render: { components: { math: mathRenderer, mermaid: mermaidRenderer } },
+  plugins: [highlight(), math(), mermaid()],
+  components: { Math, Mermaid },
 })
 
 const SAMPLE = `---
