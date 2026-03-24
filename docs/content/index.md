@@ -34,7 +34,7 @@ demoMarkdown: |-
   const tree = await parse('# Hello **World**')
   ```
 description: A fast, streaming-ready markdown parser with component support for
-  Vue and React.
+  Vue, React, Svelte, HTML and ANSI terminal.
 install: npm install comark
 primaryLabel: Get Started
 primaryTo: /getting-started/introduction

@@ -8,7 +8,7 @@
 [![Documentation](https://img.shields.io/badge/Documentation-black?logo=readme&logoColor=white)](https://comark.dev)
 [![license](https://img.shields.io/github/license/comarkdown/comark?color=black)](https://github.com/comarkdown/comark/blob/main/LICENSE)
 
-A high-performance markdown parser and renderer with Vue, React & Svelte components support.
+A high-performance markdown parser and renderer with Vue, React, Svelte, HTML and ANSI terminal.
 
 ## Features
 
