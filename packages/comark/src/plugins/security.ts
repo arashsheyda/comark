@@ -11,7 +11,7 @@ interface SecurityOptions extends PropsValidationOptions {
   blockedTags?: string[]
 }
 
-export default function security(options: SecurityOptions): ComarkPlugin {
+export default function security(options: SecurityOptions = {}): ComarkPlugin {
   const {
     blockedTags = [],
     allowedLinkPrefixes,
