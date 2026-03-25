@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.1.1](https://github.com/nuxt-content/mdc-syntax/compare/@comark/vue@0.1.0...@comark/vue@0.1.1) (2026-03-25)
+
+### Features
+
+* use Shiki Hast highlighter to use transformers ([#73](https://github.com/nuxt-content/mdc-syntax/issues/73)) ([237a9e2](https://github.com/nuxt-content/mdc-syntax/commit/237a9e2b20911b73e94effd5340d793aafaa011a))
+
+### Bug Fixes
+
+* **ansi:** broken imports ([e631ae6](https://github.com/nuxt-content/mdc-syntax/commit/e631ae60d4893078acef7d0a218e6480f31fcee4))
+* **config:** remove minimark from trace include and aline unhead version ([#71](https://github.com/nuxt-content/mdc-syntax/issues/71)) ([ccf6051](https://github.com/nuxt-content/mdc-syntax/commit/ccf60510115ceffce858a7b08d703f5cc9ba7e9b))
+* **security:** options are optional ([de1ad4e](https://github.com/nuxt-content/mdc-syntax/commit/de1ad4e6c3b76ca77cd54a23ea9dd9685d3eec50))
+
 ## 0.1.0 (2026-03-23)
 
 ### Features
