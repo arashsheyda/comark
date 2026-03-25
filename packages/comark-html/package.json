@@ -28,7 +28,7 @@
     "release": "release-it"
   },
   "dependencies": {
-    "comark": "^0.1.0"
+    "comark": "^0.1.1"
   },
   "peerDependencies": {
     "katex": ">=0.16",

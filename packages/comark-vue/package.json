@@ -47,7 +47,7 @@
     }
   },
   "dependencies": {
-    "comark": "^0.1.0"
+    "comark": "^0.1.1"
   },
   "devDependencies": {
     "@vue/server-renderer": "^3.5.30",
