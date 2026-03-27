@@ -14,7 +14,7 @@ export interface HeadingsOptions {
   descriptionTag?: string
   /**
    * Whether to remove the extracted nodes from the tree.
-   * @default true
+   * @default false
    */
   remove?: boolean
 }
@@ -74,7 +74,7 @@ function flattenNodeText(node: ComarkNode): string {
  * ```
  */
 export default function headings(options: HeadingsOptions = {}): ComarkPlugin {
-  const { titleTag = 'h1', descriptionTag = 'p', remove = true } = options
+  const { titleTag = 'h1', descriptionTag = 'p', remove = false } = options
 
   return {
     name: 'headings',
