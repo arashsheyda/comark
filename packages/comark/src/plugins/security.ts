@@ -1,7 +1,7 @@
 import type { ComarkElement, ComarkPlugin } from 'comark'
 import { visit } from 'comark/utils'
-import { validateProps } from '../internal/props-validation'
-import type { PropsValidationOptions } from '../internal/props-validation'
+import { validateProps } from '../internal/props-validation.ts'
+import type { PropsValidationOptions } from '../internal/props-validation.ts'
 
 interface SecurityOptions extends PropsValidationOptions {
   /**

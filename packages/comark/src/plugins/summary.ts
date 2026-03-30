@@ -1,6 +1,6 @@
 import type { ComarkNode } from 'comark'
-import { applyAutoUnwrap } from '../internal/parse/auto-unwrap'
-import { marmdownItTokensToComarkTree } from '../internal/parse/token-processor'
+import { applyAutoUnwrap } from '../internal/parse/auto-unwrap.ts'
+import { marmdownItTokensToComarkTree } from '../internal/parse/token-processor.ts'
 import type { ComarkPlugin } from '../types'
 
 export default function summary(delimiter: string = '<!-- more -->'): ComarkPlugin {
