@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.2.0](https://github.com/nuxt-content/mdc-syntax/compare/@comark/react@0.1.1...@comark/react@0.2.0) (2026-04-01)
+
+### Features
+
+* default class config for defined components ([#89](https://github.com/nuxt-content/mdc-syntax/issues/89)) ([bb8b7b7](https://github.com/nuxt-content/mdc-syntax/commit/bb8b7b76395f390f6a4a3fee6dc7ad9af5d58d00))
+
+### Bug Fixes
+
+* finalize highlight behavior ([#88](https://github.com/nuxt-content/mdc-syntax/issues/88)) ([2e070a9](https://github.com/nuxt-content/mdc-syntax/commit/2e070a95991e7b7f00e5de65a6795b52f868605c))
+* **headings:** do not remove extracted node ([f31b23b](https://github.com/nuxt-content/mdc-syntax/commit/f31b23b40c5c10ff9f19e7336cc507fad1075cdd))
+* **nuxt:** re-export Math & Mermaid plugins from Vue package ([caee05e](https://github.com/nuxt-content/mdc-syntax/commit/caee05ee50e0af5e1412186e80f449f650750bc2))
+* **parse:** add suffix for duplicate heading ids in a document ([#85](https://github.com/nuxt-content/mdc-syntax/issues/85)) ([6c9bfcd](https://github.com/nuxt-content/mdc-syntax/commit/6c9bfcd1be0ff9538bd22cf4c36bace36cc345b3))
+* **parse:** do not remove empty nodes (table cells) from tree ([#87](https://github.com/nuxt-content/mdc-syntax/issues/87)) ([6cafdc4](https://github.com/nuxt-content/mdc-syntax/commit/6cafdc4363b9d490c5f559cb30bdf7d8d24793ca))
+* **parser:** position detection and content split ([3a0e7be](https://github.com/nuxt-content/mdc-syntax/commit/3a0e7bedcf4ea6c74b30bb7c85c3238a1b8981dd))
+* **plugins:** add missing file extensions ([d72c7dc](https://github.com/nuxt-content/mdc-syntax/commit/d72c7dcffc8a88e7be3087e77f8b78325ad8f2c2))
+* **vue:** duplicate `comark-content` class ([bede0fd](https://github.com/nuxt-content/mdc-syntax/commit/bede0fd85a256f80c31b56b9b40e358890572c1b))
+
 ## [0.1.1](https://github.com/nuxt-content/mdc-syntax/compare/@comark/react@0.1.0...@comark/react@0.1.1) (2026-03-25)
 
 ### Features
