@@ -162,13 +162,18 @@ if (toRelease.length === 0) {
   process.exit(0)
 }
 
-// Ensure release order: comark first, then @comark/vue, then the rest
+// Ensure release order: comark first, then @comark/vue, then the rest, nuxt last
 for (const priorityName of ['@comark/vue', 'comark']) {
   const idx = toRelease.findIndex(p => p.name === priorityName)
   if (idx > 0) {
     const [pkg] = toRelease.splice(idx, 1)
     toRelease.unshift(pkg)
   }
+}
+const nuxtIdx = toRelease.findIndex(p => p.name === '@comark/nuxt')
+if (nuxtIdx >= 0 && nuxtIdx < toRelease.length - 1) {
+  const [nuxtPkg] = toRelease.splice(nuxtIdx, 1)
+  toRelease.push(nuxtPkg)
 }
 
 const dryLabel = isDry ? ' [DRY RUN]' : ''
