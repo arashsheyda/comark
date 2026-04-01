@@ -188,7 +188,7 @@ export const Comark: ComarkComponent = defineComponent({
         components: props.components,
         streaming: props.streaming,
         componentsManifest: props.componentsManifest,
-        class: `comark-content ${props.streaming ? 'comark-stream' : ''}`,
+        class: props.streaming ? 'comark-stream' : '',
         caret: props.caret,
       })
     }
