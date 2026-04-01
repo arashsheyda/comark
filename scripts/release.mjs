@@ -149,20 +149,45 @@ for (const pkg of toRelease) {
 
   // After releasing comark, update its version in all dependent packages
   if (pkg.name === 'comark' && !isDry) {
-    console.log('\nUpdating comark version in all packages...\n')
-    const ncuResult = spawnSync('npx', ['npm-check-updates', '-u', '--deep', '--filter', 'comark'], {
-      cwd: root,
-      stdio: 'inherit',
-      env: process.env,
-    })
-    if (ncuResult.status === 0) {
-      // Reinstall to update lockfile
-      spawnSync('pnpm', ['install'], { cwd: root, stdio: 'inherit', env: process.env })
+    const newVersion = JSON.parse(readFileSync(join(pkg.dir, 'package.json'), 'utf-8')).version
 
-      // Commit the dependency update
-      const newVersion = JSON.parse(readFileSync(join(pkg.dir, 'package.json'), 'utf-8')).version
-      spawnSync('git', ['add', '-A'], { cwd: root, stdio: 'inherit', env: process.env })
-      spawnSync('git', ['commit', '-m', `chore(deps): update comark to v${newVersion}`], { cwd: root, stdio: 'inherit', env: process.env })
+    // Wait for the new version to be available on npm before updating dependents
+    console.log(`\nWaiting for comark@${newVersion} to be available on npm...`)
+    const maxAttempts = 30
+    let available = false
+    for (let i = 1; i <= maxAttempts; i++) {
+      const check = spawnSync('npm', ['view', `comark@${newVersion}`, 'version'], {
+        cwd: root,
+        encoding: 'utf-8',
+        env: process.env,
+      })
+      if (check.status === 0 && check.stdout.trim() === newVersion) {
+        available = true
+        console.log(`  comark@${newVersion} is now available on npm.\n`)
+        break
+      }
+      console.log(`  Attempt ${i}/${maxAttempts} — not yet available, retrying in 10s...`)
+      spawnSync('sleep', ['10'])
+    }
+
+    if (!available) {
+      console.error(`\ncomark@${newVersion} did not appear on npm after ${maxAttempts} attempts. Skipping dependency update.`)
+    }
+    else {
+      console.log('Updating comark version in all packages...\n')
+      const ncuResult = spawnSync('npx', ['npm-check-updates', '-u', '--deep', '--filter', 'comark'], {
+        cwd: root,
+        stdio: 'inherit',
+        env: process.env,
+      })
+      if (ncuResult.status === 0) {
+        // Reinstall to update lockfile
+        spawnSync('pnpm', ['install'], { cwd: root, stdio: 'inherit', env: process.env })
+
+        // Commit the dependency update
+        spawnSync('git', ['add', '-A'], { cwd: root, stdio: 'inherit', env: process.env })
+        spawnSync('git', ['commit', '-m', `chore(deps): update comark to v${newVersion}`], { cwd: root, stdio: 'inherit', env: process.env })
+      }
     }
   }
 }
