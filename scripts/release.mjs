@@ -120,6 +120,13 @@ if (toRelease.length === 0) {
   process.exit(0)
 }
 
+// Ensure comark is released first so dependents can update to the new version
+const comarkIdx = toRelease.findIndex(p => p.name === 'comark')
+if (comarkIdx > 0) {
+  const [comarkPkg] = toRelease.splice(comarkIdx, 1)
+  toRelease.unshift(comarkPkg)
+}
+
 const dryLabel = isDry ? ' [DRY RUN]' : ''
 console.log(`Releasing ${toRelease.length} package(s)${dryLabel}: ${toRelease.map(p => p.name).join(', ')}\n`)
 
@@ -138,6 +145,25 @@ for (const pkg of toRelease) {
   if (result.status !== 0) {
     console.error(`\nRelease failed for ${pkg.name} (exit ${result.status}).`)
     process.exit(result.status ?? 1)
+  }
+
+  // After releasing comark, update its version in all dependent packages
+  if (pkg.name === 'comark' && !isDry) {
+    console.log('\nUpdating comark version in all packages...\n')
+    const ncuResult = spawnSync('npx', ['npm-check-updates', '-u', '--deep', '--filter', 'comark'], {
+      cwd: root,
+      stdio: 'inherit',
+      env: process.env,
+    })
+    if (ncuResult.status === 0) {
+      // Reinstall to update lockfile
+      spawnSync('pnpm', ['install'], { cwd: root, stdio: 'inherit', env: process.env })
+
+      // Commit the dependency update
+      const newVersion = JSON.parse(readFileSync(join(pkg.dir, 'package.json'), 'utf-8')).version
+      spawnSync('git', ['add', '-A'], { cwd: root, stdio: 'inherit', env: process.env })
+      spawnSync('git', ['commit', '-m', `chore(deps): update comark to v${newVersion}`], { cwd: root, stdio: 'inherit', env: process.env })
+    }
   }
 }
 

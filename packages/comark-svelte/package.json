@@ -72,7 +72,7 @@
     }
   },
   "dependencies": {
-    "comark": "^0.1.1"
+    "comark": "^0.1.2"
   },
   "devDependencies": {
     "@sveltejs/package": "^2.5.7",

@@ -47,7 +47,7 @@
     }
   },
   "dependencies": {
-    "comark": "^0.1.1"
+    "comark": "^0.1.2"
   },
   "devDependencies": {
     "@vue/compiler-core": "^3.5.31",
