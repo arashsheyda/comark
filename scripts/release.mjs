@@ -87,6 +87,48 @@ function getReleasablePackages() {
     .filter(Boolean)
 }
 
+/**
+ * Wait for a package to appear on npm, then update its version across the monorepo.
+ */
+function waitAndUpdateDependents(pkg) {
+  const newVersion = JSON.parse(readFileSync(join(pkg.dir, 'package.json'), 'utf-8')).version
+
+  console.log(`\nWaiting for ${pkg.name}@${newVersion} to be available on npm...`)
+  const maxAttempts = 30
+  let available = false
+  for (let i = 1; i <= maxAttempts; i++) {
+    const check = spawnSync('npm', ['view', `${pkg.name}@${newVersion}`, 'version'], {
+      cwd: root,
+      encoding: 'utf-8',
+      env: process.env,
+    })
+    if (check.status === 0 && check.stdout.trim() === newVersion) {
+      available = true
+      console.log(`  ${pkg.name}@${newVersion} is now available on npm.\n`)
+      break
+    }
+    console.log(`  Attempt ${i}/${maxAttempts} — not yet available, retrying in 10s...`)
+    spawnSync('sleep', ['10'])
+  }
+
+  if (!available) {
+    console.error(`\n${pkg.name}@${newVersion} did not appear on npm after ${maxAttempts} attempts. Skipping dependency update.`)
+    return
+  }
+
+  console.log(`Updating ${pkg.name} version in all packages...\n`)
+  const ncuResult = spawnSync('npx', ['npm-check-updates', '-u', '--deep', '--filter', pkg.name], {
+    cwd: root,
+    stdio: 'inherit',
+    env: process.env,
+  })
+  if (ncuResult.status === 0) {
+    spawnSync('pnpm', ['install'], { cwd: root, stdio: 'inherit', env: process.env })
+    spawnSync('git', ['add', '-A'], { cwd: root, stdio: 'inherit', env: process.env })
+    spawnSync('git', ['commit', '-m', `chore(deps): update ${pkg.name} to v${newVersion}`], { cwd: root, stdio: 'inherit', env: process.env })
+  }
+}
+
 // --- Main ---
 const packages = getReleasablePackages()
 
@@ -120,11 +162,13 @@ if (toRelease.length === 0) {
   process.exit(0)
 }
 
-// Ensure comark is released first so dependents can update to the new version
-const comarkIdx = toRelease.findIndex(p => p.name === 'comark')
-if (comarkIdx > 0) {
-  const [comarkPkg] = toRelease.splice(comarkIdx, 1)
-  toRelease.unshift(comarkPkg)
+// Ensure release order: comark first, then @comark/vue, then the rest
+for (const priorityName of ['@comark/vue', 'comark']) {
+  const idx = toRelease.findIndex(p => p.name === priorityName)
+  if (idx > 0) {
+    const [pkg] = toRelease.splice(idx, 1)
+    toRelease.unshift(pkg)
+  }
 }
 
 const dryLabel = isDry ? ' [DRY RUN]' : ''
@@ -147,48 +191,9 @@ for (const pkg of toRelease) {
     process.exit(result.status ?? 1)
   }
 
-  // After releasing comark, update its version in all dependent packages
-  if (pkg.name === 'comark' && !isDry) {
-    const newVersion = JSON.parse(readFileSync(join(pkg.dir, 'package.json'), 'utf-8')).version
-
-    // Wait for the new version to be available on npm before updating dependents
-    console.log(`\nWaiting for comark@${newVersion} to be available on npm...`)
-    const maxAttempts = 30
-    let available = false
-    for (let i = 1; i <= maxAttempts; i++) {
-      const check = spawnSync('npm', ['view', `comark@${newVersion}`, 'version'], {
-        cwd: root,
-        encoding: 'utf-8',
-        env: process.env,
-      })
-      if (check.status === 0 && check.stdout.trim() === newVersion) {
-        available = true
-        console.log(`  comark@${newVersion} is now available on npm.\n`)
-        break
-      }
-      console.log(`  Attempt ${i}/${maxAttempts} — not yet available, retrying in 10s...`)
-      spawnSync('sleep', ['10'])
-    }
-
-    if (!available) {
-      console.error(`\ncomark@${newVersion} did not appear on npm after ${maxAttempts} attempts. Skipping dependency update.`)
-    }
-    else {
-      console.log('Updating comark version in all packages...\n')
-      const ncuResult = spawnSync('npx', ['npm-check-updates', '-u', '--deep', '--filter', 'comark'], {
-        cwd: root,
-        stdio: 'inherit',
-        env: process.env,
-      })
-      if (ncuResult.status === 0) {
-        // Reinstall to update lockfile
-        spawnSync('pnpm', ['install'], { cwd: root, stdio: 'inherit', env: process.env })
-
-        // Commit the dependency update
-        spawnSync('git', ['add', '-A'], { cwd: root, stdio: 'inherit', env: process.env })
-        spawnSync('git', ['commit', '-m', `chore(deps): update comark to v${newVersion}`], { cwd: root, stdio: 'inherit', env: process.env })
-      }
-    }
+  // After releasing a core package, wait for npm availability and update dependents
+  if ((pkg.name === 'comark' || pkg.name === '@comark/vue') && !isDry) {
+    waitAndUpdateDependents(pkg)
   }
 }
 
