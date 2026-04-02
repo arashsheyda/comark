@@ -313,7 +313,7 @@ FROM products;
   },
   "dependencies": {
     "markdown-it": "^14.0.0",
-    "shiki": "^4.0.2"
+    "shiki": "^4.0.0"
   },
   "keywords": ["markdown", "parser", "vue", "react"],
   "author": "Comark Contributors",

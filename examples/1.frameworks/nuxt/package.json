@@ -10,8 +10,9 @@
   },
   "dependencies": {
     "@comark/nuxt": "latest",
-    "@nuxt/ui": "https://pkg.pr.new/@nuxt/ui@0b06c38",
+    "@nuxt/ui": "^4.6.0",
     "nuxt": "^4.4.2",
+    "shiki": "^4.0.2",
     "tailwindcss": "^4.2.2"
   }
 }

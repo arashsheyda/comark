@@ -10,7 +10,8 @@
   },
   "dependencies": {
     "@comark/vue": "latest",
-    "@nuxt/ui": "https://pkg.pr.new/@nuxt/ui@0b06c38",
+    "@nuxt/ui": "^4.6.0",
+    "shiki": "^4.0.2",
     "vue": "^3.5.30",
     "vue-router": "^5.0.4"
   },
