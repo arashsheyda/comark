@@ -1,7 +1,7 @@
-import type { LanguageRegistration, ShikiTransformer, ShikiInternal, ThemeRegistration } from 'shiki'
+import type { LanguageRegistration, ShikiTransformer, ShikiPrimitive, ThemeRegistration } from 'shiki'
 import type { ComarkElement, ComarkNode, ComarkTree, ComarkElementAttributes } from 'comark'
 import { defineComarkPlugin } from '../utils/helpers.ts'
-import { createShikiInternal } from 'shiki'
+import { createShikiPrimitive } from 'shiki'
 import { createJavaScriptRegexEngine } from 'shiki/engine/javascript'
 import { codeToHast } from 'shiki/core'
 
@@ -52,8 +52,8 @@ export interface CodeBlockAttributes {
   meta?: string
 }
 
-let highlighter: ShikiInternal | null = null
-let highlighterPromise: Promise<ShikiInternal> | null = null
+let highlighter: ShikiPrimitive | null = null
+let highlighterPromise: Promise<ShikiPrimitive> | null = null
 const loadedThemes: Set<string> = new Set()
 const loadedLanguages: Set<string> = new Set()
 
@@ -61,7 +61,7 @@ const loadedLanguages: Set<string> = new Set()
  * Get or create the Shiki highlighter instance
  * Uses a singleton pattern to avoid creating multiple highlighters
  */
-export async function getHighlighter(options: HighlightOptions = {}): Promise<ShikiInternal> {
+export async function getHighlighter(options: HighlightOptions = {}): Promise<ShikiPrimitive> {
   // If highlighter exists, load any new themes that aren't loaded yet
   if (highlighter) {
     const { themes, languages } = await registerDefaults(options)
@@ -78,7 +78,7 @@ export async function getHighlighter(options: HighlightOptions = {}): Promise<Sh
   try {
     highlighterPromise = (async () => {
       const { themes, languages } = await registerDefaults(options)
-      const hl = await createShikiInternal({
+      const hl = await createShikiPrimitive({
         themes: themes,
         langs: languages,
         langAlias: {
@@ -93,7 +93,7 @@ export async function getHighlighter(options: HighlightOptions = {}): Promise<Sh
       await Promise.all(languages.map(language => loadLanguage(hl, language)))
 
       return hl
-    })() as Promise<ShikiInternal>
+    })() as Promise<ShikiPrimitive>
 
     highlighter = await highlighterPromise
     highlighterPromise = null
@@ -141,7 +141,7 @@ async function registerDefaults(options: HighlightOptions) {
   return { themes, languages }
 }
 
-async function loadTheme(hl: ShikiInternal, theme: ThemeRegistration) {
+async function loadTheme(hl: ShikiPrimitive, theme: ThemeRegistration) {
   if (loadedThemes.has(theme.name || '')) {
     return
   }
@@ -149,7 +149,7 @@ async function loadTheme(hl: ShikiInternal, theme: ThemeRegistration) {
   loadedThemes.add(theme.name || '')
 }
 
-async function loadLanguage(hl: ShikiInternal, language: LanguageRegistration | LanguageRegistration[]) {
+async function loadLanguage(hl: ShikiPrimitive, language: LanguageRegistration | LanguageRegistration[]) {
   if (loadedLanguages.has(Array.isArray(language) ? language.map(l => l.name || '').join(',') : language.name || '')) {
     return
   }

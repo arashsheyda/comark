@@ -521,8 +521,8 @@ importers:
         specifier: 1.0.0-beta.9
         version: 1.0.0-beta.9
       shiki:
-        specifier: ^3.22.0
-        version: 3.23.0
+        specifier: ^4.0.2
+        version: 4.0.2
     devDependencies:
       '@nuxt/kit':
         specifier: ^4.4.2
@@ -573,8 +573,8 @@ importers:
         specifier: '>=0.16'
         version: 0.16.35
       shiki:
-        specifier: ^3.22.0
-        version: 3.23.0
+        specifier: ^4.0.2
+        version: 4.0.2
     devDependencies:
       vitest:
         specifier: ^4.1.1
@@ -586,7 +586,7 @@ importers:
         specifier: workspace:*
         version: link:../comark
       shiki:
-        specifier: ^4.0.0
+        specifier: ^4.0.2
         version: 4.0.2
     devDependencies:
       beautiful-mermaid:
@@ -636,8 +636,8 @@ importers:
         specifier: ^0.16.33
         version: 0.16.35
       shiki:
-        specifier: ^3.22.0
-        version: 3.23.0
+        specifier: ^4.0.2
+        version: 4.0.2
     devDependencies:
       '@types/react':
         specifier: ^19.2.14
@@ -667,8 +667,8 @@ importers:
         specifier: ^0.16.33
         version: 0.16.35
       shiki:
-        specifier: ^3.22.0
-        version: 3.23.0
+        specifier: ^4.0.2
+        version: 4.0.2
     devDependencies:
       '@sveltejs/package':
         specifier: ^2.5.7
@@ -710,8 +710,8 @@ importers:
         specifier: ^0.16.33
         version: 0.16.35
       shiki:
-        specifier: ^3.22.0
-        version: 3.23.0
+        specifier: ^4.0.2
+        version: 4.0.2
     devDependencies:
       '@vue/compiler-core':
         specifier: ^3.5.31

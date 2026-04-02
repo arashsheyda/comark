@@ -154,7 +154,7 @@ html, body {
   "dependencies": {
     "comark": "workspace:*",
     "@comark/html": "workspace:*",
-    "shiki": "^3.0.0"
+    "shiki": "^4.0.2"
   },
   "devDependencies": {
     "typescript": "^5.9.3",
