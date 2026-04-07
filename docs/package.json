@@ -6,19 +6,20 @@
   },
   "dependencies": {
     "@comark/nuxt": "^0.2.0",
-    "@nuxt/ui": "^4.6.0",
-    "comark": "^0.2.0",
     "@monaco-editor/loader": "^1.7.0",
+    "@nuxt/content": "^3.12.0",
+    "@nuxt/ui": "^4.6.0",
     "@nuxtlabs/monarch-mdc": "^0.9.0",
     "@vercel/analytics": "^2.0.1",
     "@vercel/speed-insights": "^2.0.0",
-    "vue-json-pretty": "^2.6.0",
+    "comark": "^0.2.0",
     "docus": "^5.9.0",
     "markdown-it-math": "^5.2.1",
     "nuxt": "^4.4.2",
     "nuxt-studio": "1.5.1",
     "splitpanes": "^4.0.4",
-    "tailwindcss": "^4.2.2"
+    "tailwindcss": "^4.2.2",
+    "vue-json-pretty": "^2.6.0"
   },
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.19",

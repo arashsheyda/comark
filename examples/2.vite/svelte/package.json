@@ -10,7 +10,9 @@
   },
   "dependencies": {
     "@comark/svelte": "latest",
-    "@tailwindcss/vite": "^4.2.2"
+    "@shikijs/langs": "^4.0.2",
+    "@tailwindcss/vite": "^4.2.2",
+    "tailwindcss": "^4.2.2"
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^7.0.0",
