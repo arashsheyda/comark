@@ -91,9 +91,11 @@ function resetComark(): void {
   markdown.value = defaultMarkdown.trim()
 }
 
-const formattedOutput = computed<string>(() =>
-  tree.value ? renderMarkdown(tree.value as ComarkTree) : '',
-)
+const formattedOutput = ref<string>('')
+
+watch(tree, async (t: ComarkTree | null) => {
+  formattedOutput.value = t ? await renderMarkdown(t) : ''
+}, { immediate: true })
 
 const formattedOutputModel = computed({
   get: () => formattedOutput.value,
