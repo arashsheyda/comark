@@ -11,7 +11,7 @@
   "dependencies": {
     "@comark/react": "^0.2.0",
     "@tailwindcss/vite": "^4.2.2",
-    "comark": "^0.2.0",
+    "comark": "^0.2.1",
     "react": "^19.2.5",
     "react-dom": "^19.2.5"
   },

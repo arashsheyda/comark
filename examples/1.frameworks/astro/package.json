@@ -12,7 +12,7 @@
     "@astrojs/react": "^5.0.3",
     "@tailwindcss/vite": "^4.2.2",
     "astro": "^6.1.5",
-    "comark": "^0.2.0",
+    "comark": "^0.2.1",
     "react": "^19.2.5",
     "react-dom": "^19.2.5"
   },

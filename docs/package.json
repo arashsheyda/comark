@@ -12,7 +12,7 @@
     "@nuxtlabs/monarch-mdc": "^0.9.0",
     "@vercel/analytics": "^2.0.1",
     "@vercel/speed-insights": "^2.0.0",
-    "comark": "^0.2.0",
+    "comark": "^0.2.1",
     "docus": "^5.9.0",
     "markdown-it-math": "^5.2.1",
     "nuxt": "^4.4.2",

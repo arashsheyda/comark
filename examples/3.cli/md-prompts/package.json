@@ -14,7 +14,7 @@
     "@clack/prompts": "^1.2.0",
     "@comark/ansi": "workspace:*",
     "citty": "^0.2.2",
-    "comark": "^0.2.0",
+    "comark": "^0.2.1",
     "shiki": "^4.0.2"
   }
 }

@@ -46,7 +46,7 @@
     }
   },
   "dependencies": {
-    "comark": "^0.2.0"
+    "comark": "^0.2.1"
   },
   "devDependencies": {
     "@types/react": "^19.2.14",
