@@ -68,7 +68,7 @@
     "mitata": "^1.0.34",
     "tsx": "^4.21.0",
     "twoslash": "^0.3.6",
-    "vitest": "^4.1.1"
+    "vitest": "^4.1.4"
   },
   "dependencies": {
     "@comark/markdown-it": "^0.3.3",
