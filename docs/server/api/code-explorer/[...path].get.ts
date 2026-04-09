@@ -155,7 +155,7 @@ export default defineEventHandler(async (event) => {
   }
   else {
     repo = repoSegment
-    branch = 'main'
+    branch = 'master'
   }
 
   const dirPath = segments.slice(2).join('/')
@@ -163,6 +163,7 @@ export default defineEventHandler(async (event) => {
   const listing = await $fetch<JsDelivrResponse>(
     `https://data.jsdelivr.com/v1/package/gh/${org}/${repo}@${encodedBranch}/flat`,
   )
+  console.log(`https://data.jsdelivr.com/v1/package/gh/${org}/${repo}@${encodedBranch}/flat`)
 
   const prefix = `/${dirPath}/`.replaceAll('//', '/')
   const files = listing.files
@@ -170,7 +171,7 @@ export default defineEventHandler(async (event) => {
     .map(f => f.name.slice(prefix.length))
     .filter(relativePath => !shouldExclude(relativePath))
     .sort()
-
+console.log({prefix})
   const highlightPlugin = highlight({
     themes: {
       light: (await import('@shikijs/themes/material-theme-lighter')).default,
