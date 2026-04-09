@@ -316,7 +316,7 @@ Warning message
 
 ```typescript
 import { parse } from 'comark'
-import { renderHTML } from 'comark/string'
+import { renderHTML } from '@comark/html'
 
 const content = '# Hello World\n\nThis is **markdown**.'
 const tree = await parse(content)
