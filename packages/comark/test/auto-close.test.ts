@@ -552,3 +552,42 @@ describe('link', () => {
     expect(autoCloseMarkdown(input)).toBe(expected)
   })
 })
+describe('attributes scope', () => {
+  it('should ignore $ in inline attributes', () => {
+    const input = ':component[content]{$client}'
+    const expected = ':component[content]{$client}'
+    expect(autoCloseMarkdown(input)).toBe(expected)
+  })
+
+  it('should ignore $ in block component attributes', () => {
+    const input = '::component{$client}\nContent\n::'
+    const expected = '::component{$client}\nContent\n::'
+    expect(autoCloseMarkdown(input)).toBe(expected)
+  })
+
+  it('should ignore * in attributes', () => {
+    const input = ':component{*bold}'
+    const expected = ':component{*bold}'
+    expect(autoCloseMarkdown(input)).toBe(expected)
+  })
+
+  it('should ignore _ in attributes', () => {
+    const input = ':component{_italic}'
+    const expected = ':component{_italic}'
+    expect(autoCloseMarkdown(input)).toBe(expected)
+  })
+
+  it('should ignore backtick in attributes', () => {
+    const input = ':component{`code}'
+    const expected = ':component{`code}'
+    expect(autoCloseMarkdown(input)).toBe(expected)
+  })
+
+  it('should not treat multi-line braces as attributes', () => {
+    // Only the last line is processed for inline markers,
+    // so $client on a middle line is left untouched
+    const input = '{\n$client'
+    const expected = '{\n$client$'
+    expect(autoCloseMarkdown(input)).toBe(expected)
+  })
+})
