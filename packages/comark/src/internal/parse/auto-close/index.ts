@@ -214,8 +214,10 @@ function closeInlineMarkersLinear(line: string): string {
   const doubleUnderscorePositions: number[] = []
 
   // Single-pass scan through the line - O(n)
-  // Skip markers inside attribute scopes {...}
+  // Skip markers inside attribute scopes {...} and link text [...] / link URL (...)
   let inAttributes = 0
+  let inLinkText = 0
+  let inLinkUrl = 0
   for (let i = 0; i < len; i++) {
     const prevCh = i > 0 ? line[i - 1] : ''
     const ch = line[i]
@@ -229,6 +231,35 @@ function closeInlineMarkersLinear(line: string): string {
       continue
     }
     if (inAttributes > 0) continue
+
+    if (ch === '[') {
+      bracketBalance++
+      lastBracketPos = i
+      inLinkText++
+      continue
+    }
+    if (ch === ']') {
+      bracketBalance--
+      lastBracketPos = i
+      if (inLinkText > 0) inLinkText--
+      continue
+    }
+    if (ch === '(') {
+      if (lastBracketPos >= 0 && i > lastBracketPos) {
+        parenBalance++
+        if (prevCh === ']') inLinkUrl++
+      }
+      continue
+    }
+    if (ch === ')') {
+      if (lastBracketPos >= 0 && i > lastBracketPos) {
+        parenBalance--
+        if (inLinkUrl > 0) inLinkUrl--
+      }
+      continue
+    }
+
+    if (inLinkText > 0 || inLinkUrl > 0) continue
 
     if (ch === '*') {
       asteriskCount++
@@ -268,24 +299,6 @@ function closeInlineMarkersLinear(line: string): string {
       }
       else {
         dollarCount++ // Single $ for inline math
-      }
-    }
-    else if (ch === '[') {
-      bracketBalance++
-      lastBracketPos = i
-    }
-    else if (ch === ']') {
-      bracketBalance--
-      lastBracketPos = i
-    }
-    else if (ch === '(') {
-      if (lastBracketPos >= 0 && i > lastBracketPos) {
-        parenBalance++
-      }
-    }
-    else if (ch === ')') {
-      if (lastBracketPos >= 0 && i > lastBracketPos) {
-        parenBalance--
       }
     }
   }

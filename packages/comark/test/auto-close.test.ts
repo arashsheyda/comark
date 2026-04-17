@@ -590,4 +590,14 @@ describe('attributes scope', () => {
     const expected = '{\n$client$'
     expect(autoCloseMarkdown(input)).toBe(expected)
   })
+  it('should work fine in link', () => {
+    const input = '[$link](https://example.com)'
+    const expected = '[$link](https://example.com)'
+    expect(autoCloseMarkdown(input)).toBe(expected)
+  })
+  it('should work fine in image', () => {
+    const input = '![$link](https://example.com/icons.png)'
+    const expected = '![$link](https://example.com/icons.png)'
+    expect(autoCloseMarkdown(input)).toBe(expected)
+  })
 })
