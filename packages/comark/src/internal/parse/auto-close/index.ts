@@ -290,7 +290,7 @@ function closeInlineMarkersLinear(line: string): string {
     else if (ch === '`') {
       backtickCount++
     }
-    else if (ch === '$') {
+    else if (ch === '$' && prevCh !== '\\') {
       // Count $$ pairs for block/display math
       if (i + 1 < len && line[i + 1] === '$') {
         dollarPairCount++
