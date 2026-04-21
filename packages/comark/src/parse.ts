@@ -11,6 +11,7 @@ import { extractReusableNodes } from './internal/parse/incremental.ts'
 import html_block from './internal/parse/html/html_block_rule.ts'
 import html_inline from './internal/parse/html/html_inline_rule.ts'
 import { createSerializedTask } from './utils/helpers.ts'
+import { diffNodes } from './utils/diff.ts'
 
 // Re-export frontmatter utilities
 export { parseFrontmatter } from './internal/frontmatter.ts'
@@ -75,6 +76,7 @@ export function createParse(options: ParseOptions = {}): ComarkParseFn {
 
   let lastOutput: ComarkTree | null = null
   let lastInput: string | null = null
+  let lastDiffBase: ComarkNode[] | null = null
 
   return async (markdown, opts = {}) => {
     const state = {
@@ -132,10 +134,11 @@ export function createParse(options: ParseOptions = {}): ComarkParseFn {
     }
 
     if (opts.streaming) {
+      const finalNodes = [...state.reusableNodes, ...nodes]
       state.tree = {
         frontmatter: state.parsedLines > 0 ? (prevOutput?.frontmatter ?? data) : data,
         meta: {},
-        nodes: [...state.reusableNodes, ...nodes],
+        nodes: finalNodes,
       }
       // Set last output and input for streaming mode
       lastOutput = state.tree
@@ -147,7 +150,7 @@ export function createParse(options: ParseOptions = {}): ComarkParseFn {
         meta: {},
         nodes,
       }
-      // Reset last output and input for non-streaming mode
+      // Reset streaming state for non-streaming mode
       lastOutput = null
       lastInput = null
     }
@@ -155,6 +158,13 @@ export function createParse(options: ParseOptions = {}): ComarkParseFn {
     for (const plugin of plugins || []) {
       await plugin.post?.(state as ComarkParsePostState)
     }
+
+    // Apply diffNodes AFTER plugin post hooks — plugins may mutate/replace
+    // nodes, so diffing must compare final post-plugin output.
+    if (lastDiffBase) {
+      state.tree.nodes = diffNodes(lastDiffBase, state.tree.nodes)
+    }
+    lastDiffBase = state.tree.nodes
 
     return state.tree
   }

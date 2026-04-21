@@ -3,6 +3,8 @@
 import { decodeHTML } from 'entities'
 import type { ComarkNode, ComarkTree } from 'comark'
 
+export { nodesEqual, diffNodes } from './diff.ts'
+
 /**
  * Get the text content of a Comark node
  *

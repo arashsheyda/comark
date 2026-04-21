@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { parse } from 'comark'
+import { createParse } from 'comark'
 import highlight from '@comark/vue/plugins/highlight'
 import math from '@comark/vue/plugins/math'
 import emoji from '@comark/vue/plugins/emoji'
@@ -11,7 +11,7 @@ import { renderMarkdown } from 'comark/render'
 import { Splitpanes, Pane } from 'splitpanes'
 import { defaultMarkdown } from '~/constants'
 import { useLocalStorage, watchDebounced } from '@vueuse/core'
-import type { ComarkTree, ComarkPlugin } from 'comark'
+import type { ComarkTree, ComarkPlugin, ComarkNode } from 'comark'
 import VueJsonPretty from 'vue-json-pretty'
 
 const props = defineProps<{
@@ -19,11 +19,25 @@ const props = defineProps<{
 }>()
 
 const markdown = ref<string>(defaultMarkdown.trim())
-const tree = ref<ComarkTree | null>(null)
+// Use shallowRef for tree & prevNodes — ref() deep-proxies objects,
+// which breaks === reference comparisons that diffNodes relies on.
+const tree = shallowRef<ComarkTree | null>(null)
 const parseTime = ref<number>(0)
 const nodeCount = ref<number>(0)
 const error = ref<string | null>(null)
 const parsing = ref<boolean>(false)
+
+// reactivity stats
+const prevNodes = shallowRef<ComarkNode[]>([])
+const preservedCount = ref<number>(0)
+const changedCount = ref<number>(0)
+const totalTopLevel = computed(() => preservedCount.value + changedCount.value)
+const preservedPct = computed(() => {
+  return totalTopLevel.value > 0 ? Math.round((preservedCount.value / totalTopLevel.value) * 100) : 0
+})
+// Flash the diff indicator briefly on each change
+const diffFlash = ref(false)
+let diffFlashTimer: ReturnType<typeof setTimeout> | null = null
 
 const colorMode = useColorMode()
 const isDark = computed(() => colorMode.value === 'dark')
@@ -108,6 +122,21 @@ const activePlugins = computed<ComarkPlugin[]>(() =>
 
 const enabledPluginCount = computed<number>(() => Object.values(pluginToggles.value).filter(Boolean).length)
 
+// Use createParse() so diffNodes state persists across edits.
+// This is rebuilt when plugins or parse options change.
+let parser: ReturnType<typeof createParse> | null = null
+
+function rebuildParser() {
+  parser = createParse({
+    plugins: activePlugins.value,
+    autoUnwrap: parseOptions.value.autoUnwrap,
+    autoClose: parseOptions.value.autoClose,
+    html: parseOptions.value.html,
+  })
+  // Reset diff base when parser is rebuilt
+  prevNodes.value = []
+}
+
 const activeTab = ref('preview')
 const tabs = [
   { label: 'Preview', value: 'preview', icon: 'i-lucide-eye' },
@@ -141,18 +170,43 @@ async function parseMarkdown(): Promise<void> {
     tree.value = null
     parseTime.value = 0
     nodeCount.value = 0
+    preservedCount.value = 0
+    changedCount.value = 0
     error.value = null
     return
   }
+  if (!parser) rebuildParser()
   parsing.value = true
   const start = performance.now()
   try {
-    const result = await parse(markdown.value, {
-      plugins: activePlugins.value,
-      autoUnwrap: parseOptions.value.autoUnwrap,
-      autoClose: parseOptions.value.autoClose,
-      html: parseOptions.value.html,
-    })
+    const result = await parser!(markdown.value)
+
+    // Compute diff stats by comparing references
+    const oldNodes = prevNodes.value
+    const newNodes = result.nodes
+    let preserved = 0
+    let changed = 0
+    for (let i = 0; i < newNodes.length; i++) {
+      if (i < oldNodes.length && oldNodes[i] === newNodes[i]) {
+        preserved++
+      }
+      else {
+        changed++
+      }
+    }
+    preservedCount.value = preserved
+    changedCount.value = changed
+    prevNodes.value = newNodes
+
+    // Flash indicator when diffing is active (not first parse)
+    if (oldNodes.length > 0) {
+      diffFlash.value = true
+      if (diffFlashTimer) clearTimeout(diffFlashTimer)
+      diffFlashTimer = setTimeout(() => {
+        diffFlash.value = false
+      }, 800)
+    }
+
     tree.value = result
     parseTime.value = Math.round((performance.now() - start) * 10) / 10
     nodeCount.value = countNodes(result.nodes)
@@ -167,9 +221,15 @@ async function parseMarkdown(): Promise<void> {
 }
 
 watchDebounced(markdown, parseMarkdown, { debounce: 300 })
-watchDebounced([activePlugins, parseOptions], parseMarkdown, { deep: true, debounce: 300 })
+watchDebounced([activePlugins, parseOptions], () => {
+  rebuildParser()
+  parseMarkdown()
+}, { deep: true, debounce: 300 })
 onMounted(() => {
   nextTick(() => parseMarkdown())
+})
+onBeforeUnmount(() => {
+  if (diffFlashTimer) clearTimeout(diffFlashTimer)
 })
 
 function resetComark(): void {
@@ -461,6 +521,35 @@ const isMatch = computed(() =>
               />
               {{ parseTime }}ms
             </span>
+            <UTooltip
+              :text="totalTopLevel > 0
+                ? `${preservedCount} of ${totalTopLevel} top-level nodes unchanged (${changedCount} re-rendered)`
+                : 'Edit markdown to see reactivity diffing'"
+            >
+              <span
+                class="flex items-center gap-1.5 text-xs cursor-default transition-colors duration-500"
+                :class="diffFlash ? 'text-primary' : 'text-muted'"
+              >
+                <span
+                  class="size-2 rounded-full transition-colors duration-500"
+                  :class="[
+                    totalTopLevel === 0
+                      ? 'bg-muted/40'
+                      : preservedPct === 100
+                        ? 'bg-success'
+                        : preservedPct >= 50
+                          ? 'bg-primary'
+                          : 'bg-warning',
+                  ]"
+                />
+                <template v-if="totalTopLevel > 0">
+                  {{ preservedCount }}/{{ totalTopLevel }} unchanged
+                </template>
+                <template v-else>
+                  diff &mdash;
+                </template>
+              </span>
+            </UTooltip>
             <span class="flex items-center gap-1 text-xs text-muted">
               <UIcon
                 name="i-lucide-puzzle"

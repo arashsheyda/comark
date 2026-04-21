@@ -13,7 +13,8 @@
     "@tailwindcss/vite": "catalog:",
     "comark": "catalog:",
     "react": "catalog:",
-    "react-dom": "catalog:"
+    "react-dom": "catalog:",
+    "react-scan": "^0.5.3"
   },
   "devDependencies": {
     "@types/react": "catalog:",

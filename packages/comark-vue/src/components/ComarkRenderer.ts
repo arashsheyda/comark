@@ -1,6 +1,6 @@
-import type { PropType, VNode } from 'vue'
+import type { ComputedRef, InjectionKey, PropType, VNode } from 'vue'
 import type { ComponentManifest, ComarkContextProvider, ComarkElement, ComarkNode, ComarkTree } from 'comark'
-import { computed, defineAsyncComponent, defineComponent, getCurrentInstance, h, inject, onErrorCaptured, ref, toRaw } from 'vue'
+import { computed, defineAsyncComponent, defineComponent, getCurrentInstance, h, inject, onErrorCaptured, provide, ref, toRaw } from 'vue'
 import { findLastTextNodeAndAppendNode, getCaret } from '../utils/caret.ts'
 
 // Cache for dynamically resolved components
@@ -81,6 +81,50 @@ function resolveComponent(tag: string, components: Record<string, any>, componen
 
   return resolvedComponent
 }
+
+// reactivity infrastructure
+
+interface ComarkRendererContext {
+  components: ComputedRef<Record<string, any>>
+  manifest: ComponentManifest
+}
+
+const RENDERER_CONTEXT_KEY: InjectionKey<ComarkRendererContext> = Symbol('comark-renderer')
+
+/**
+ * Deep clone a ComarkNode array structure.
+ * Shares string leaves and attribute objects (not mutated by caret logic).
+ */
+function cloneNodeDeep(node: ComarkNode): ComarkNode {
+  if (typeof node === 'string') return node
+  const arr = node as ComarkElement
+  const len = arr.length
+  const cloned: unknown[] = Array.from({ length: len })
+  cloned[0] = arr[0]
+  cloned[1] = arr[1]
+  for (let i = 2; i < len; i++) {
+    cloned[i] = cloneNodeDeep(arr[i] as ComarkNode)
+  }
+  return cloned as ComarkElement
+}
+
+/**
+ * Internal component that renders a single top-level ComarkNode.
+ * When the node reference is preserved by the core parser's `diffNodes`,
+ * Vue skips re-rendering this component — achieving node-level reactivity.
+ */
+const ComarkNodeItem = defineComponent({
+  name: 'ComarkNodeItem',
+  props: {
+    node: { type: null as unknown as PropType<ComarkNode>, required: true },
+    nodeKey: { type: Number },
+  },
+  setup(props) {
+    const ctx = inject(RENDERER_CONTEXT_KEY)!
+    return () => renderNode(props.node, ctx.components.value, props.nodeKey, ctx.manifest)
+  },
+})
+
 /**
  * Render a single Comark node to Vue VNode
  */
@@ -351,20 +395,36 @@ export const ComarkRenderer: ComarkRendererComponent = defineComponent({
 
     const caret = computed<ComarkElement | null>(() => getCaret(props.caret || false))
 
+    // Provide renderer context for ComarkNodeItem children
+    provide(RENDERER_CONTEXT_KEY, { components, manifest: componentManifest })
+
     return () => {
-      // Render all nodes from the tree value
-      const nodes = toRaw(props.tree.nodes || []) || []
+      // The core parser (createParse) already applies diffNodes, so
+      // tree.nodes contains reference-stable nodes for unchanged content.
+      // ComarkNodeItem leverages this: Vue skips re-rendering nodes whose
+      // reference didn't change.
+      let nodes = toRaw(props.tree.nodes || []) || []
 
       if (props.streaming && caret.value && nodes.length > 0) {
-        const hasStreamCaret = findLastTextNodeAndAppendNode(nodes[nodes.length - 1] as ComarkElement, caret.value)
-        if (!hasStreamCaret) {
-          nodes.push(caret.value)
+        // Clone the last node to avoid mutating diff-preserved references
+        const lastNode = nodes[nodes.length - 1]
+        if (Array.isArray(lastNode)) {
+          const cloned = cloneNodeDeep(lastNode) as ComarkElement
+          const hasStreamCaret = findLastTextNodeAndAppendNode(cloned, caret.value)
+          if (hasStreamCaret) {
+            nodes = [...nodes]
+            nodes[nodes.length - 1] = cloned
+          }
+          else {
+            nodes = [...nodes, caret.value]
+          }
         }
       }
 
-      const children = nodes
-        .map((node, index) => renderNode(node, components.value, index, componentManifest))
-        .filter((child): child is VNode | string => child !== null)
+      const children: (VNode)[] = Array.from({ length: nodes.length })
+      for (let i = 0; i < nodes.length; i++) {
+        children[i] = h(ComarkNodeItem, { node: nodes[i], nodeKey: i, key: i })
+      }
 
       // Wrap in a fragment
       return h('div', { class: 'comark-content' }, children)
