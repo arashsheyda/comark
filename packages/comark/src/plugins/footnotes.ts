@@ -1,6 +1,6 @@
 import type { ComarkNode, ComarkElement, ComarkElementAttributes, ConditionalNodeHandler } from 'comark'
 import { defineComarkPlugin } from '../utils/helpers.ts'
-import { visit } from '../utils'
+import { visit } from '../utils/index.ts'
 
 export interface FootnotesConfig {
   /**
