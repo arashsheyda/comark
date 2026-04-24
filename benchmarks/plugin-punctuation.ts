@@ -69,6 +69,12 @@ for (const [label, content] of [
 ] as const) {
   barplot(() => {
     group(`punctuation — ${label}`, () => {
+      bench('comark', async () => {
+        await comark(content)
+      })
+      bench('comark + punctuation', async () => {
+        await comarkPunc(content)
+      })
       bench('markdown-it', () => {
         markdownIt.parse(content, {})
       })
@@ -81,13 +87,7 @@ for (const [label, content] of [
       bench('markdown-exit + typographer', () => {
         markdownExitTyp.parse(content, {})
       })
-      bench('comark', async () => {
-        await comark(content)
-      })
-      bench('comark + punctuation', async () => {
-        await comarkPunc(content)
-      })
-      bench('remark (unified)', () => {
+      bench('remark', () => {
         remark.parse(content)
       })
       bench('remark + smartypants', () => {

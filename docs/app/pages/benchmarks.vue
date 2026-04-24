@@ -239,12 +239,13 @@ function scrollToGroup(id: string) {
       <UContainer>
         <div class="space-y-1.5 text-sm/6 text-muted">
           <p>
-            Unlike <strong class="text-highlighted font-medium">markdown-it</strong> and <strong class="text-highlighted font-medium">markdown-exit</strong> which produce a flat token stream,
-            <strong class="text-primary">Comark</strong> builds a <strong class="text-highlighted font-medium">full AST</strong> with component syntax, auto-close for streaming,
-            and frontmatter extraction in a single pass — ready for Vue, React, or Svelte rendering.
+            Benchmarks are grouped by output type for fair comparison.
+            <strong class="text-highlighted font-medium">markdown-it</strong> and <strong class="text-highlighted font-medium">markdown-exit</strong> produce flat token arrays and render directly to HTML strings.
+            <strong class="text-primary">Comark</strong> builds a <strong class="text-highlighted font-medium">structured AST</strong> with component syntax, frontmatter extraction,
+            and auto-close — ready for Vue, React, or Svelte rendering without an HTML intermediary.
           </p>
           <p>
-            <strong class="text-highlighted font-medium">Streaming mode</strong> skips AST construction for the fastest incremental parsing.
+            <strong class="text-highlighted font-medium">Streaming mode</strong> provides the fastest incremental parsing for real-time use cases.
             Plugin benchmarks measure the <strong class="text-highlighted font-medium">overhead</strong> each plugin adds.
           </p>
         </div>

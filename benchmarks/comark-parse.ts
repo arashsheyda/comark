@@ -75,27 +75,30 @@ const comark = createParse()
 const comarkNoClose = createParse({ autoClose: false })
 const comarkStreaming = createParse()
 
+// All parsers in one group so the chart is comparable.
+// Entry names show what each parser produces:
+//   markdown-it/exit → flat token array
+//   comark → structured AST + frontmatter + component syntax + auto-close
+
 barplot(() => {
   group('parse', () => {
-    // Benchmark: markdown-it parsing
-    bench('markdown-it parse', () => {
+    bench('markdown-it', () => {
       markdownIt.parse(sampleMarkdown, {})
     })
 
-    // Benchmark: markdown-exit parsing
-    bench('markdown-exit parse', () => {
+    bench('markdown-exit', () => {
       markdownExit.parse(sampleMarkdown, {})
     })
 
-    bench('comark parse', async () => {
+    bench('comark', async () => {
       await comark(sampleMarkdown)
     })
 
-    bench('comark parse no close', async () => {
+    bench('comark no auto-close', async () => {
       await comarkNoClose(sampleMarkdown)
     })
 
-    bench('comark parse streaming', async () => {
+    bench('comark streaming', async () => {
       await comarkStreaming(sampleMarkdown, { streaming: true })
     })
   })

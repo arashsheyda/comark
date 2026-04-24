@@ -62,12 +62,8 @@ const loadedLanguages: Set<string> = new Set()
  * Uses a singleton pattern to avoid creating multiple highlighters
  */
 export async function getHighlighter(options: HighlightOptions = {}): Promise<ShikiPrimitive> {
-  // If highlighter exists, load any new themes that aren't loaded yet
+  // Fast path: highlighter already initialized, skip redundant imports
   if (highlighter) {
-    const { themes, languages } = await registerDefaults(options)
-    await Promise.all(themes.map(theme => loadTheme(highlighter!, theme)))
-    await Promise.all(languages.map(language => loadLanguage(highlighter!, language)))
-
     return highlighter
   }
 
@@ -159,6 +155,18 @@ async function loadLanguage(hl: ShikiPrimitive, language: LanguageRegistration |
   loadedLanguages.add(Array.isArray(language) ? language.map(l => l.name || '').join(',') : language.name || '')
 }
 
+function hastToMinimarkNode(input: any): ComarkNode {
+  const props = input.properties || {}
+  if (input.type === 'comment') return [null, {}, input.value]
+  if (input.type === 'text') return input.value
+  if (input.tag === 'code' && props?.className && props.className.length === 0) delete props.className
+  return [
+    input.tagName,
+    props,
+    ...(input.children || []).map(hastToMinimarkNode),
+  ]
+}
+
 /**
  * Highlight code using Shiki with codeToTokens
  * Returns comark nodes built from hast
@@ -199,18 +207,6 @@ export async function highlightCode(code: string, attrs: CodeBlockAttributes, op
       language,
     }
   }
-
-  function hastToMinimarkNode(input: any) {
-    const props = input.properties || {}
-    if (input.type === 'comment') return [null, {}, input.value]
-    if (input.type === 'text') return input.value
-    if (input.tag === 'code' && props?.className && props.className.length === 0) delete props.className
-    return [
-      input.tagName,
-      props,
-      ...(input.children || []).map(hastToMinimarkNode),
-    ]
-  }
 }
 
 /**
@@ -245,13 +241,42 @@ export async function highlightCodeBlocks(
 
   if (codeBlocks.length === 0) return tree
 
+  // Get highlighter once for all blocks instead of per-block
+  const hl = await getHighlighter(options)
+  const { themes = { light: 'material-theme-lighter', dark: 'material-theme-palenight' } } = options
+  const lightTheme = themes.light || themes.dark || 'material-theme-lighter'
+  const darkTheme = themes.dark || themes.light || 'material-theme-palenight'
+
   const highlightedResults = await Promise.all(
-    codeBlocks.map(({ node }) => {
-      return highlightCode((node[2] as any)[2] as string, node[1] as CodeBlockAttributes, options)
+    codeBlocks.map(async ({ node }) => {
+      const code = (node[2] as any)[2] as string
+      const attrs = node[1] as CodeBlockAttributes
+      const language: string = (attrs as any)?.language
+      try {
+        const result = await codeToHast(hl, code, {
+          lang: language,
+          transformers: options.transformers,
+          themes: {
+            light: lightTheme,
+            dark: lightTheme !== darkTheme ? darkTheme : undefined,
+          },
+          meta: {
+            __raw: attrs.meta,
+          },
+        })
+        return {
+          nodes: result.children.map(hastToMinimarkNode) as ComarkNode[],
+          language,
+        }
+      }
+      catch {
+        return { nodes: [code], language }
+      }
     }),
   )
 
-  const newNodes = JSON.parse(JSON.stringify(tree.nodes)) as ComarkNode[]
+  // Structural clone: only copy the spine from root to each modified node
+  const newNodes = [...tree.nodes] as ComarkNode[]
   for (let i = 0; i < codeBlocks.length; i++) {
     const { node, path } = codeBlocks[i]
     const preAttrs = node[1] as Record<string, any>
@@ -326,9 +351,15 @@ export async function highlightCodeBlocks(
       newNodes[path[0]] = newPreNode
     }
     else {
-      let current = newNodes[path[0]] as ComarkElement
+      // Shallow-copy the spine so we don't mutate the original tree
+      const rootIdx = path[0]
+      let current = [...(newNodes[rootIdx] as ComarkElement)] as ComarkElement
+      newNodes[rootIdx] = current
       for (let j = 1; j < path.length - 1; j++) {
-        current = current[path[j] + 2] as ComarkElement
+        const childSlot = path[j] + 2
+        const next = [...(current[childSlot] as ComarkElement)] as ComarkElement
+        current[childSlot] = next
+        current = next
       }
       const childSlot = path[path.length - 1] + 2
       current[childSlot] = newPreNode

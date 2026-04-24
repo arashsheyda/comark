@@ -76,30 +76,32 @@ const comark = createParse()
 const comarkNoClose = createParse({ autoClose: false })
 const comarkStreaming = createParse()
 
+// All renderers in one group for direct comparison.
+// markdown-it/exit render tokens straight to HTML.
+// comark builds a structured AST first, then renders — the AST is what
+// Vue/React/Svelte renderers consume directly (no HTML intermediary needed).
+
 barplot(() => {
   group('render', () => {
-    // Benchmark: markdown-it render
-    bench('markdown-it render', () => {
+    bench('markdown-it (tokens → HTML)', () => {
       markdownIt.render(sampleMarkdown)
     })
 
-    // Benchmark: markdown-exit render
-    bench('markdown-exit render', () => {
+    bench('markdown-exit (tokens → HTML)', () => {
       markdownExit.render(sampleMarkdown)
     })
 
-    // Benchmark: comark parse + renderHTML
-    bench('comark parse + renderHTML', async () => {
+    bench('comark (AST → HTML)', async () => {
       const tree = await comark(sampleMarkdown)
       renderHTML(tree)
     })
 
-    bench('comark parse no close', async () => {
+    bench('comark no auto-close (AST → HTML)', async () => {
       const tree = await comarkNoClose(sampleMarkdown)
       renderHTML(tree)
     })
 
-    bench('comark parse streaming', async () => {
+    bench('comark streaming (AST → HTML)', async () => {
       const tree = await comarkStreaming(sampleMarkdown, { streaming: true })
       renderHTML(tree)
     })

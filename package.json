@@ -56,6 +56,7 @@
     "eslint-plugin-svelte": "catalog:",
     "markdown-exit": "catalog:",
     "markdown-it": "catalog:",
+    "markdown-it-emoji": "^3.0.0",
     "mitata": "catalog:",
     "nuxt": "catalog:",
     "playwright": "catalog:",
