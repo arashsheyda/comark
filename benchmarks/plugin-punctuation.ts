@@ -1,11 +1,15 @@
 import { bench, run, group, barplot } from 'mitata'
+import MarkdownIt from 'markdown-it'
 import MarkdownExit from 'markdown-exit'
 import pluginMdc from '@comark/markdown-it'
 import { createParse } from 'comark'
-import { log } from '@comark/ansi'
+import { unified } from 'unified'
+import remarkParse from 'remark-parse'
+import remarkGfm from 'remark-gfm'
+import remarkSmartypants from 'remark-smartypants'
 import punctuation from '../packages/comark/src/plugins/punctuation'
 
-// ── Test content (exercises ALL features: quotes, dashes, ellipsis, symbols, normalization) ──
+// Test content (exercises all punctuation features)
 
 const short = `"Hello" -- world... (c) 2025 what???? ok,,`
 
@@ -35,110 +39,63 @@ Another line with "double quotes" and 'single quotes' and more ellipsis...
 Really????  Wow!!!!! hmm,, ok?.... end
 `).join('\n')
 
-// ── markdown-it typographer ─────────────────────────────────────────────────
+// markdown-it: baseline vs typographer
+const markdownIt = new MarkdownIt({ html: false, linkify: true, typographer: false })
+  .enable(['table', 'strikethrough']).use(pluginMdc)
+const markdownItTyp = new MarkdownIt({ html: false, linkify: true, typographer: true })
+  .enable(['table', 'strikethrough']).use(pluginMdc)
 
-const parserTypographer = new MarkdownExit({
-  html: false,
-  linkify: true,
-  typographer: true,
-})
-  .enable(['table', 'strikethrough'])
-  .use(pluginMdc)
+// markdown-exit: baseline vs typographer
+const markdownExit = new MarkdownExit({ html: false, linkify: true, typographer: false })
+  .enable(['table', 'strikethrough']).use(pluginMdc)
+const markdownExitTyp = new MarkdownExit({ html: false, linkify: true, typographer: true })
+  .enable(['table', 'strikethrough']).use(pluginMdc)
 
-const parserNoTypographer = new MarkdownExit({
-  html: false,
-  linkify: true,
-  typographer: false,
-})
-  .enable(['table', 'strikethrough'])
-  .use(pluginMdc)
+// comark: baseline vs punctuation plugin
+const comark = createParse()
+const comarkPunc = createParse({ plugins: [punctuation()] })
 
-// ── comark with full punctuation plugin (all features) ──────────────────────
+// remark (unified): baseline vs smartypants
+const remark = unified().use(remarkParse).use(remarkGfm)
+const remarkSmarty = unified().use(remarkParse).use(remarkGfm).use(remarkSmartypants)
 
-const comarkFull = createParse({ plugins: [punctuation()] })
-const comarkBaseline = createParse()
+// Shows each parser with and without punctuation side by side.
+// The delta between the two reveals the overhead of enabling punctuation.
 
-// ── Benchmarks ──────────────────────────────────────────────────────────────
-
-barplot(() => {
-  group('short text (all features)', () => {
-    bench('markdown-it typographer', () => {
-      parserTypographer.parse(short, {})
-    })
-    bench('markdown-it baseline', () => {
-      parserNoTypographer.parse(short, {})
-    })
-    bench('comark + punctuation (full)', async () => {
-      await comarkFull(short)
-    })
-    bench('comark baseline', async () => {
-      await comarkBaseline(short)
+for (const [label, content] of [
+  ['short text', short],
+  ['medium text', medium],
+  ['long text (50 sections)', long],
+] as const) {
+  barplot(() => {
+    group(`punctuation — ${label}`, () => {
+      bench('markdown-it', () => {
+        markdownIt.parse(content, {})
+      })
+      bench('markdown-it + typographer', () => {
+        markdownItTyp.parse(content, {})
+      })
+      bench('markdown-exit', () => {
+        markdownExit.parse(content, {})
+      })
+      bench('markdown-exit + typographer', () => {
+        markdownExitTyp.parse(content, {})
+      })
+      bench('comark', async () => {
+        await comark(content)
+      })
+      bench('comark + punctuation', async () => {
+        await comarkPunc(content)
+      })
+      bench('remark (unified)', () => {
+        remark.parse(content)
+      })
+      bench('remark + smartypants', () => {
+        remarkSmarty.runSync(remarkSmarty.parse(content))
+      })
     })
   })
-})
-
-barplot(() => {
-  group('medium text (all features)', () => {
-    bench('markdown-it typographer', () => {
-      parserTypographer.parse(medium, {})
-    })
-    bench('markdown-it baseline', () => {
-      parserNoTypographer.parse(medium, {})
-    })
-    bench('comark + punctuation (full)', async () => {
-      await comarkFull(medium)
-    })
-    bench('comark baseline', async () => {
-      await comarkBaseline(medium)
-    })
-  })
-})
-
-barplot(() => {
-  group('long text — 50 sections (all features)', () => {
-    bench('markdown-it typographer', () => {
-      parserTypographer.parse(long, {})
-    })
-    bench('markdown-it baseline', () => {
-      parserNoTypographer.parse(long, {})
-    })
-    bench('comark + punctuation (full)', async () => {
-      await comarkFull(long)
-    })
-    bench('comark baseline', async () => {
-      await comarkBaseline(long)
-    })
-  })
-})
-
-// ── Output comparison ───────────────────────────────────────────────────────
-
-function flattenText(nodes: any[]): string {
-  let text = ''
-  for (const node of nodes) {
-    if (typeof node === 'string') text += node
-    else if (Array.isArray(node) && node.length > 2) text += flattenText(node.slice(2))
-  }
-  return text
 }
 
-const testStr = `"Hello" -- world... (c) what???? ok,, really!.... hmm.....`
-
-console.log('=== Output Comparison ===\n')
-console.log('Input:', JSON.stringify(testStr))
-
-const miTokens = parserTypographer.parse(testStr, {})
-const miText = miTokens.filter((t: any) => t.type === 'inline').map((t: any) => t.content).join('')
-console.log('markdown-it typographer:', JSON.stringify(miText))
-
-const comarkTree = await comarkFull(testStr)
-console.log('comark punctuation:     ', JSON.stringify(flattenText(comarkTree.nodes)))
-
-console.log('\n🏃 Running benchmarks...\n')
+console.log('🏃 Running benchmarks...\n')
 await run()
-
-await log(`> [!NOTE]
-> The goal of this benchmark is to compare the additional time each parser takes when
-> using punctuation plugins.
->
-> Official plugin adds ~100% the execution time, while comark adds ~25% execution time`)
