@@ -8,7 +8,7 @@ ignoredBuiltDependencies:
 
 catalog:
   # Workspace packages (publish versions, locally overridden by resolutions)
-  comark: ^0.2.1
+  comark: ^0.3.0
   "@comark/vue": ^0.2.1
   "@comark/nuxt": ^0.2.0
   "@comark/html": ^0.2.0
