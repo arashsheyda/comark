@@ -1,5 +1,7 @@
 # Changelog
 
+## [0.3.1](https://github.com/comarkdown/comark/compare/@comark/vue@0.3.0...@comark/vue@0.3.1) (2026-04-24)
+
 ## [0.3.0](https://github.com/comarkdown/comark/compare/@comark/vue@0.2.1...@comark/vue@0.3.0) (2026-04-24)
 
 ### Features
