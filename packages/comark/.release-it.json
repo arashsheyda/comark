@@ -33,10 +33,7 @@
     }
   },
   "hooks": {
-    "before:init": [
-      "rm -rf ./skills &&cp -r ../../docs/skills ./skills",
-      "pnpm run test"
-    ],
+    "before:init": ["rm -rf ./skills &&cp -r ../../docs/skills ./skills", "pnpm run test"],
     "before:release": ["pnpm run build"]
   }
 }

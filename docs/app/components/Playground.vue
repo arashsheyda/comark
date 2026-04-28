@@ -31,17 +31,18 @@ const props = defineProps<{
 
 const router = useRouter()
 const route = useRoute()
-const knownExamples = playgroundExamples.map(e => e.value)
+const knownExamples = playgroundExamples.map((e) => e.value)
 const selectedExample = computed({
-  get: () => knownExamples.includes(route.query.example as string) ? (route.query.example as string) : knownExamples[0],
+  get: () =>
+    knownExamples.includes(route.query.example as string) ? (route.query.example as string) : knownExamples[0],
   set: (value: string) => {
     if (knownExamples.includes(value)) {
       router.push({ query: { example: value } })
     }
   },
 })
-const currentExample = computed(() =>
-  playgroundExamples.find(e => e.value === selectedExample.value) ?? playgroundExamples[0]!,
+const currentExample = computed(
+  () => playgroundExamples.find((e) => e.value === selectedExample.value) ?? playgroundExamples[0]!
 )
 
 const markdown = ref<string>(currentExample.value.content.trim())
@@ -54,23 +55,31 @@ const parsing = ref<boolean>(false)
 const colorMode = useColorMode()
 const isDark = computed(() => colorMode.value === 'dark')
 
-const pluginToggles = useLocalStorage('comark-playground-plugins', {
-  highlight: true,
-  math: true,
-  emoji: true,
-  mermaid: true,
-  jsonRender: true,
-  footnotes: true,
-  punctuation: false,
-  breaks: false,
-  binding: true,
-}, { mergeDefaults: true })
+const pluginToggles = useLocalStorage(
+  'comark-playground-plugins',
+  {
+    highlight: true,
+    math: true,
+    emoji: true,
+    mermaid: true,
+    jsonRender: true,
+    footnotes: true,
+    punctuation: false,
+    breaks: false,
+    binding: true,
+  },
+  { mergeDefaults: true }
+)
 
-const parseOptions = useLocalStorage('comark-playground-parse-options', {
-  autoUnwrap: true,
-  autoClose: true,
-  html: true,
-}, { mergeDefaults: true })
+const parseOptions = useLocalStorage(
+  'comark-playground-parse-options',
+  {
+    autoUnwrap: true,
+    autoClose: true,
+    html: true,
+  },
+  { mergeDefaults: true }
+)
 
 const pluginDefs = [
   {
@@ -148,9 +157,7 @@ const parseOptionDefs = [
 ] as const
 
 const activePlugins = computed<ComarkPlugin[]>(() =>
-  pluginDefs
-    .filter(p => pluginToggles.value[p.key as keyof typeof pluginToggles.value])
-    .map(p => p.factory()),
+  pluginDefs.filter((p) => pluginToggles.value[p.key as keyof typeof pluginToggles.value]).map((p) => p.factory())
 )
 
 const enabledPluginCount = computed<number>(() => Object.values(pluginToggles.value).filter(Boolean).length)
@@ -163,7 +170,7 @@ const tabs = [
 ]
 
 // In compact mode the tab is always locked to preview
-const currentTab = computed(() => props.compact ? 'preview' : activeTab.value)
+const currentTab = computed(() => (props.compact ? 'preview' : activeTab.value))
 
 function countNodes(nodes: unknown[]): number {
   let count = 0
@@ -173,8 +180,7 @@ function countNodes(nodes: unknown[]): number {
       for (let i = 2; i < node.length; i++) {
         if (Array.isArray(node[i])) {
           count += countNodes([node[i]])
-        }
-        else if (typeof node[i] === 'string') {
+        } else if (typeof node[i] === 'string') {
           count++
         }
       }
@@ -204,11 +210,9 @@ async function parseMarkdown(): Promise<void> {
     parseTime.value = Math.round((performance.now() - start) * 10) / 10
     nodeCount.value = countNodes(result.nodes)
     error.value = null
-  }
-  catch (err: any) {
+  } catch (err: any) {
     error.value = err.message || 'Failed to parse markdown'
-  }
-  finally {
+  } finally {
     parsing.value = false
   }
 }
@@ -238,9 +242,7 @@ const formattedOutputModel = computed({
   set: () => {},
 })
 
-const isMatch = computed(() =>
-  !!formattedOutput.value && formattedOutput.value.trim() === markdown.value.trim(),
-)
+const isMatch = computed(() => !!formattedOutput.value && formattedOutput.value.trim() === markdown.value.trim())
 </script>
 
 <template>
@@ -306,9 +308,7 @@ const isMatch = computed(() =>
                 <div class="w-72">
                   <!-- Plugins section -->
                   <div class="px-3 pt-3 pb-1.5">
-                    <p class="text-xs font-semibold text-muted uppercase tracking-wider">
-                      Plugins
-                    </p>
+                    <p class="text-xs font-semibold text-muted uppercase tracking-wider">Plugins</p>
                   </div>
                   <div class="px-1 pb-1.5">
                     <button
@@ -337,9 +337,7 @@ const isMatch = computed(() =>
 
                   <!-- Parse options section -->
                   <div class="px-3 pt-2.5 pb-1.5">
-                    <p class="text-xs font-semibold text-muted uppercase tracking-wider">
-                      Parse Options
-                    </p>
+                    <p class="text-xs font-semibold text-muted uppercase tracking-wider">Parse Options</p>
                   </div>
                   <div class="px-1 pb-2">
                     <button
@@ -453,9 +451,7 @@ const isMatch = computed(() =>
                 name="i-lucide-eye-off"
                 class="size-8 opacity-40"
               />
-              <p class="text-sm font-medium">
-                Nothing to preview
-              </p>
+              <p class="text-sm font-medium">Nothing to preview</p>
             </div>
             <UScrollArea
               v-else
@@ -475,7 +471,17 @@ const isMatch = computed(() =>
               >
                 <ComarkDocsRenderer
                   :tree="tree"
-                  :components="{ Binding, Gallery, RatingBar, HostInfo, Facility, TwoColumn, BookingCard, Ingredients, steps: ProseSteps }"
+                  :components="{
+                    Binding,
+                    Gallery,
+                    RatingBar,
+                    HostInfo,
+                    Facility,
+                    TwoColumn,
+                    BookingCard,
+                    Ingredients,
+                    steps: ProseSteps,
+                  }"
                 />
               </div>
             </UScrollArea>
@@ -489,7 +495,7 @@ const isMatch = computed(() =>
           >
             <VueJsonPretty
               v-if="tree"
-              :data="(tree as any)"
+              :data="tree as any"
               :theme="isDark ? 'dark' : 'light'"
               :deep="6"
               show-line

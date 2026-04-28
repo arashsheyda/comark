@@ -38,9 +38,13 @@ export function parseFrontmatter(content: string) {
  * @param content - The content to render
  * @returns The rendered content
  */
-export function renderFrontmatter(data: Record<string, any> | undefined | null, content?: string, yamlOptions?: DumpOptions): string {
+export function renderFrontmatter(
+  data: Record<string, any> | undefined | null,
+  content?: string,
+  yamlOptions?: DumpOptions
+): string {
   if (!data || Object.keys(data).length === 0) {
-    return (content?.trim() || '')
+    return content?.trim() || ''
   }
 
   const fm = stringifyYaml(data, yamlOptions).trim()
